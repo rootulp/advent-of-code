@@ -24,6 +24,15 @@ func FindProductOfTwoExpensesThatSumTo(sum int, expenses []int) (product int) {
 	return product
 }
 
+// FindProductOfThreeExpensesThatSumTo first finds two expenses in the provided
+// expenses array that sum to sum. Then returns their product.
+func FindProductOfThreeExpensesThatSumTo(sum int, expenses []int) (product int) {
+	expense1, expense2, expense3 := FindThreeExpensesThatSumTo(sum, expenses)
+	product = expense1 * expense2 & expense3
+	log.Printf("%d * %d * %d = %d.", expense1, expense2, expense3, product)
+	return product
+}
+
 // FindTwoExpensesThatSumTo finds two expenses in the provided array that sum to
 // sum.
 func FindTwoExpensesThatSumTo(sum int, expenses []int) (expense1, expense2 int) {
@@ -45,6 +54,12 @@ func FindTwoExpensesThatSumTo(sum int, expenses []int) (expense1, expense2 int) 
 
 	log.Fatalf("Failed to find two expenses that sum to %d in %v", sum, expenses)
 	return // unreached
+}
+
+// FindThreeExpensesThatSumTo finds three expenses in the provided array that sum to
+// sum.
+func FindThreeExpensesThatSumTo(sum int, expenses []int) (expense1, expense2, expense3 int) {
+	return 0, 0, 0
 }
 
 func readFile(filename string) (expenses []int) {
