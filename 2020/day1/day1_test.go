@@ -40,7 +40,7 @@ func TestFindProductOfThreeExpensesThatSumTo(t *testing.T) {
 	sum := 2020
 	expected := 241861950
 
-	result := FindProductOfTwoExpensesThatSumTo(sum, expenses)
+	result := FindProductOfThreeExpensesThatSumTo(sum, expenses)
 	if result != expected {
 		t.Errorf("FindProductOfTwoExpensesThatSumTo was incorrect. Received: %d. Wanted: %d.", result, expected)
 	}
