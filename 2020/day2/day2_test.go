@@ -20,6 +20,24 @@ func TestIsValidPolicyOne_ReturnsFalseForInvalidPassword(t *testing.T) {
 	}
 }
 
+func TestIsValidPolicyTwo_ReturnsTrueForValidPassword(t *testing.T) {
+	validPassword := "1-3 a: abcde"
+	isValid := IsValidPasswordPolicyTwo(validPassword)
+
+	if isValid != true {
+		t.Errorf("isValid is %v wanted %v", isValid, true)
+	}
+}
+
+func TestIsValidPolicyTwo_ReturnsFalseForInvalidPassword(t *testing.T) {
+	invalidPassword := "1-3 b: cdefg"
+	isValid := IsValidPasswordPolicyTwo(invalidPassword)
+
+	if isValid != false {
+		t.Errorf("isValid is %v wanted %v", isValid, false)
+	}
+}
+
 func TestParseLine(t *testing.T) {
 	input := "1-3 a: abcde"
 	expectedPassword := "abcde"
