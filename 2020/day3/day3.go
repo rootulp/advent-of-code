@@ -20,12 +20,12 @@ func main() {
 		if isTree(currentPos) {
 			numTreesEncountered++
 		}
-		fmt.Printf("currentRow %v, currentCol %v, currentPos %v, numTreesEncountered %v", currentRow, currentCol, currentPos, numTreesEncountered)
+		fmt.Printf("currentRow %v, currentCol %v, currentPos %v, numTreesEncountered %v\n", currentRow, currentCol, currentPos, numTreesEncountered)
 		currentRow++
 		currentCol = (currentCol + 3) % len(grid[0])
 	}
 
-	fmt.Printf("Total # of trees encountered: %d", numTreesEncountered)
+	fmt.Printf("Total # of trees encountered: %d\n", numTreesEncountered)
 }
 
 func isTree(char rune) bool {
