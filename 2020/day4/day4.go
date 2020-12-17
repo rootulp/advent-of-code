@@ -5,7 +5,36 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
+	"strings"
 )
+
+func main() {
+	lines := readFile("./input.txt")
+
+	validPassports := 0
+	for _, potentialPassport := range lines {
+		if IsValidPassport(potentialPassport) {
+			validPassports++
+		}
+	}
+	fmt.Printf("There are %d valid passports\n", validPassports)
+}
+
+// IsValidPassport returns whether the provided line is a valid passport.
+func IsValidPassport(line string) (isValid bool) {
+	fields := strings.Split(line, " ")
+	keys := make(map[string]bool)
+	for _, field := range fields {
+		parts := strings.Split(field, ":")
+		key := parts[0]
+		keys[key] = true
+	}
+	delete(keys, "cid") // "cid" is optional
+	isValid = reflect.DeepEqual(keys, getRequiredPassportFields())
+	fmt.Printf("Line %s, isValid %v\n", line, isValid)
+	return
+}
 
 // A valid passport has the following required fields:
 // - byr (Birth Year)
@@ -16,37 +45,11 @@ import (
 // - ecl (Eye Color)
 // - pid (Passport ID)
 // - [optional] cid (Country ID)
-type passport struct {
-	byr string
-	iyr string
-	eyr string
-	hgt string
-	hcl string
-	ecl string
-	pid string
+func getRequiredPassportFields() map[string]bool {
+	return map[string]bool{"byr": true, "iyr": true, "eyr": true, "hgt": true, "hcl": true, "ecl": true, "pid": true}
 }
 
-func main() {
-	fmt.Print("Hello world\n")
-	lines := readFile("./input.txt")
-
-	validPassports := 0
-	for _, line := range lines {
-		if IsValidPassport(line) {
-			validPassports++
-		}
-	}
-	fmt.Printf("There are %d valid passports", validPassports)
-}
-
-// IsValidPassport returns whether the provided line is a valid passport.
-func IsValidPassport(line string) (isValid bool) {
-	isValid = true
-	fmt.Printf("Line %s, isValid %v", line, isValid)
-	return
-}
-
-func readFile(filename string) (passportLines []string) {
+func readFile(filename string) (potentialPassports []string) {
 	file, err := os.Open(filename)
 	defer file.Close()
 
@@ -56,11 +59,18 @@ func readFile(filename string) (passportLines []string) {
 
 	fileScanner := bufio.NewScanner(file)
 
-	passportLines = []string{}
+	potentialPassports = []string{}
+	partialPassport := []string{}
 	for fileScanner.Scan() {
 		text := fileScanner.Text()
-		fmt.Println(text)
-		passportLines = append(passportLines, text)
+		if text == "" { // passports are separated by newlines
+			potentialPassports = append(potentialPassports, strings.Join(partialPassport, " "))
+			partialPassport = []string{}
+		} else {
+			partialPassport = append(partialPassport, text)
+		}
 	}
+	potentialPassports = append(potentialPassports, strings.Join(partialPassport, " "))
+	// fmt.Printf("passportLines %#v\n", potentialPassports)
 	return
 }
