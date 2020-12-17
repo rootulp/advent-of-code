@@ -14,14 +14,14 @@ func main() {
 
 	validPasswords := 0
 	for _, line := range lines {
-		if IsValidPassword(line) {
+		if IsValidPasswordPolicyOne(line) {
 			validPasswords++
 		}
 	}
-	fmt.Printf("The number of validPasswords: %v\n", validPasswords)
+	fmt.Printf("The number of validPasswords for policy one: %v\n", validPasswords)
 }
 
-func IsValidPassword(line string) bool {
+func IsValidPasswordPolicyOne(line string) bool {
 	password, character, min, max := ParseLine(line)
 	count := strings.Count(password, character)
 	return min <= count && count <= max

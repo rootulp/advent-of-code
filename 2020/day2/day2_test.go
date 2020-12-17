@@ -2,18 +2,18 @@ package main
 
 import "testing"
 
-func TestIsValid_ReturnsTrueForValidPassword(t *testing.T) {
+func TestIsValidPolicyOne_ReturnsTrueForValidPassword(t *testing.T) {
 	validPassword := "1-3 a: abcde"
-	isValid := IsValidPassword(validPassword)
+	isValid := IsValidPasswordPolicyOne(validPassword)
 
 	if isValid != true {
 		t.Errorf("isValid is %v wanted %v", isValid, true)
 	}
 }
 
-func TestIsValid_ReturnsFalseForInvalidPassword(t *testing.T) {
+func TestIsValidPolicyOne_ReturnsFalseForInvalidPassword(t *testing.T) {
 	invalidPassword := "1-3 b: cdefg"
-	isValid := IsValidPassword(invalidPassword)
+	isValid := IsValidPasswordPolicyOne(invalidPassword)
 
 	if isValid != false {
 		t.Errorf("isValid is %v wanted %v", isValid, false)
