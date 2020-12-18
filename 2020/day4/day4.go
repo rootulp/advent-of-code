@@ -17,7 +17,7 @@ type Passport struct {
 	hgt string
 	hcl string
 	ecl string
-	pid int
+	pid string
 }
 
 func (passport Passport) isValid() bool {
@@ -38,13 +38,13 @@ func isValidExpirationYear(expirationYear int) bool {
 
 func isValidHeight(height string) bool {
 	if len(height) < 2 {
-		// fmt.Printf("Height %v is not long enough to contain a unit", height)
+		fmt.Printf("Height %v is not long enough to contain a unit", height)
 		return false
 	}
 	unit := string(height[len(height)-2:])
 	value, err := strconv.Atoi(string(height[:len(height)-2]))
 	if err != nil {
-		// fmt.Printf("Failed to parse height %v\n", err)
+		fmt.Printf("Failed to parse height %v\n", err)
 		return false
 	}
 
@@ -92,19 +92,22 @@ func isValidEyeColor(eyeColor string) bool {
 			return true
 		}
 	}
+	fmt.Printf("Invalid eye color %s\n", eyeColor)
 	return false
 }
 
 func getValidEyeColors() []string {
-	return []string{"amb", "blu", "brn", "gry", "hzl", "oth"}
+	return []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
 }
 
-func isValidPassportID(passportID int) bool {
-	return len(strconv.Itoa(passportID)) == 9
+func isValidPassportID(passportID string) bool {
+	length := len(passportID)
+	fmt.Printf("PassportId length %v", length)
+	return length == 9
 }
 
 func main() {
-	lines := readFile("./input_example.txt")
+	lines := readFile("./input.txt")
 
 	validPassports := 0
 	for _, potentialPassport := range lines {
@@ -149,6 +152,7 @@ func getPassport(line string) (passport Passport, err error) {
 	passport.hgt = properties["hgt"]
 	passport.hcl = properties["hcl"]
 	passport.ecl = properties["ecl"]
+	passport.pid = properties["pid"]
 
 	// Parse strings into ints
 	byr, err := strconv.Atoi(properties["byr"])
@@ -168,12 +172,6 @@ func getPassport(line string) (passport Passport, err error) {
 		return passport, err
 	}
 	passport.eyr = eyr
-
-	pid, err := strconv.Atoi(properties["pid"])
-	if err != nil {
-		return passport, err
-	}
-	passport.pid = pid
 
 	fmt.Printf("Passport %#v\n", passport)
 	return passport, nil
