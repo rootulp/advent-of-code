@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"unicode/utf8"
 )
 
@@ -16,6 +17,33 @@ func main() {
 	fmt.Printf("Max boarding pass seatID %v\n", maxSeatID)
 
 	// Part two
+	PrintOccupiedSeats(boardingPasses)
+	// Unoccupied seat is row 64 col 7 = seatId 519
+}
+
+// PrintOccupiedSeats prints a map from row => col that describes the occupied
+// seats.
+func PrintOccupiedSeats(boardingPasses []string) {
+	occupied := make(map[int][]int)
+	for _, boardingPass := range boardingPasses {
+		row, col := GetRowAndCol(boardingPass)
+		newRow := append(occupied[row], col)
+		sort.Ints(newRow)
+		occupied[row] = newRow
+	}
+
+	// To store the keys in occupied in sorted order
+	keys := make([]int, len(occupied))
+	i := 0
+	for k := range occupied {
+		keys[i] = k
+		i++
+	}
+	sort.Ints(keys)
+
+	for _, row := range keys {
+		fmt.Printf("Row %v: %v\n", row, occupied[row])
+	}
 }
 
 // GetMaxSeatID returns the max seatId from the list of provided boarding
@@ -51,13 +79,19 @@ func ReadFile(filename string) (lines []string) {
 
 // GetSeatID gets the seatId for the provided boarding pass.
 func GetSeatID(boardingPass string) (seatID int) {
+	row, col := GetRowAndCol(boardingPass)
+	return (row * 8) + col
+}
+
+// GetRowAndCol gets the row and col for a boarding pass.
+func GetRowAndCol(boardingPass string) (row int, col int) {
 	boardingRow := boardingPass[:7]
 	boardingCol := boardingPass[7:]
 	// log.Printf("boardingPass %v boardingRow %v boardingCol %v\n", boardingPass, boardingRow, boardingCol)
 
-	row := GetRow(boardingRow)
-	col := GetCol(boardingCol)
-	return (row * 8) + col
+	row = GetRow(boardingRow)
+	col = GetCol(boardingCol)
+	return
 }
 
 // GetRow returns a number between 0 and 127 (inclusive) that represents the row
