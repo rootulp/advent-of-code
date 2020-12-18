@@ -31,20 +31,6 @@ func IsValidPassport(line string) (isValid bool) {
 	return passport.IsValid()
 }
 
-func getProperties(line string) (properties map[string]string) {
-	properties = make(map[string]string)
-	fields := strings.Split(line, " ")
-
-	for _, property := range fields {
-		splitProperty := strings.Split(property, ":")
-		key := splitProperty[0]
-		val := splitProperty[1]
-		properties[key] = val
-	}
-
-	return properties
-}
-
 // getPassport returns a passport struct for the provided line or returns err if
 // the provided line could not be parsed into a passport.
 func getPassport(line string) (passport Passport, err error) {
@@ -76,8 +62,22 @@ func getPassport(line string) (passport Passport, err error) {
 	}
 	passport.ExpirationYear = eyr
 
-	// fmt.Printf("Passport %#v\n", passport)
+	// log.Printf("Passport %#v\n", passport)
 	return passport, nil
+}
+
+func getProperties(line string) (properties map[string]string) {
+	properties = make(map[string]string)
+	fields := strings.Split(line, " ")
+
+	for _, property := range fields {
+		splitProperty := strings.Split(property, ":")
+		key := splitProperty[0]
+		val := splitProperty[1]
+		properties[key] = val
+	}
+
+	return properties
 }
 
 func readFile(filename string) (potentialPassports []string) {
@@ -102,7 +102,7 @@ func readFile(filename string) (potentialPassports []string) {
 		}
 	}
 	potentialPassports = append(potentialPassports, strings.Join(partialPassport, " "))
-	// fmt.Printf("potentialPassports %#v\n", potentialPassports)
+	// log.Printf("potentialPassports %#v\n", potentialPassports)
 	return
 }
 
@@ -137,13 +137,13 @@ func (passport Passport) isValidExpirationYear() bool {
 
 func (passport Passport) isValidHeight() bool {
 	if len(passport.Height) < 2 {
-		fmt.Printf("Height %v is not long enough to contain a unit", passport.Height)
+		log.Printf("Height %v is not long enough to contain a unit", passport.Height)
 		return false
 	}
 	unit := string(passport.Height[len(passport.Height)-2:])
 	value, err := strconv.Atoi(string(passport.Height[:len(passport.Height)-2]))
 	if err != nil {
-		fmt.Printf("Failed to parse height %v\n", err)
+		log.Printf("Failed to parse height %v\n", err)
 		return false
 	}
 
@@ -152,7 +152,7 @@ func (passport Passport) isValidHeight() bool {
 	} else if unit == "in" {
 		return isValidHeightInInches(value)
 	} else {
-		fmt.Println("Unit is not cm or in")
+		log.Println("Unit is not cm or in")
 		return false
 	}
 }
@@ -167,18 +167,18 @@ func isValidHeightInCentimeters(centimeters int) bool {
 
 func (passport Passport) isValidHairColor() bool {
 	if len(passport.HairColor) < 7 {
-		fmt.Printf("hairColor %v is not long enough to be valid\n", passport.HairColor)
+		log.Printf("hairColor %v is not long enough to be valid\n", passport.HairColor)
 		return false
 	}
 
 	if !strings.HasPrefix(passport.HairColor, "#") {
-		fmt.Printf("hairColor %v does not start with #\n", passport.HairColor)
+		log.Printf("hairColor %v does not start with #\n", passport.HairColor)
 		return false
 	}
 	hexadecimalColor := strings.TrimPrefix(passport.HairColor, "#")
 	_, err := hex.DecodeString(hexadecimalColor)
 	if err != nil {
-		fmt.Printf("Failed to decode hexadecimalColor %v\n", hexadecimalColor)
+		log.Printf("Failed to decode hexadecimalColor %v\n", hexadecimalColor)
 		return false
 	}
 	return true
@@ -191,7 +191,7 @@ func (passport Passport) isValidEyeColor() bool {
 			return true
 		}
 	}
-	fmt.Printf("Invalid eye color %s\n", passport.EyeColor)
+	log.Printf("Invalid eye color %s\n", passport.EyeColor)
 	return false
 }
 
@@ -201,6 +201,9 @@ func getValidEyeColors() []string {
 
 func (passport Passport) isValidPassportID() bool {
 	length := len(passport.PassportID)
-	// fmt.Printf("PassportId length %v", length)
-	return length == 9
+	isValid := length == 9
+	if !isValid {
+		log.Printf("PassportId of length %v is invalid", length)
+	}
+	return isValid
 }
