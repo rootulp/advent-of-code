@@ -57,7 +57,7 @@ func getPassport(line string) (passport Passport, err error) {
 	passport.Height = properties["hgt"]
 	passport.HairColor = properties["hcl"]
 	passport.EyeColor = properties["ecl"]
-	passport.PassportId = properties["pid"]
+	passport.PassportID = properties["pid"]
 
 	// Parse strings into ints
 	byr, err := strconv.Atoi(properties["byr"])
@@ -117,7 +117,7 @@ type Passport struct {
 	Height         string
 	HairColor      string
 	EyeColor       string
-	PassportId     string
+	PassportID     string
 }
 
 // IsValid returns whethere the passport is a valid passport.
@@ -202,7 +202,7 @@ func getValidEyeColors() []string {
 }
 
 func (passport Passport) isValidPassportID() bool {
-	length := len(passport.PassportId)
+	length := len(passport.PassportID)
 	fmt.Printf("PassportId length %v", length)
 	return length == 9
 }
