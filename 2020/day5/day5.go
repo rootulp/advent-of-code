@@ -10,6 +10,17 @@ import (
 
 func main() {
 	boardingPasses := ReadFile("./input.txt")
+
+	// Part one
+	maxSeatID := GetMaxSeatID(boardingPasses)
+	fmt.Printf("Max boarding pass seatID %v\n", maxSeatID)
+
+	// Part two
+}
+
+// GetMaxSeatID returns the max seatId from the list of provided boarding
+// passes.
+func GetMaxSeatID(boardingPasses []string) int {
 	maxSeatID := 0
 	for _, boardingPass := range boardingPasses {
 		seatID := GetSeatID(boardingPass)
@@ -17,7 +28,7 @@ func main() {
 			maxSeatID = seatID
 		}
 	}
-	fmt.Printf("Max boarding pass seatID %v\n", maxSeatID)
+	return maxSeatID
 }
 
 // ReadFile reads a file line by line
