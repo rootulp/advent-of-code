@@ -48,9 +48,7 @@ func getProperties(line string) (properties map[string]string) {
 // getPassport returns a passport struct for the provided line or returns err if
 // the provided line could not be parsed into a passport.
 func getPassport(line string) (passport Passport, err error) {
-
 	passport = Passport{}
-
 	properties := getProperties(line)
 
 	// Set all string types of passport
@@ -78,7 +76,7 @@ func getPassport(line string) (passport Passport, err error) {
 	}
 	passport.ExpirationYear = eyr
 
-	fmt.Printf("Passport %#v\n", passport)
+	// fmt.Printf("Passport %#v\n", passport)
 	return passport, nil
 }
 
@@ -104,7 +102,7 @@ func readFile(filename string) (potentialPassports []string) {
 		}
 	}
 	potentialPassports = append(potentialPassports, strings.Join(partialPassport, " "))
-	// fmt.Printf("passportLines %#v\n", potentialPassports)
+	// fmt.Printf("potentialPassports %#v\n", potentialPassports)
 	return
 }
 
@@ -203,6 +201,6 @@ func getValidEyeColors() []string {
 
 func (passport Passport) isValidPassportID() bool {
 	length := len(passport.PassportID)
-	fmt.Printf("PassportId length %v", length)
+	// fmt.Printf("PassportId length %v", length)
 	return length == 9
 }
