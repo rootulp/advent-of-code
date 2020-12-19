@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	lines := readFile("./input.txt")
+	lines := readFile("input.txt")
 
 	validPassports := 0
 	for _, potentialPassport := range lines {

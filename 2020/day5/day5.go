@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	boardingPasses := ReadFile("./input.txt")
+	boardingPasses := ReadFile("input.txt")
 
 	// Part one
 	maxSeatID := GetMaxSeatID(boardingPasses)

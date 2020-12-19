@@ -10,7 +10,7 @@ import (
 
 func main() {
 	sum := 2020
-	expenses := readFile("./input.txt")
+	expenses := readFile("input.txt")
 
 	FindProductOfTwoExpensesThatSumTo(sum, expenses)
 	FindProductOfThreeExpensesThatSumTo(sum, expenses)

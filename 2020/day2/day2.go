@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	lines := readFile("./input.txt")
+	lines := readFile("input.txt")
 
 	validPolicyOne := 0
 	validPolicyTwo := 0

@@ -9,7 +9,7 @@ import (
 
 func main() {
 	fmt.Println("Starting Toboggan Trajectory")
-	grid := readFile("./input.txt")
+	grid := readFile("input.txt")
 	trees1 := GetNumTreesEncountered(grid, 1, 1)
 	trees2 := GetNumTreesEncountered(grid, 3, 1)
 	trees3 := GetNumTreesEncountered(grid, 5, 1)
