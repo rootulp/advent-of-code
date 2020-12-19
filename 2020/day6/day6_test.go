@@ -6,16 +6,19 @@ import (
 )
 
 func TestGetNumUnique1(t *testing.T) {
-	testGetNumUnique(t, "abc", 3)
+	testGetNumUnique(t, []string{"abc"}, 3)
 }
 func TestGetNumUnique2(t *testing.T) {
-	testGetNumUnique(t, "abac", 3)
+	testGetNumUnique(t, []string{"a", "b", "c"}, 3)
 }
 func TestGetNumUnique3(t *testing.T) {
-	testGetNumUnique(t, "aaaa", 1)
+	testGetNumUnique(t, []string{"ab", "ac"}, 3)
 }
 func TestGetNumUnique4(t *testing.T) {
-	testGetNumUnique(t, "b", 1)
+	testGetNumUnique(t, []string{"a", "a", "a", "a"}, 1)
+}
+func TestGetNumUnique5(t *testing.T) {
+	testGetNumUnique(t, []string{"b"}, 1)
 }
 
 func TestGetNumCommon1(t *testing.T) {
@@ -33,18 +36,6 @@ func TestGetNumCommon4(t *testing.T) {
 func TestGetNumCommon5(t *testing.T) {
 	testGetNumCommon(t, []string{"b"}, 1)
 }
-func TestReadFileIntoResponses(t *testing.T) {
-	expected := []string{
-		"abc",
-		"abc",
-		"abac",
-		"aaaa",
-		"b"}
-	result := ReadFileIntoResponses("./input_test.txt")
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("ReadFile failed. Received %v expected %v", result, expected)
-	}
-}
 func TestReadFileIntoGroups(t *testing.T) {
 	expected := [][]string{
 		{"abc"},
@@ -59,8 +50,8 @@ func TestReadFileIntoGroups(t *testing.T) {
 	}
 }
 
-func testGetNumUnique(t *testing.T, response string, expected int) {
-	result := GetNumUnique(response)
+func testGetNumUnique(t *testing.T, group []string, expected int) {
+	result := GetNumUnique(group)
 
 	if result != expected {
 		t.Errorf("GetNumUnique failed. Received %v expected %v", result, expected)

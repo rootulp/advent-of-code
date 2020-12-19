@@ -8,20 +8,20 @@ import (
 )
 
 func main() {
+	groups := ReadFileIntoGroups("input.txt")
+
 	// Part one
-	responses := ReadFileIntoResponses("input.txt")
-	PrintSumOfUnique(responses)
+	PrintSumOfUnique(groups)
 
 	// Part two
-	groups := ReadFileIntoGroups("input.txt")
 	PrintSumOfCommon(groups)
 }
 
 // PrintSumOfUnique prints the sum of unique characters in each response
-func PrintSumOfUnique(responses []string) {
+func PrintSumOfUnique(groups [][]string) {
 	sum := 0
-	for _, response := range responses {
-		unique := GetNumUnique(response)
+	for _, group := range groups {
+		unique := GetNumUnique(group)
 		sum += unique
 	}
 	fmt.Printf("Sum of unique counts %v\n", sum)
@@ -55,38 +55,14 @@ func GetNumCommon(group []string) (numCommon int) {
 }
 
 // GetNumUnique returns the number of unique characters in the provided response
-func GetNumUnique(response string) int {
+func GetNumUnique(group []string) int {
 	seen := make(map[rune]bool)
-	for _, char := range response {
-		seen[char] = true
-	}
-	return len(seen)
-}
-
-// ReadFileIntoResponses returns a list responses per group. Each response represents one group.
-func ReadFileIntoResponses(filename string) (responses []string) {
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	scanner := bufio.NewScanner(file)
-	responses = []string{}
-	response := ""
-	for scanner.Scan() {
-		text := scanner.Text()
-		if text == "" {
-			responses = append(responses, response)
-			response = ""
-		} else {
-			response += text
+	for _, response := range group {
+		for _, char := range response {
+			seen[char] = true
 		}
 	}
-	responses = append(responses, response)
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-	return
+	return len(seen)
 }
 
 // ReadFileIntoGroups returns a list of groups. Each group is a list of
