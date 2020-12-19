@@ -11,32 +11,41 @@ import (
 func main() {
 	fmt.Println("Started day7")
 	rules := ReadFile("input_test.txt")
+	bags := []Bag{}
+
 	for _, rule := range rules {
 		// fmt.Printf("Rule %v\n", rule)
-		ParseRule(rule)
-		// fmt.Printf("Container %v contained %v\n", container, contained)
+		color, _ := ParseRule(rule)
+		bag := Bag{
+			Color: color,
+			// TODO figure out a way to fetch a pointer to the existing
+			// contained bags and add them here.
+		}
+		bags = append(bags, bag)
 	}
 }
 
+// Bag represents a bag. Color is the bag's color. Contained is a list of
+// pointers to bags that can be contained inside this bag.
 type Bag struct {
 	Color     string
-	Container *Bag
+	Contained []*Bag
 }
 
-// ParseRule gets the containerColor and containedColors from a rule
-func ParseRule(rule string) (containerColor string, containedColors []string) {
+// ParseRule gets the color and contained from a rule
+func ParseRule(rule string) (color string, contained []string) {
 	fields := strings.Split(rule, "contain")
 
-	containerColor = strings.TrimSpace(strings.TrimSuffix(fields[0], "bags "))
+	color = strings.TrimSpace(strings.TrimSuffix(fields[0], "bags "))
 	containedPhrases := strings.Split(strings.Trim(strings.TrimSpace(fields[1]), "."), ", ")
-	containedColors = []string{}
+	contained = []string{}
 	for _, phrase := range containedPhrases {
 		words := strings.Fields(phrase)
 		if len(words) == 4 {
 			// Valid contained expressions contain four words:
 			// Ex. "5 faded blue bags"
 			containedColor := words[1] + " " + words[2]
-			containedColors = append(containedColors, containedColor)
+			contained = append(contained, containedColor)
 		} else {
 			// Invalid contained expressions usually contain three words:
 			// Ex. "no other bags"
@@ -44,8 +53,8 @@ func ParseRule(rule string) (containerColor string, containedColors []string) {
 		}
 	}
 
-	log.Printf("containerColor %#v containedColors %#v\n", containerColor, containedColors)
-	return containerColor, containedColors
+	log.Printf("containerColor %#v containedColors %#v\n", color, contained)
+	return color, contained
 }
 
 // ReadFile returns a list of rules from the provided file
