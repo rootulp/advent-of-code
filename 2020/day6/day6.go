@@ -17,7 +17,7 @@ func main() {
 	PrintSumOfCommon(groups)
 }
 
-// PrintSumOfUnique prints the sum of unique characters in each response
+// PrintSumOfUnique prints the sum of unique answers from each group
 func PrintSumOfUnique(groups [][]string) {
 	sum := 0
 	for _, group := range groups {
@@ -54,7 +54,7 @@ func GetNumCommon(group []string) (numCommon int) {
 	return numCommon
 }
 
-// GetNumUnique returns the number of unique characters in the provided response
+// GetNumUnique returns the number of responses that are unique in the group
 func GetNumUnique(group []string) int {
 	seen := make(map[rune]bool)
 	for _, response := range group {
@@ -67,24 +67,24 @@ func GetNumUnique(group []string) int {
 
 // ReadFileIntoGroups returns a list of groups. Each group is a list of
 // responses (one per person).
-func ReadFileIntoGroups(filename string) (groupResponses [][]string) {
+func ReadFileIntoGroups(filename string) (groups [][]string) {
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
 	scanner := bufio.NewScanner(file)
-	groupResponses = [][]string{}
+	groups = [][]string{}
 	response := []string{}
 	for scanner.Scan() {
 		text := scanner.Text()
 		if text == "" {
-			groupResponses = append(groupResponses, response)
+			groups = append(groups, response)
 			response = []string{}
 		} else {
 			response = append(response, text)
 		}
 	}
-	groupResponses = append(groupResponses, response)
+	groups = append(groups, response)
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
