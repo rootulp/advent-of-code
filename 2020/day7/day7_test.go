@@ -5,6 +5,34 @@ import (
 	"testing"
 )
 
+func TestGetContainersOf_WithOneContainer(t *testing.T) {
+	colorsToContainers := map[string][]string{
+		"bright white": {"light red"},
+		"muted yellow": {"light red"},
+		"light red":    {},
+	}
+
+	testGetContainersOf(t, colorsToContainers, "bright white", []string{"light red"})
+}
+func TestGetContainersOf_WithTwoContainers(t *testing.T) {
+	colorsToContainers := map[string][]string{
+		"bright white": {"light red", "dark orange"},
+		"muted yellow": {"light red", "dark orange"},
+		"light red":    {},
+		"dark orange":  {},
+	}
+
+	testGetContainersOf(t, colorsToContainers, "bright white", []string{"light red", "dark orange"})
+}
+
+func testGetContainersOf(t *testing.T, colorsToContainers map[string][]string, target string, expected []string) {
+	result := GetContainersOf(colorsToContainers, target)
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("GetContainersOf did not match expected. Received %#v expected %#v", result, expected)
+	}
+}
+
 func TestGetColorsToContainer_WithOneRule(t *testing.T) {
 	rules := []string{"light red bags contain 1 bright white bag, 2 muted yellow bags."}
 	expected := map[string][]string{
