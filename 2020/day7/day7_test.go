@@ -5,7 +5,23 @@ import (
 	"testing"
 )
 
-func TestGetContainersOf_WithOneContainer(t *testing.T) {
+func GetNumberOfContainersWithInputTest(t *testing.T) {
+	testGetNumberOfContainers(t, "input_test.txt", "shiny gold", 4)
+}
+
+func GetNumberOfContainersWithInput(t *testing.T) {
+	testGetNumberOfContainers(t, "input.txt", "shiny gold", 144)
+}
+
+func testGetNumberOfContainers(t *testing.T, filename string, target string, expected int) {
+	result := GetNumberOfContainers(filename, target)
+
+	if result != expected {
+		t.Errorf("GetNumberOfContainers failed. Received %v wanted %v", result, expected)
+	}
+}
+
+func TestGetContainersOfWithOneContainer(t *testing.T) {
 	colorsToContainers := map[string][]string{
 		"bright white": {"light red"},
 		"muted yellow": {"light red"},
@@ -14,7 +30,7 @@ func TestGetContainersOf_WithOneContainer(t *testing.T) {
 
 	testGetContainersOf(t, colorsToContainers, "bright white", []string{"light red"})
 }
-func TestGetContainersOf_WithTwoContainers(t *testing.T) {
+func TestGetContainersOfWithTwoContainers(t *testing.T) {
 	colorsToContainers := map[string][]string{
 		"bright white": {"light red", "dark orange"},
 		"muted yellow": {"light red", "dark orange"},
