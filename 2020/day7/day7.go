@@ -138,7 +138,7 @@ func ParseRule(rule string) (color string, contained []ContainedBag) {
 	return color, contained
 }
 
-// ReadFile returns a list of rules from the provided file
+// ReadFile returns a list of rules from the provided file.
 func ReadFile(filename string) (rules []string) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -155,6 +155,7 @@ func ReadFile(filename string) (rules []string) {
 	return rules
 }
 
+// Why does golang not support a native slice .contains method?
 func contains(s []string, str string) bool {
 	for _, v := range s {
 		if v == str {
