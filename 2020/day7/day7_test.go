@@ -5,6 +5,37 @@ import (
 	"testing"
 )
 
+func TestGetColorsToContainer_WithOneRule(t *testing.T) {
+	rules := []string{"light red bags contain 1 bright white bag, 2 muted yellow bags."}
+	expected := map[string][]string{
+		"bright white": {"light red"},
+		"muted yellow": {"light red"},
+		"light red":    {},
+	}
+
+	testGetColorsToContainer(t, rules, expected)
+}
+
+func TestGetColorsToContainer_WithTwoRules(t *testing.T) {
+	rules := []string{"light red bags contain 1 bright white bag, 2 muted yellow bags.", "dark orange bags contain 3 bright white bags, 4 muted yellow bags."}
+	expected := map[string][]string{
+		"bright white": {"light red", "dark orange"},
+		"muted yellow": {"light red", "dark orange"},
+		"light red":    {},
+		"dark orange":  {},
+	}
+
+	testGetColorsToContainer(t, rules, expected)
+}
+
+func testGetColorsToContainer(t *testing.T, rules []string, expected map[string][]string) {
+	result := GetColorsToContainers(rules)
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("GetColorsToContainers did not match expected. Received %#v expected %#v", result, expected)
+	}
+}
+
 func TestParseRuleWithNoContained(t *testing.T) {
 	rule := "dotted black bags contain no other bags."
 	expectedColor := "dotted black"
