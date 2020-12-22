@@ -50,14 +50,9 @@ func GetColorToNumContained(rules []string) map[string][]NumberContained {
 // GetNumContained returns the total number of bags contained inside the target bag.
 func GetNumContained(colorToNumContained map[string][]NumberContained, target string) int {
 	result := 1
-	if len(colorToNumContained[target]) == 0 {
-		fmt.Printf("A %v bag does not contain any more bags\n", target)
-		return result
-	}
 	for _, contained := range colorToNumContained[target] {
 		result += contained.Quantity * GetNumContained(colorToNumContained, contained.Color)
 	}
-	fmt.Printf("A %v contains %d total bags\n", target, result)
 	return result
 }
 
@@ -136,7 +131,7 @@ func ParseQuantityAndColorFromRule(rule string) (color string, contained []Numbe
 		}
 	}
 
-	log.Printf("containerColor %#v containedColors %#v\n", color, contained)
+	// log.Printf("containerColor %#v containedColors %#v\n", color, contained)
 	return color, contained
 }
 
