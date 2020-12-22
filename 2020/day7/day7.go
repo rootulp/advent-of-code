@@ -15,15 +15,16 @@ type NumberContained struct {
 	Color    string
 }
 
+const shinyGold = "shiny gold"
+
 func main() {
 	// Part one
-	result1 := GetNumberOfContainers("input.txt", "shiny gold")
+	result1 := GetNumberOfContainers("input.txt", shinyGold)
 	fmt.Printf("%d bag colors can eventually contain at least one shiny gold bag\n", result1)
 
 	// Part two
-	result2 := GetNumberOfContainedBags("input.txt", "shiny gold")
+	result2 := GetNumberOfContainedBags("input.txt", shinyGold)
 	fmt.Printf("A shiny gold bag must contain %d bags\n", result2)
-
 }
 
 // GetNumberOfContainedBags returns the number of total bags that are contained
