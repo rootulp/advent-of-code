@@ -41,7 +41,7 @@ func GetColorToNumContained(rules []string) map[string][]NumberContained {
 	result := make(map[string][]NumberContained)
 
 	for _, rule := range rules {
-		color, contained := ParseQuantityAndColorFromRule(rule)
+		color, contained := ParseRule(rule)
 		result[color] = contained
 	}
 	return result
@@ -92,13 +92,13 @@ func GetColorsToContainers(rules []string) map[string][]string {
 	colorsToContainers := make(map[string][]string)
 	// Initialize colors
 	for _, rule := range rules {
-		color, _ := ParseQuantityAndColorFromRule(rule)
+		color, _ := ParseRule(rule)
 		colorsToContainers[color] = []string{}
 	}
 
 	// Initialize containers
 	for _, rule := range rules {
-		container, colors := ParseQuantityAndColorFromRule(rule)
+		container, colors := ParseRule(rule)
 		for _, color := range colors {
 			colorsToContainers[color.Color] = append(colorsToContainers[color.Color], container)
 		}
@@ -106,9 +106,9 @@ func GetColorsToContainers(rules []string) map[string][]string {
 	return colorsToContainers
 }
 
-// ParseQuantityAndColorFromRule gets the color and the number and color of each
+// ParseRule gets the color and the number and color of each
 // contained bag from a rule.
-func ParseQuantityAndColorFromRule(rule string) (color string, contained []NumberContained) {
+func ParseRule(rule string) (color string, contained []NumberContained) {
 	fields := strings.Split(rule, "contain")
 
 	// NOTE: It may make more sense to use a RegEx to capture the relevant
