@@ -5,13 +5,59 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
+// NumberContained represents the
+type NumberContained struct {
+	Quantity int
+	Color    string
+}
+
 func main() {
 	// Part one
-	result := GetNumberOfContainers("input.txt", "shiny gold")
-	fmt.Printf("%d bag colors can eventually contain at least one shiny gold bag\n", result)
+	result1 := GetNumberOfContainers("input.txt", "shiny gold")
+	fmt.Printf("%d bag colors can eventually contain at least one shiny gold bag\n", result1)
+
+	// Part two
+	result2 := GetNumberOfContainedBags("input.txt", "shiny gold")
+	fmt.Printf("A shiny gold bag must contain %d bags\n", result2)
+
+}
+
+// GetNumberOfContainedBags returns the number of total bags that are contained
+// inside the target bag.
+func GetNumberOfContainedBags(filename string, target string) int {
+	rules := ReadFile(filename)
+	colorToNumContained := GetColorToNumContained(rules)
+	return GetNumContained(colorToNumContained, target) - 1 // the result expects the number of bags contained in the target bag excluding the target bag therefore subtract one
+}
+
+// GetColorToNumContained returns a map from color name to a slice of objects
+// that represent the number and color of the contained bags.
+func GetColorToNumContained(rules []string) map[string][]NumberContained {
+	result := make(map[string][]NumberContained)
+
+	for _, rule := range rules {
+		color, contained := ParseQuantityAndColorFromRule(rule)
+		result[color] = contained
+	}
+	return result
+}
+
+// GetNumContained returns the total number of bags contained inside the target bag.
+func GetNumContained(colorToNumContained map[string][]NumberContained, target string) int {
+	result := 1
+	if len(colorToNumContained[target]) == 0 {
+		fmt.Printf("A %v bag does not contain any more bags\n", target)
+		return result
+	}
+	for _, contained := range colorToNumContained[target] {
+		result += contained.Quantity * GetNumContained(colorToNumContained, contained.Color)
+	}
+	fmt.Printf("A %v contains %d total bags\n", target, result)
+	return result
 }
 
 // GetNumberOfContainers gets the number of containers that can possibly hold the target bag.
@@ -64,7 +110,36 @@ func GetColorsToContainers(rules []string) map[string][]string {
 	return colorsToContainers
 }
 
-// ParseRule gets the color and contained from a rule
+// ParseQuantityAndColorFromRule gets the color and the number and color of each
+// contained bag from a rule.
+func ParseQuantityAndColorFromRule(rule string) (color string, contained []NumberContained) {
+	fields := strings.Split(rule, "contain")
+
+	// NOTE: It may make more sense to use a RegEx to capture the relevant
+	// fields in this string. However, I wanted to try using the methods exposed
+	// by strings as a learning exercise.
+	color = strings.TrimSpace(strings.TrimSuffix(fields[0], "bags "))
+	containedPhrases := strings.Split(strings.Trim(strings.TrimSpace(fields[1]), "."), ", ")
+	contained = []NumberContained{}
+	for _, phrase := range containedPhrases {
+		words := strings.Fields(phrase)
+		if len(words) == 4 {
+			// Valid contained expressions contain four words:
+			// Ex. "5 faded blue bags"
+			containedQuantity, err := strconv.Atoi(words[0])
+			if err != nil {
+				log.Fatal(err)
+			}
+			containedColor := words[1] + " " + words[2]
+			contained = append(contained, NumberContained{Quantity: containedQuantity, Color: containedColor})
+		}
+	}
+
+	log.Printf("containerColor %#v containedColors %#v\n", color, contained)
+	return color, contained
+}
+
+// ParseRule gets the color and color of each contained bag from a rule.
 func ParseRule(rule string) (color string, contained []string) {
 	fields := strings.Split(rule, "contain")
 
@@ -81,10 +156,6 @@ func ParseRule(rule string) (color string, contained []string) {
 			// Ex. "5 faded blue bags"
 			containedColor := words[1] + " " + words[2]
 			contained = append(contained, containedColor)
-		} else {
-			// Invalid contained expressions usually contain three words:
-			// Ex. "no other bags"
-			// log.Printf("Ignoring split %v because it does not contain 4 words", words)
 		}
 	}
 
