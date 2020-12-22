@@ -92,15 +92,15 @@ func GetColorsToContainers(rules []string) map[string][]string {
 	colorsToContainers := make(map[string][]string)
 	// Initialize colors
 	for _, rule := range rules {
-		color, _ := ParseRule(rule)
+		color, _ := ParseQuantityAndColorFromRule(rule)
 		colorsToContainers[color] = []string{}
 	}
 
 	// Initialize containers
 	for _, rule := range rules {
-		container, colors := ParseRule(rule)
+		container, colors := ParseQuantityAndColorFromRule(rule)
 		for _, color := range colors {
-			colorsToContainers[color] = append(colorsToContainers[color], container)
+			colorsToContainers[color.Color] = append(colorsToContainers[color.Color], container)
 		}
 	}
 	return colorsToContainers
@@ -128,30 +128,6 @@ func ParseQuantityAndColorFromRule(rule string) (color string, contained []Numbe
 			}
 			containedColor := words[1] + " " + words[2]
 			contained = append(contained, NumberContained{Quantity: containedQuantity, Color: containedColor})
-		}
-	}
-
-	// log.Printf("containerColor %#v containedColors %#v\n", color, contained)
-	return color, contained
-}
-
-// ParseRule gets the color and color of each contained bag from a rule.
-func ParseRule(rule string) (color string, contained []string) {
-	fields := strings.Split(rule, "contain")
-
-	// NOTE: It may make more sense to use a RegEx to capture the relevant
-	// fields in this string. However, I wanted to try using the methods exposed
-	// by strings as a learning exercise.
-	color = strings.TrimSpace(strings.TrimSuffix(fields[0], "bags "))
-	containedPhrases := strings.Split(strings.Trim(strings.TrimSpace(fields[1]), "."), ", ")
-	contained = []string{}
-	for _, phrase := range containedPhrases {
-		words := strings.Fields(phrase)
-		if len(words) == 4 {
-			// Valid contained expressions contain four words:
-			// Ex. "5 faded blue bags"
-			containedColor := words[1] + " " + words[2]
-			contained = append(contained, containedColor)
 		}
 	}
 
