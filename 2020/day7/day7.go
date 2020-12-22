@@ -9,38 +9,39 @@ import (
 	"strings"
 )
 
-// NumberContained represents the
-type NumberContained struct {
+// ContainedBag represents a bag that is contained inside another bag.
+type ContainedBag struct {
 	Quantity int
 	Color    string
 }
 
-const shinyGold = "shiny gold"
+// ShinyGold represents the targetBag in this exercise.
+const ShinyGold = "shiny gold"
 
 func main() {
 	// Part one
-	result1 := GetNumberOfContainers("input.txt", shinyGold)
+	result1 := GetNumberOfContainers("input.txt", ShinyGold)
 	fmt.Printf("%d bag colors can eventually contain at least one shiny gold bag\n", result1)
 
 	// Part two
-	result2 := GetNumberOfContainedBags("input.txt", shinyGold)
+	result2 := GetNumberOfContainedBags("input.txt", ShinyGold)
 	fmt.Printf("A shiny gold bag must contain %d bags\n", result2)
 }
 
 // GetNumberOfContainedBags returns the number of total bags that are contained
 // inside the target bag.
-func GetNumberOfContainedBags(filename string, target string) int {
+func GetNumberOfContainedBags(filename string, targetBag string) int {
 	rules := ReadFile(filename)
-	colorToNumContained := GetColorToNumContained(rules)
+	colorToContainedBags := GetColorToContainedBags(rules)
 	// the result expects the number of bags contained in the target bag
 	// excluding the target bag therefore subtract one
-	return GetNumberOfBagsContainedInside(colorToNumContained, target) - 1
+	return GetNumberOfBagsContainedInside(colorToContainedBags, targetBag) - 1
 }
 
-// GetColorToNumContained returns a map from color name to a slice of objects
+// GetColorToContainedBags returns a map from color name to a slice of objects
 // that represent the number and color of the contained bags.
-func GetColorToNumContained(rules []string) map[string][]NumberContained {
-	result := make(map[string][]NumberContained)
+func GetColorToContainedBags(rules []string) map[string][]ContainedBag {
+	result := make(map[string][]ContainedBag)
 
 	for _, rule := range rules {
 		color, contained := ParseRule(rule)
@@ -50,29 +51,29 @@ func GetColorToNumContained(rules []string) map[string][]NumberContained {
 }
 
 // GetNumberOfBagsContainedInside returns the total number of bags contained inside the target bag.
-func GetNumberOfBagsContainedInside(colorToNumContained map[string][]NumberContained, target string) int {
+func GetNumberOfBagsContainedInside(colorToNumContained map[string][]ContainedBag, targetBag string) int {
 	result := 1
-	for _, contained := range colorToNumContained[target] {
+	for _, contained := range colorToNumContained[targetBag] {
 		result += contained.Quantity * GetNumberOfBagsContainedInside(colorToNumContained, contained.Color)
 	}
 	return result
 }
 
 // GetNumberOfContainers gets the number of containers that can possibly hold the target bag.
-func GetNumberOfContainers(filename string, target string) int {
+func GetNumberOfContainers(filename string, targetBag string) int {
 	rules := ReadFile(filename)
-	colorsToContainers := GetColorsToContainers(rules)
-	containers := GetContainersOf(colorsToContainers, target)
+	colorsToContainers := GetColorToContainers(rules)
+	containers := GetContainersOf(colorsToContainers, targetBag)
 
 	return len(containers)
 }
 
-// GetContainersOf retuns a list of strings that represent that bags that
-// contain the target
-func GetContainersOf(colorsToContainers map[string][]string, target string) []string {
+// GetContainersOf retuns a list of strings that represent the bags that
+// contain the target bag.
+func GetContainersOf(colorsToContainers map[string][]string, targetBag string) []string {
 	containers := []string{}
 	unvisited := []string{}
-	unvisited = append(unvisited, colorsToContainers[target]...)
+	unvisited = append(unvisited, colorsToContainers[targetBag]...)
 	var toVisit string
 
 	for (len(unvisited)) > 0 {
@@ -88,29 +89,29 @@ func GetContainersOf(colorsToContainers map[string][]string, target string) []st
 	return containers
 }
 
-// GetColorsToContainers returns a map from bag color to a list of bag colors
+// GetColorToContainers returns a map from bag color to a list of bag colors
 // that can contain the color.
-func GetColorsToContainers(rules []string) map[string][]string {
-	colorsToContainers := make(map[string][]string)
+func GetColorToContainers(rules []string) map[string][]string {
+	colorToContainers := make(map[string][]string)
 	// Initialize colors
 	for _, rule := range rules {
 		color, _ := ParseRule(rule)
-		colorsToContainers[color] = []string{}
+		colorToContainers[color] = []string{}
 	}
 
 	// Initialize containers
 	for _, rule := range rules {
 		container, colors := ParseRule(rule)
 		for _, color := range colors {
-			colorsToContainers[color.Color] = append(colorsToContainers[color.Color], container)
+			colorToContainers[color.Color] = append(colorToContainers[color.Color], container)
 		}
 	}
-	return colorsToContainers
+	return colorToContainers
 }
 
 // ParseRule gets the color and the number and color of each
 // contained bag from a rule.
-func ParseRule(rule string) (color string, contained []NumberContained) {
+func ParseRule(rule string) (color string, contained []ContainedBag) {
 	fields := strings.Split(rule, "contain")
 
 	// NOTE: It may make more sense to use a RegEx to capture the relevant
@@ -118,7 +119,7 @@ func ParseRule(rule string) (color string, contained []NumberContained) {
 	// by strings as a learning exercise.
 	color = strings.TrimSpace(strings.TrimSuffix(fields[0], "bags "))
 	containedPhrases := strings.Split(strings.Trim(strings.TrimSpace(fields[1]), "."), ", ")
-	contained = []NumberContained{}
+	contained = []ContainedBag{}
 	for _, phrase := range containedPhrases {
 		words := strings.Fields(phrase)
 		if len(words) == 4 {
@@ -129,7 +130,7 @@ func ParseRule(rule string) (color string, contained []NumberContained) {
 				log.Fatal(err)
 			}
 			containedColor := words[1] + " " + words[2]
-			contained = append(contained, NumberContained{Quantity: containedQuantity, Color: containedColor})
+			contained = append(contained, ContainedBag{Quantity: containedQuantity, Color: containedColor})
 		}
 	}
 

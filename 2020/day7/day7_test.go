@@ -7,22 +7,22 @@ import (
 
 // Part one
 func TestGetNumberOfContainersWithInputTest(t *testing.T) {
-	testGetNumberOfContainers(t, "input_test.txt", "shiny gold", 4)
+	testGetNumberOfContainers(t, "input_test.txt", ShinyGold, 4)
 }
 
 func TestGetNumberOfContainersWithInput(t *testing.T) {
-	testGetNumberOfContainers(t, "input.txt", "shiny gold", 144)
+	testGetNumberOfContainers(t, "input.txt", ShinyGold, 144)
 }
 
 // Part two
 func TestGetNumberOfContainedBagsWithInputTest(t *testing.T) {
-	testGetNumberOfContainedBags(t, "input_test.txt", "shiny gold", 32)
+	testGetNumberOfContainedBags(t, "input_test.txt", ShinyGold, 32)
 }
 func TestGetNumberOfContainedBagsWithInputTestTwo(t *testing.T) {
-	testGetNumberOfContainedBags(t, "input_test2.txt", "shiny gold", 126)
+	testGetNumberOfContainedBags(t, "input_test2.txt", ShinyGold, 126)
 }
 func TestGetNumberOfContainedBagsWith(t *testing.T) {
-	testGetNumberOfContainedBags(t, "input.txt", "shiny gold", 5956)
+	testGetNumberOfContainedBags(t, "input.txt", ShinyGold, 5956)
 }
 
 func TestGetContainersOfWithOneContainer(t *testing.T) {
@@ -84,7 +84,7 @@ func testGetNumberOfContainedBags(t *testing.T, filename string, target string, 
 	}
 }
 func testGetColorsToContainer(t *testing.T, rules []string, expected map[string][]string) {
-	result := GetColorsToContainers(rules)
+	result := GetColorToContainers(rules)
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("GetColorsToContainers did not match expected. Received %#v expected %#v", result, expected)
