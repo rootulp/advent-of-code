@@ -32,7 +32,9 @@ func main() {
 func GetNumberOfContainedBags(filename string, target string) int {
 	rules := ReadFile(filename)
 	colorToNumContained := GetColorToNumContained(rules)
-	return GetNumContained(colorToNumContained, target) - 1 // the result expects the number of bags contained in the target bag excluding the target bag therefore subtract one
+	// the result expects the number of bags contained in the target bag
+	// excluding the target bag therefore subtract one
+	return GetNumberOfBagsContainedInside(colorToNumContained, target) - 1
 }
 
 // GetColorToNumContained returns a map from color name to a slice of objects
@@ -47,11 +49,11 @@ func GetColorToNumContained(rules []string) map[string][]NumberContained {
 	return result
 }
 
-// GetNumContained returns the total number of bags contained inside the target bag.
-func GetNumContained(colorToNumContained map[string][]NumberContained, target string) int {
+// GetNumberOfBagsContainedInside returns the total number of bags contained inside the target bag.
+func GetNumberOfBagsContainedInside(colorToNumContained map[string][]NumberContained, target string) int {
 	result := 1
 	for _, contained := range colorToNumContained[target] {
-		result += contained.Quantity * GetNumContained(colorToNumContained, contained.Color)
+		result += contained.Quantity * GetNumberOfBagsContainedInside(colorToNumContained, contained.Color)
 	}
 	return result
 }
