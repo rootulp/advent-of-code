@@ -5,20 +5,24 @@ import (
 	"testing"
 )
 
-func GetNumberOfContainersWithInputTest(t *testing.T) {
+// Part one
+func TestGetNumberOfContainersWithInputTest(t *testing.T) {
 	testGetNumberOfContainers(t, "input_test.txt", "shiny gold", 4)
 }
 
-func GetNumberOfContainersWithInput(t *testing.T) {
+func TestGetNumberOfContainersWithInput(t *testing.T) {
 	testGetNumberOfContainers(t, "input.txt", "shiny gold", 144)
 }
 
-func testGetNumberOfContainers(t *testing.T, filename string, target string, expected int) {
-	result := GetNumberOfContainers(filename, target)
-
-	if result != expected {
-		t.Errorf("GetNumberOfContainers failed. Received %v wanted %v", result, expected)
-	}
+// Part two
+func TestGetNumberOfContainedBagsWithInputTest(t *testing.T) {
+	testGetNumberOfContainedBags(t, "input_test.txt", "shiny gold", 32)
+}
+func TestGetNumberOfContainedBagsWithInputTestTwo(t *testing.T) {
+	testGetNumberOfContainedBags(t, "input_test2.txt", "shiny gold", 126)
+}
+func TestGetNumberOfContainedBagsWith(t *testing.T) {
+	testGetNumberOfContainedBags(t, "input.txt", "shiny gold", 5956)
 }
 
 func TestGetContainersOfWithOneContainer(t *testing.T) {
@@ -39,14 +43,6 @@ func TestGetContainersOfWithTwoContainers(t *testing.T) {
 	}
 
 	testGetContainersOf(t, colorsToContainers, "bright white", []string{"light red", "dark orange"})
-}
-
-func testGetContainersOf(t *testing.T, colorsToContainers map[string][]string, target string, expected []string) {
-	result := GetContainersOf(colorsToContainers, target)
-
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("GetContainersOf did not match expected. Received %#v expected %#v", result, expected)
-	}
 }
 
 func TestGetColorsToContainer_WithOneRule(t *testing.T) {
@@ -70,14 +66,6 @@ func TestGetColorsToContainer_WithTwoRules(t *testing.T) {
 	}
 
 	testGetColorsToContainer(t, rules, expected)
-}
-
-func testGetColorsToContainer(t *testing.T, rules []string, expected map[string][]string) {
-	result := GetColorsToContainers(rules)
-
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("GetColorsToContainers did not match expected. Received %#v expected %#v", result, expected)
-	}
 }
 
 func TestParseRuleWithNoContained(t *testing.T) {
@@ -118,5 +106,35 @@ func testParseRule(t *testing.T, rule string, expectedColor string, expectedCont
 
 	if !reflect.DeepEqual(contained, expectedContained) {
 		t.Errorf("ParseRule incorrect contained. Received %#v wanted %#v", contained, expectedContained)
+	}
+}
+
+// Helpers
+func testGetNumberOfContainers(t *testing.T, filename string, target string, expected int) {
+	result := GetNumberOfContainers(filename, target)
+
+	if result != expected {
+		t.Errorf("GetNumberOfContainers failed. Received %v wanted %v", result, expected)
+	}
+}
+func testGetNumberOfContainedBags(t *testing.T, filename string, target string, expected int) {
+	result := GetNumberOfContainedBags(filename, target)
+
+	if result != expected {
+		t.Errorf("GetNumberOfContainedBags did not match expected. Received %#v expected %#v", result, expected)
+	}
+}
+func testGetColorsToContainer(t *testing.T, rules []string, expected map[string][]string) {
+	result := GetColorsToContainers(rules)
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("GetColorsToContainers did not match expected. Received %#v expected %#v", result, expected)
+	}
+}
+func testGetContainersOf(t *testing.T, colorsToContainers map[string][]string, target string, expected []string) {
+	result := GetContainersOf(colorsToContainers, target)
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("GetContainersOf did not match expected. Received %#v expected %#v", result, expected)
 	}
 }
