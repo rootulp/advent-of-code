@@ -26,9 +26,9 @@ type instruction struct {
 func main() {
 	// Part one
 	log.Println("Starting day8")
-	lines := readFile("input_test.txt")
+	lines := readFile("input.txt")
 	value := GetAccumulatorValuePriorToFirstRepeatedInstruction(lines)
-	fmt.Printf("The value in the accumulator is %d prior to the first repeated instruction.", value)
+	fmt.Printf("The value in the accumulator is %d prior to the first repeated instruction\n", value)
 }
 
 // GetAccumulatorValuePriorToFirstRepeatedInstruction returns the value in the
@@ -38,7 +38,7 @@ func GetAccumulatorValuePriorToFirstRepeatedInstruction(lines []string) int {
 	executed := make(map[int]bool)
 	result, err := ExecuteInstruction(instructions, 0, executed, 0)
 	if err != nil {
-		log.Fatal("Failed to GetAccumulatorValuePriorToFirstRepeatedInstruction")
+		log.Fatal("Failed to GetAccumulatorValuePriorToFirstRepeatedInstruction\n")
 	}
 	return result
 }
@@ -47,7 +47,7 @@ func GetAccumulatorValuePriorToFirstRepeatedInstruction(lines []string) int {
 // index. It maintains a map of executed instructions and the value present in
 // the accumulator.
 func ExecuteInstruction(instructions []instruction, index int, executed map[int]bool, accumulator int) (int, error) {
-	log.Printf("Executing instructions index %v, executed %v, accumulator %v", index, executed, accumulator)
+	// log.Printf("Executing instructions index %v, executed %v, accumulator %v\n", index, executed, accumulator)
 	if executed[index] == true {
 		// We have already executed the current instruction. Therefore return
 		// the value present in the accumulator.
