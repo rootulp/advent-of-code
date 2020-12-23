@@ -52,14 +52,12 @@ func getNumberOfNJoltDifferences(slice []int, n int) int {
 }
 
 func addZeroJolts(adapters []int) []int {
-	adapters = append(adapters, 0)
-	return adapters
+	return append(adapters, 0)
 }
 
 func addThreeHigherThanMaxJolts(adapters []int) []int {
 	max := getMax(adapters)
-	adapters = append(adapters, max+3)
-	return adapters
+	return append(adapters, max+3)
 }
 
 func getMax(slice []int) int {
