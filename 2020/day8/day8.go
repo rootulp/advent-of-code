@@ -25,15 +25,14 @@ type instruction struct {
 
 func main() {
 	// Part one
-	log.Println("Starting day8")
-	lines := readFile("input.txt")
-	value := GetAccumulatorValuePriorToFirstRepeatedInstruction(lines)
+	value := GetAccumulatorValuePriorToFirstRepeatedInstruction("input.txt")
 	fmt.Printf("The value in the accumulator is %d prior to the first repeated instruction\n", value)
 }
 
 // GetAccumulatorValuePriorToFirstRepeatedInstruction returns the value in the
 // accumulator prior to the first repeated instruction.
-func GetAccumulatorValuePriorToFirstRepeatedInstruction(lines []string) int {
+func GetAccumulatorValuePriorToFirstRepeatedInstruction(filename string) int {
+	lines := readFile(filename)
 	instructions := parseInstructions(lines)
 	executed := make(map[int]bool)
 	result, err := ExecuteInstruction(instructions, 0, executed, 0)
