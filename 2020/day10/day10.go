@@ -40,14 +40,11 @@ func getNumberOfThreeJoltDifferences(slice []int) int {
 
 func getNumberOfNJoltDifferences(slice []int, n int) int {
 	differences := 0
-
 	for i := 1; i < len(slice); i++ {
 		if slice[i]-slice[i-1] == n {
 			differences++
 		}
-
 	}
-
 	return differences
 }
 
