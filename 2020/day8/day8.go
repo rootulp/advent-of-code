@@ -49,24 +49,6 @@ func GetAccumulatorValueAfterProgramTerminates(filename string) int {
 	return 0
 }
 
-// swapInstruction swaps the operations: jump and no-op
-func swapInstruction(i instruction) instruction {
-	switch i.operation {
-	case noOperation:
-		return instruction{
-			operation: jump,
-			argument:  i.argument,
-		}
-	case jump:
-		return instruction{
-			operation: noOperation,
-			argument:  i.argument,
-		}
-	default:
-		return i
-	}
-}
-
 // GetAccumulatorValuePriorToFirstRepeatedInstruction returns the value in the
 // accumulator prior to the first repeated instruction.
 func GetAccumulatorValuePriorToFirstRepeatedInstruction(filename string) int {
@@ -89,7 +71,7 @@ func ExecuteInstruction(instructions []instruction, index int, executed map[int]
 	if executed[index] == true {
 		// We have already executed the current instruction. Therefore return
 		// the value present in the accumulator.
-		return accumulator, errors.New("We have already executed the current instruction. This set of instructions produces an infinite loop.")
+		return accumulator, errors.New("we have already executed the current instruction therefore this set of instructions produces an infinite loop")
 	}
 
 	// Otherwise, mark the current instruction as executed and then execute it.
@@ -156,4 +138,22 @@ func readFile(filename string) []string {
 		log.Fatal(err)
 	}
 	return lines
+}
+
+// swapInstruction swaps the operations: jump and no-op
+func swapInstruction(i instruction) instruction {
+	switch i.operation {
+	case noOperation:
+		return instruction{
+			operation: jump,
+			argument:  i.argument,
+		}
+	case jump:
+		return instruction{
+			operation: noOperation,
+			argument:  i.argument,
+		}
+	default:
+		return i
+	}
 }
