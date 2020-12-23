@@ -30,4 +30,12 @@ func TestGetAccumulatorValueAfterProgramTerminates(t *testing.T) {
 			t.Errorf("GetAccumulatorValueAfterProgramTerminates got %d expected %d", got, expected)
 		}
 	})
+	t.Run("input", func(t *testing.T) {
+		got := GetAccumulatorValueAfterProgramTerminates("input.txt")
+		expected := 2188
+
+		if got != expected {
+			t.Errorf("GetAccumulatorValueAfterProgramTerminates got %d expected %d", got, expected)
+		}
+	})
 }
