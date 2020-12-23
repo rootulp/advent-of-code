@@ -30,4 +30,12 @@ func TestGetSumOfSmallestAndLargestInContiguousRange(t *testing.T) {
 			t.Errorf("GetSumOfSmallestAndLargestInContiguousRange got %d want %d", got, want)
 		}
 	})
+	t.Run("input", func(t *testing.T) {
+		got := GetSumOfSmallestAndLargestInContiguousRange("input.txt", 25)
+		want := 28509180
+
+		if got != want {
+			t.Errorf("GetSumOfSmallestAndLargestInContiguousRange got %d want %d", got, want)
+		}
+	})
 }
