@@ -31,29 +31,24 @@ func GetProductOfOneJoltDifferencesAndThreeJoltDifferences(filename string) int 
 }
 
 func getNumberOfOneJoltDifferences(slice []int) int {
-	numberOfOneJoltDifferences := 0
-
-	for i := 1; i < len(slice); i++ {
-		if slice[i]-slice[i-1] == 1 {
-			numberOfOneJoltDifferences++
-		}
-
-	}
-
-	return numberOfOneJoltDifferences
+	return getNumberOfNJoltDifferences(slice, 1)
 }
 
 func getNumberOfThreeJoltDifferences(slice []int) int {
-	getNumberOfThreeJoltDifferences := 0
+	return getNumberOfNJoltDifferences(slice, 3)
+}
+
+func getNumberOfNJoltDifferences(slice []int, n int) int {
+	differences := 0
 
 	for i := 1; i < len(slice); i++ {
-		if slice[i]-slice[i-1] == 3 {
-			getNumberOfThreeJoltDifferences++
+		if slice[i]-slice[i-1] == n {
+			differences++
 		}
 
 	}
 
-	return getNumberOfThreeJoltDifferences
+	return differences
 }
 
 func addZeroJolts(adapters []int) []int {
