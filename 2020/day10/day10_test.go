@@ -11,4 +11,12 @@ func TestHelloWord(t *testing.T) {
 			t.Errorf("GetProductOfOneJoltDifferencesAndThreeJoltDifferences failed got %d want %d", got, want)
 		}
 	})
+	t.Run("input.txt", func(t *testing.T) {
+		got := GetProductOfOneJoltDifferencesAndThreeJoltDifferences("input.txt")
+		want := 2400
+
+		if got != want {
+			t.Errorf("GetProductOfOneJoltDifferencesAndThreeJoltDifferences failed got %d want %d", got, want)
+		}
+	})
 }
