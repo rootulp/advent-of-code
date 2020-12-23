@@ -9,8 +9,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Starting day9")
-
 	// Part one
 	preambleLength := 25
 	result1 := GetFirstNumberThatIsNotSumOfPair("input.txt", preambleLength)
@@ -33,7 +31,6 @@ func GetSumOfSmallestAndLargestInContiguousRange(filename string, preambleLength
 		for i := 0; i < len(numbers)-rangeLength; i++ {
 			targetRange := numbers[i : i+rangeLength]
 			if isNumberTheSumOfRange(targetRange, invalidNumber) {
-				fmt.Printf("Found range: %v", targetRange)
 				return min(targetRange) + max(targetRange)
 			}
 		}
@@ -53,6 +50,7 @@ func GetFirstNumberThatIsNotSumOfPair(filename string, preambleLength int) int {
 			return numbers[i]
 		}
 	}
+
 	log.Fatalf("failed to find a number that is not the sum of a pair")
 	return 0 // unreached
 }
