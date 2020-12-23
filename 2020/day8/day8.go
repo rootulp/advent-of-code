@@ -74,6 +74,10 @@ func ExecuteInstruction(instructions []instruction, index int, executed map[int]
 		return accumulator, errors.New("we have already executed the current instruction therefore this set of instructions produces an infinite loop")
 	}
 
+	if index == len(instructions)+1 {
+		return accumulator, nil
+	}
+
 	// Otherwise, mark the current instruction as executed and then execute it.
 	executed[index] = true
 
