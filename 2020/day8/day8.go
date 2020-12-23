@@ -44,8 +44,11 @@ func GetAccumulatorValueAfterProgramTerminates(filename string) int {
 		modifiedInstructions := make([]instruction, len(instructions))
 		copy(modifiedInstructions, instructions)
 		modifiedInstructions[i] = swapInstruction(ins)
+		result, err := ExecuteInstruction(modifiedInstructions, 0, make(map[int]bool), 0)
+		if err == nil {
+			return result
+		}
 	}
-
 	return 0
 }
 
@@ -67,14 +70,14 @@ func GetAccumulatorValuePriorToFirstRepeatedInstruction(filename string) int {
 // set of instructions produces an infinite loop. Otherwise it returns the value
 // in the accumulator with no error.
 func ExecuteInstruction(instructions []instruction, index int, executed map[int]bool, accumulator int) (int, error) {
-	// log.Printf("Executing instructions index %v, executed %v, accumulator %v\n", index, executed, accumulator)
+	log.Printf("Executing instructions index %v, executed %v, accumulator %v\n", index, executed, accumulator)
 	if executed[index] == true {
 		// We have already executed the current instruction. Therefore return
 		// the value present in the accumulator.
 		return accumulator, errors.New("we have already executed the current instruction therefore this set of instructions produces an infinite loop")
 	}
 
-	if index == len(instructions)+1 {
+	if index >= len(instructions) {
 		return accumulator, nil
 	}
 
