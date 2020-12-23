@@ -25,8 +25,23 @@ type instruction struct {
 
 func main() {
 	// Part one
-	value := GetAccumulatorValuePriorToFirstRepeatedInstruction("input.txt")
-	fmt.Printf("The value in the accumulator is %d prior to the first repeated instruction\n", value)
+	result1 := GetAccumulatorValuePriorToFirstRepeatedInstruction("input.txt")
+	fmt.Printf("The value in the accumulator is %d prior to the first repeated instruction\n", result1)
+
+	// Part two
+	result2 := GetAccumulatorValueAfterProgramTerminates("input.txt")
+	fmt.Printf("The value in the accumulator is %d after the program terminates\n", result2)
+}
+
+// GetAccumulatorValueAfterProgramTerminates returns the value in the
+// accumulator after the program terminates. It first modifies the instructions
+// by altering one no-op or jump command to produce a valid program.
+func GetAccumulatorValueAfterProgramTerminates(filename string) int {
+	// lines := readFile(filename)
+	// instructions := parseInstructions(lines)
+	// executed := make(map[int]bool)
+
+	return 0
 }
 
 // GetAccumulatorValuePriorToFirstRepeatedInstruction returns the value in the
