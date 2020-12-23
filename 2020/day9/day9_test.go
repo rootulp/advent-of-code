@@ -11,5 +11,4 @@ func TestGetFirstNumberThatIsNotSumOfPair(t *testing.T) {
 			t.Errorf("GetFirstNumberThatIsNotSumOfPair got %d want %d", got, want)
 		}
 	})
-
 }

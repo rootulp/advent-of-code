@@ -17,10 +17,29 @@ func main() {
 	fmt.Printf("The first number that is not the sum of a pair in the previous %d numbers is: %d\n", preambleLength, result1)
 }
 
+// GetFirstNumberThatIsNotSumOfPair returns the first number that isn't the sum
+// of a pair of numbers in the prior preambleLength set of numbers.
 func GetFirstNumberThatIsNotSumOfPair(filename string, preambleLength int) int {
 	numbers := readFile(filename)
 	fmt.Printf("numbers %v\n", numbers)
+	for i := preambleLength; i < len(numbers); i++ {
+		if !isNumberTheSumOfPair(numbers[i-preambleLength:i], preambleLength, numbers[i]) {
+			return numbers[i]
+		}
+	}
 	return 0
+}
+
+func isNumberTheSumOfPair(rangeToSearch []int, preambleLength int, target int) bool {
+	log.Printf("isNumberInTheSumOfPair %v, %v, %v", rangeToSearch, preambleLength, target)
+	for j := 0; j < len(rangeToSearch); j++ {
+		for k := j + 1; k < len(rangeToSearch); k++ {
+			if rangeToSearch[j]+rangeToSearch[k] == target {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func readFile(filename string) []int {
