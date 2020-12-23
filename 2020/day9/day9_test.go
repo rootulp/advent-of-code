@@ -11,4 +11,12 @@ func TestGetFirstNumberThatIsNotSumOfPair(t *testing.T) {
 			t.Errorf("GetFirstNumberThatIsNotSumOfPair got %d want %d", got, want)
 		}
 	})
+	t.Run("input", func(t *testing.T) {
+		got := GetFirstNumberThatIsNotSumOfPair("input_test.txt", 25)
+		want := 217430975
+
+		if got != want {
+			t.Errorf("GetFirstNumberThatIsNotSumOfPair got %d want %d", got, want)
+		}
+	})
 }
