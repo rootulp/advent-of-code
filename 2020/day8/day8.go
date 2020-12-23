@@ -37,11 +37,34 @@ func main() {
 // accumulator after the program terminates. It first modifies the instructions
 // by altering one no-op or jump command to produce a valid program.
 func GetAccumulatorValueAfterProgramTerminates(filename string) int {
-	// lines := readFile(filename)
-	// instructions := parseInstructions(lines)
-	// executed := make(map[int]bool)
+	lines := readFile(filename)
+	instructions := parseInstructions(lines)
+
+	for i, ins := range instructions {
+		modifiedInstructions := make([]instruction, len(instructions))
+		copy(modifiedInstructions, instructions)
+		modifiedInstructions[i] = swapInstruction(ins)
+	}
 
 	return 0
+}
+
+// swapInstruction swaps the operations: jump and no-op
+func swapInstruction(i instruction) instruction {
+	switch i.operation {
+	case noOperation:
+		return instruction{
+			operation: jump,
+			argument:  i.argument,
+		}
+	case jump:
+		return instruction{
+			operation: noOperation,
+			argument:  i.argument,
+		}
+	default:
+		return i
+	}
 }
 
 // GetAccumulatorValuePriorToFirstRepeatedInstruction returns the value in the
@@ -49,22 +72,24 @@ func GetAccumulatorValueAfterProgramTerminates(filename string) int {
 func GetAccumulatorValuePriorToFirstRepeatedInstruction(filename string) int {
 	lines := readFile(filename)
 	instructions := parseInstructions(lines)
-	result, err := ExecuteInstruction(instructions, 0, make(map[int]bool), 0)
-	if err != nil {
-		log.Fatal("Failed to GetAccumulatorValuePriorToFirstRepeatedInstruction\n")
-	}
+
+	// intentionally ignore errors because we expect the current set of
+	// instructions to produce an infinite loop.
+	result, _ := ExecuteInstruction(instructions, 0, make(map[int]bool), 0)
 	return result
 }
 
 // ExecuteInstruction recursively executed the instruction at the provided
 // index. It maintains a map of executed instructions and the value present in
-// the accumulator.
+// the accumulator. It returns the value in the accumulator and an error if the
+// set of instructions produces an infinite loop. Otherwise it returns the value
+// in the accumulator with no error.
 func ExecuteInstruction(instructions []instruction, index int, executed map[int]bool, accumulator int) (int, error) {
 	// log.Printf("Executing instructions index %v, executed %v, accumulator %v\n", index, executed, accumulator)
 	if executed[index] == true {
 		// We have already executed the current instruction. Therefore return
 		// the value present in the accumulator.
-		return accumulator, nil
+		return accumulator, errors.New("We have already executed the current instruction. This set of instructions produces an infinite loop.")
 	}
 
 	// Otherwise, mark the current instruction as executed and then execute it.
@@ -82,7 +107,6 @@ func ExecuteInstruction(instructions []instruction, index int, executed map[int]
 		log.Fatalf("instruction %v did not match an expected operation", instructions[index].operation)
 	}
 	return accumulator, errors.New("Failed to execute instruction")
-
 }
 
 func parseInstructions(lines []string) (instructions []instruction) {
