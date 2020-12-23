@@ -49,8 +49,7 @@ func GetAccumulatorValueAfterProgramTerminates(filename string) int {
 func GetAccumulatorValuePriorToFirstRepeatedInstruction(filename string) int {
 	lines := readFile(filename)
 	instructions := parseInstructions(lines)
-	executed := make(map[int]bool)
-	result, err := ExecuteInstruction(instructions, 0, executed, 0)
+	result, err := ExecuteInstruction(instructions, 0, make(map[int]bool), 0)
 	if err != nil {
 		log.Fatal("Failed to GetAccumulatorValuePriorToFirstRepeatedInstruction\n")
 	}
