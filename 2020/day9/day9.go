@@ -15,6 +15,19 @@ func main() {
 	preambleLength := 25
 	result1 := GetFirstNumberThatIsNotSumOfPair("input.txt", preambleLength)
 	fmt.Printf("The first number that is not the sum of a pair in the previous %d numbers is: %d\n", preambleLength, result1)
+
+	// Part two
+	result2 := GetSumOfSmallestAndLargestInContiguousRange("input.txt", preambleLength)
+	fmt.Printf("The sum of the smallest and largest numbers in the contiguous range that sums to invalid number %d is: %d\n", result1, result2)
+}
+
+// GetSumOfSmallestAndLargestInContiguousRange first finds the invalid number
+// from part one. Then it finds a contiguous range that sums to this invalid
+// number. This function returns the sum of the smallest and largest numbers in
+// this contiguous range.
+func GetSumOfSmallestAndLargestInContiguousRange(filename string, preambleLength int) int {
+	// invalidNumber := GetFirstNumberThatIsNotSumOfPair(filename, preambleLength)
+	return 0
 }
 
 // GetFirstNumberThatIsNotSumOfPair returns the first number that isn't the sum
