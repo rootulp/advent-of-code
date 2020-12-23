@@ -26,8 +26,21 @@ func main() {
 // number. This function returns the sum of the smallest and largest numbers in
 // this contiguous range.
 func GetSumOfSmallestAndLargestInContiguousRange(filename string, preambleLength int) int {
-	// invalidNumber := GetFirstNumberThatIsNotSumOfPair(filename, preambleLength)
-	return 0
+	invalidNumber := GetFirstNumberThatIsNotSumOfPair(filename, preambleLength)
+	numbers := readFile(filename)
+
+	for rangeLength := 2; rangeLength < len(numbers); rangeLength++ {
+		for i := 0; i < len(numbers)-rangeLength; i++ {
+			targetRange := numbers[i : i+rangeLength]
+			if isNumberTheSumOfRange(targetRange, invalidNumber) {
+				fmt.Printf("Found range: %v", targetRange)
+				return min(targetRange) + max(targetRange)
+			}
+		}
+	}
+
+	log.Fatalf("failed to find a contiguous range that sums to %d", invalidNumber)
+	return 0 // unreached
 }
 
 // GetFirstNumberThatIsNotSumOfPair returns the first number that isn't the sum
@@ -40,7 +53,8 @@ func GetFirstNumberThatIsNotSumOfPair(filename string, preambleLength int) int {
 			return numbers[i]
 		}
 	}
-	return 0
+	log.Fatalf("failed to find a number that is not the sum of a pair")
+	return 0 // unreached
 }
 
 func isNumberTheSumOfPair(rangeToSearch []int, preambleLength int, target int) bool {
@@ -53,6 +67,34 @@ func isNumberTheSumOfPair(rangeToSearch []int, preambleLength int, target int) b
 		}
 	}
 	return false
+}
+
+func isNumberTheSumOfRange(rangeToSearch []int, target int) bool {
+	sum := 0
+	for _, num := range rangeToSearch {
+		sum += num
+	}
+	return sum == target
+}
+
+func min(slice []int) int {
+	min := slice[0]
+	for _, num := range slice {
+		if num < min {
+			min = num
+		}
+	}
+	return min
+}
+
+func max(slice []int) int {
+	max := slice[0]
+	for _, num := range slice {
+		if num > max {
+			max = num
+		}
+	}
+	return max
 }
 
 func readFile(filename string) []int {
