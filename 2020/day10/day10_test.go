@@ -38,6 +38,14 @@ func TestGetNumberOfArrangements(t *testing.T) {
 			t.Errorf("GetNumberOfArrangements failed got %d want %d", got, want)
 		}
 	})
+	t.Run("input.txt", func(t *testing.T) {
+		got := GetNumberOfArrangements("input.txt")
+		want := 338510590509056
+
+		if got != want {
+			t.Errorf("GetNumberOfArrangements failed got %d want %d", got, want)
+		}
+	})
 	t.Run("input_test2.txt", func(t *testing.T) {
 		got := GetNumberOfArrangements("input_test2.txt")
 		want := 19208
