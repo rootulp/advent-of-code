@@ -29,7 +29,21 @@ func GetNumberOfArrangements(filename string) int {
 	slice := addThreeHigherThanMaxJolts(addZeroJolts(adapters))
 	sort.Ints(slice)
 
-	return slice[0]
+	var paths = make(map[int]int)
+	paths[getMax(slice)] = 1
+	return nPaths(paths, slice, 0)
+}
+
+func nPaths(paths map[int]int, slice []int, start int) int {
+	fmt.Printf("Start %v Paths %#v\n", start, paths)
+	if paths[start] == 0 {
+		if contains(slice, start) {
+			paths[start] = nPaths(paths, slice, start+1) + nPaths(paths, slice, start+2) + nPaths(paths, slice, start+3)
+		} else {
+			paths[start] = 0
+		}
+	}
+	return paths[start]
 }
 
 // GetProductOfOneJoltDifferencesAndThreeJoltDifferences returns the number of
@@ -80,6 +94,15 @@ func getMax(slice []int) int {
 		}
 	}
 	return max
+}
+
+func contains(slice []int, target int) bool {
+	for _, current := range slice {
+		if current == target {
+			return true
+		}
+	}
+	return false
 }
 
 func readFile(filename string) []int {

@@ -39,7 +39,7 @@ func TestGetNumberOfArrangements(t *testing.T) {
 		}
 	})
 	t.Run("input_test2.txt", func(t *testing.T) {
-		got := GetNumberOfArrangements("input_test.txt")
+		got := GetNumberOfArrangements("input_test2.txt")
 		want := 19208
 
 		if got != want {
