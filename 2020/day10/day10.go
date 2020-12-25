@@ -15,6 +15,21 @@ func main() {
 	// Part one
 	result1 := GetProductOfOneJoltDifferencesAndThreeJoltDifferences("input.txt")
 	fmt.Printf("The product of 1-jolt differences and 3-jolt differences is: %d\n", result1)
+
+	// Part two
+	result2 := GetNumberOfArrangements("input.txt")
+	fmt.Printf("The number of distinct arrangements you can arrange the adapters to connect the charging outlet to your device is: %d\n", result2)
+}
+
+// GetNumberOfArrangements returns the number of distinct arrangements that can
+// be used to arrange the adapters to connect the charging outlet to the device.
+func GetNumberOfArrangements(filename string) int {
+	adapters := readFile(filename)
+
+	slice := addThreeHigherThanMaxJolts(addZeroJolts(adapters))
+	sort.Ints(slice)
+
+	return slice[0]
 }
 
 // GetProductOfOneJoltDifferencesAndThreeJoltDifferences returns the number of
