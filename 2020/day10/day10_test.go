@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func TestHelloWord(t *testing.T) {
+func TestGetProductOfOneJoltDifferencesAndThreeJoltDifferences(t *testing.T) {
 	t.Run("input_test.txt", func(t *testing.T) {
 		got := GetProductOfOneJoltDifferencesAndThreeJoltDifferences("input_test.txt")
 		want := 35
