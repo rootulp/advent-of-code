@@ -29,21 +29,25 @@ func GetNumberOfArrangements(filename string) int {
 	slice := addThreeHigherThanMaxJolts(addZeroJolts(adapters))
 	sort.Ints(slice)
 
-	var paths = make(map[int]int)
-	paths[getMax(slice)] = 1
-	return nPaths(paths, slice, 0)
+	// A map from start adapter to the number of possible arrangements for the
+	// following adapters.
+	var startAdapterToNumPossibleArrangements = make(map[int]int)
+
+	// The device is always included in the arrangement. Therefore there is one
+	// valid arrangement with the device (i.e. max adapter).
+	startAdapterToNumPossibleArrangements[getMax(slice)] = 1
+	return getArrangements(startAdapterToNumPossibleArrangements, slice, 0)
 }
 
-func nPaths(paths map[int]int, slice []int, start int) int {
-	fmt.Printf("Start %v Paths %#v\n", start, paths)
-	if paths[start] == 0 {
-		if contains(slice, start) {
-			paths[start] = nPaths(paths, slice, start+1) + nPaths(paths, slice, start+2) + nPaths(paths, slice, start+3)
+func getArrangements(arangements map[int]int, slice []int, startAdapter int) int {
+	if arangements[startAdapter] == 0 {
+		if contains(slice, startAdapter) {
+			arangements[startAdapter] = getArrangements(arangements, slice, startAdapter+1) + getArrangements(arangements, slice, startAdapter+2) + getArrangements(arangements, slice, startAdapter+3)
 		} else {
-			paths[start] = 0
+			arangements[startAdapter] = 0
 		}
 	}
-	return paths[start]
+	return arangements[startAdapter]
 }
 
 // GetProductOfOneJoltDifferencesAndThreeJoltDifferences returns the number of
