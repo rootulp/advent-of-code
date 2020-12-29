@@ -11,13 +11,13 @@ func main() {
 	fmt.Println("Starting day11")
 
 	// Part one
-	result1 := GetCountOfOccupiedSeats("input_test.txt")
+	result1 := GetCountOfOccupiedSeats("input.txt")
 	fmt.Printf("The number of occupied seats after the grid stabalizes is %v\n", result1)
 }
 
 // GetCountOfOccupiedSeats returns the number of occupied seats after the grid stabalizes.
 func GetCountOfOccupiedSeats(filename string) int {
-	lines := readFile("input_test.txt")
+	lines := readFile(filename)
 	grid := getGrid(lines)
 
 	for i := 0; i < 100; i++ {
