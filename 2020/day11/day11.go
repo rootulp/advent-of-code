@@ -7,6 +7,89 @@ import (
 	"os"
 )
 
+func main() {
+	fmt.Println("Starting day11")
+
+	// Part one
+	result1 := GetCountOfOccupiedSeats("input_test.txt")
+	fmt.Printf("The number of occupied seats after the grid stabalizes is %v\n", result1)
+}
+
+// GetCountOfOccupiedSeats returns the number of occupied seats after the grid stabalizes.
+func GetCountOfOccupiedSeats(filename string) int {
+	lines := readFile("input_test.txt")
+	grid := getGrid(lines)
+
+	for i := 0; i < 100; i++ {
+		fmt.Printf("Iteration %v count of occupied seats %v\n", i, getCountOfOccupiedSeats(grid))
+		grid = tick(grid)
+	}
+
+	return getCountOfOccupiedSeats(grid)
+}
+
+func tick(grid [][]gridValue) [][]gridValue {
+	next := duplicateGrid(grid)
+
+	for x, row := range grid {
+		for y, val := range row {
+			countOfOccupiedNeighbors := getCountOfOccupiedNeighbors(grid, x, y)
+			if val == *registry.emptySeat && countOfOccupiedNeighbors == 0 {
+				next[x][y] = *registry.occupiedSeat
+			} else if val == *registry.occupiedSeat && countOfOccupiedNeighbors >= 4 {
+				next[x][y] = *registry.emptySeat
+			}
+		}
+	}
+
+	printGrid(next)
+	return next
+}
+
+func duplicateGrid(grid [][]gridValue) [][]gridValue {
+	duplicate := make([][]gridValue, len(grid))
+	for i := range grid {
+		duplicate[i] = make([]gridValue, len(grid[i]))
+		copy(duplicate[i], grid[i])
+	}
+	return duplicate
+}
+
+func getCountOfOccupiedNeighbors(grid [][]gridValue, row int, col int) int {
+	count := 0
+	for _, diffX := range []int{-1, 0, 1} {
+		for _, diffY := range []int{-1, 0, 1} {
+			if diffX == 0 && diffY == 0 {
+				continue
+			}
+			if row+diffX >= len(grid) || row+diffX < 0 {
+				continue
+			}
+			if col+diffY >= len(grid[0]) || col+diffY < 0 {
+				continue
+			}
+			neighbor := grid[row+diffX][col+diffY]
+			if neighbor == *registry.occupiedSeat {
+				count++
+			}
+		}
+	}
+
+	return count
+}
+
+func getCountOfOccupiedSeats(grid [][]gridValue) int {
+	count := 0
+	for _, row := range grid {
+		for _, val := range row {
+			if val == *registry.occupiedSeat {
+				count++
+			}
+		}
+	}
+	return count
+}
+
 type gridValue struct {
 	characterRepresentation rune
 }
@@ -46,20 +129,6 @@ func (g *gridRegistry) Parse(r rune) (*gridValue, error) {
 
 var registry = newGridRegistry()
 
-func main() {
-	fmt.Println("Starting day11")
-
-	// Part one
-	lines := readFile("input_test.txt")
-	grid := getGrid(lines)
-	printGrid(grid)
-}
-
-// GetCountOfOccupiedSeats returns the number of occupied seats after the grid stabalizes.
-func GetCountOfOccupiedSeats(filename string) int {
-	return 0
-}
-
 func printGrid(grid [][]gridValue) {
 	for _, line := range grid {
 		for _, r := range line {
@@ -67,6 +136,7 @@ func printGrid(grid [][]gridValue) {
 		}
 		fmt.Println()
 	}
+	fmt.Println()
 }
 
 // getGrid converts a slice of lines into a matrix of gridValues
