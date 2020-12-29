@@ -2,50 +2,49 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"log"
 	"os"
 )
 
-type GridValue struct {
+type gridValue struct {
 	characterRepresentation rune
 }
 
-type GridRegistry struct {
-	floor        *GridValue
-	emptySeat    *GridValue
-	occupiedSeat *GridValue
-	tokens       []*GridValue
+type gridRegistry struct {
+	floor        *gridValue
+	emptySeat    *gridValue
+	occupiedSeat *gridValue
+	tokens       []*gridValue
 }
 
-func newGridRegistry() *GridRegistry {
-	floor := &GridValue{'.'}
-	emptySeat := &GridValue{'L'}
-	occupiedSeat := &GridValue{'#'}
+func newGridRegistry() *gridRegistry {
+	floor := &gridValue{'.'}
+	emptySeat := &gridValue{'L'}
+	occupiedSeat := &gridValue{'#'}
 
-	return &GridRegistry{
+	return &gridRegistry{
 		floor:        floor,
 		emptySeat:    emptySeat,
 		occupiedSeat: occupiedSeat,
-		tokens:       []*GridValue{floor, emptySeat, occupiedSeat},
+		tokens:       []*gridValue{floor, emptySeat, occupiedSeat},
 	}
 }
 
-func (g *GridRegistry) List() []*GridValue {
+func (g *gridRegistry) List() []*gridValue {
 	return g.tokens
 }
 
-func (g *GridRegistry) Parse(r rune) (*GridValue, error) {
+func (g *gridRegistry) Parse(r rune) (*gridValue, error) {
 	for _, token := range g.List() {
 		if token.characterRepresentation == r {
 			return token, nil
 		}
 	}
-	return nil, errors.New(fmt.Sprintf("couldn't find rune %v in list %v", r, g.List()))
+	return nil, fmt.Errorf("couldn't find rune %v in list %v", r, g.List())
 }
 
-var gridRegistry = newGridRegistry()
+var registry = newGridRegistry()
 
 func main() {
 	fmt.Println("Starting day11")
@@ -56,11 +55,12 @@ func main() {
 	printGrid(grid)
 }
 
+// GetCountOfOccupiedSeats returns the number of occupied seats after the grid stabalizes.
 func GetCountOfOccupiedSeats(filename string) int {
 	return 0
 }
 
-func printGrid(grid [][]GridValue) {
+func printGrid(grid [][]gridValue) {
 	for _, line := range grid {
 		for _, r := range line {
 			fmt.Printf("%c", r.characterRepresentation)
@@ -70,12 +70,12 @@ func printGrid(grid [][]GridValue) {
 }
 
 // getGrid converts a slice of lines into a matrix of gridValues
-func getGrid(lines []string) [][]GridValue {
-	grid := [][]GridValue{}
+func getGrid(lines []string) [][]gridValue {
+	grid := [][]gridValue{}
 	for _, line := range lines {
-		gridLine := []GridValue{}
+		gridLine := []gridValue{}
 		for _, ch := range line {
-			gridValue, err := gridRegistry.Parse(ch)
+			gridValue, err := registry.Parse(ch)
 			if err != nil {
 				log.Fatal(err)
 			}
