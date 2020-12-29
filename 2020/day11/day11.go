@@ -9,7 +9,7 @@ import (
 )
 
 type GridValue struct {
-	CharacterRepresentation rune
+	characterRepresentation rune
 }
 
 type GridRegistry struct {
@@ -38,7 +38,7 @@ func (g *GridRegistry) List() []*GridValue {
 
 func (g *GridRegistry) Parse(r rune) (*GridValue, error) {
 	for _, token := range g.List() {
-		if token.CharacterRepresentation == r {
+		if token.characterRepresentation == r {
 			return token, nil
 		}
 	}
@@ -56,10 +56,14 @@ func main() {
 	printGrid(grid)
 }
 
+func GetCountOfOccupiedSeats(filename string) int {
+	return 0
+}
+
 func printGrid(grid [][]GridValue) {
 	for _, line := range grid {
 		for _, r := range line {
-			fmt.Printf("%c", r.CharacterRepresentation)
+			fmt.Printf("%c", r.characterRepresentation)
 		}
 		fmt.Println()
 	}
