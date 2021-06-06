@@ -92,18 +92,18 @@ func duplicateGrid(grid [][]gridValue) [][]gridValue {
 
 func getCountOfOccupiedNeighbors(grid [][]gridValue, row int, col int) int {
 	count := 0
-	for _, diffX := range []int{-1, 0, 1} {
-		for _, diffY := range []int{-1, 0, 1} {
-			if diffX == 0 && diffY == 0 {
+	for _, diffRow := range []int{-1, 0, 1} {
+		for _, diffCol := range []int{-1, 0, 1} {
+			if diffRow == 0 && diffCol == 0 {
 				continue
 			}
-			if row+diffX >= len(grid) || row+diffX < 0 {
+			if row+diffRow >= len(grid) || row+diffRow < 0 {
 				continue
 			}
-			if col+diffY >= len(grid[0]) || col+diffY < 0 {
+			if col+diffCol >= len(grid[0]) || col+diffCol < 0 {
 				continue
 			}
-			neighbor := grid[row+diffX][col+diffY]
+			neighbor := grid[row+diffRow][col+diffCol]
 			if neighbor == *registry.occupiedSeat {
 				count++
 			}
@@ -116,10 +116,10 @@ func getCountOfOccupiedNeighbors(grid [][]gridValue, row int, col int) int {
 func getCountOfOccupiedVisible(grid [][]gridValue, row int, col int) int {
 	printGrid(grid)
 	count := 0
-	fmt.Printf("Getting count of visible for (%d, %d)\n", row, col)
+	// fmt.Printf("Getting count of visible for (%d, %d)\n", row, col)
 	for _, directionRow := range []int{-1, 0, 1} {
 		for _, directionCol := range []int{-1, 0, 1} {
-			fmt.Printf("Visible direction (%d, %d)\n", directionRow, directionCol)
+			// fmt.Printf("Visible direction (%d, %d)\n", directionRow, directionCol)
 			if directionRow == 0 && directionCol == 0 {
 				continue
 			}
@@ -129,14 +129,14 @@ func getCountOfOccupiedVisible(grid [][]gridValue, row int, col int) int {
 				col+diffY < len(grid[0]) && col+diffY >= 0 {
 				visible := grid[row+diffX][col+diffY]
 				if visible == *registry.occupiedSeat {
-					fmt.Printf("(%d, %d) is occupied seat\n", row+diffX, col+diffY)
+					// fmt.Printf("(%d, %d) is occupied seat\n", row+diffX, col+diffY)
 					count++
 					break
 				} else if visible == *registry.emptySeat {
-					fmt.Printf("(%d, %d) is empty seat\n", row+diffX, col+diffY)
+					// fmt.Printf("(%d, %d) is empty seat\n", row+diffX, col+diffY)
 					break
 				} else if visible == *registry.floor {
-					fmt.Printf("(%d, %d) is floor\n", row+diffX, col+diffY)
+					// fmt.Printf("(%d, %d) is floor\n", row+diffX, col+diffY)
 					diffX += directionRow
 					diffY += directionCol
 				}
