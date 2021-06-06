@@ -130,13 +130,19 @@ func (g *gridRegistry) Parse(r rune) (*gridValue, error) {
 var registry = newGridRegistry()
 
 func printGrid(grid [][]gridValue) {
+	fmt.Print(toString(grid))
+}
+
+func toString(grid [][]gridValue) (result string) {
 	for _, line := range grid {
 		for _, r := range line {
-			fmt.Printf("%c", r.characterRepresentation)
+			result += string(r.characterRepresentation)
 		}
-		fmt.Println()
+		result += "\n"
 	}
-	fmt.Println()
+	result += "\n"
+
+	return result
 }
 
 // getGrid converts a slice of lines into a matrix of gridValues
