@@ -59,7 +59,7 @@ func tickPartOne(grid [][]gridValue) [][]gridValue {
 		}
 	}
 
-	printGrid(next)
+	// printGrid(next)
 	return next
 }
 
@@ -68,16 +68,16 @@ func tickPartTwo(grid [][]gridValue) [][]gridValue {
 
 	for x, row := range grid {
 		for y, val := range row {
-			countOfOccupiedNeighbors := getCountOfOccupiedNeighbors(grid, x, y)
-			if val == *registry.emptySeat && countOfOccupiedNeighbors == 0 {
+			countOfOccupiedVisible := getCountOfOccupiedVisible(grid, x, y)
+			if val == *registry.emptySeat && countOfOccupiedVisible == 0 {
 				next[x][y] = *registry.occupiedSeat
-			} else if val == *registry.occupiedSeat && countOfOccupiedNeighbors >= 4 {
+			} else if val == *registry.occupiedSeat && countOfOccupiedVisible >= 5 {
 				next[x][y] = *registry.emptySeat
 			}
 		}
 	}
 
-	printGrid(next)
+	// printGrid(next)
 	return next
 }
 
@@ -106,6 +106,40 @@ func getCountOfOccupiedNeighbors(grid [][]gridValue, row int, col int) int {
 			neighbor := grid[row+diffX][col+diffY]
 			if neighbor == *registry.occupiedSeat {
 				count++
+			}
+		}
+	}
+
+	return count
+}
+
+func getCountOfOccupiedVisible(grid [][]gridValue, row int, col int) int {
+	printGrid(grid)
+	count := 0
+	fmt.Printf("Getting count of visible for (%d, %d)\n", row, col)
+	for _, directionRow := range []int{-1, 0, 1} {
+		for _, directionCol := range []int{-1, 0, 1} {
+			fmt.Printf("Visible direction (%d, %d)\n", directionRow, directionCol)
+			if directionRow == 0 && directionCol == 0 {
+				continue
+			}
+			diffX := directionRow
+			diffY := directionCol
+			for row+diffX < len(grid) && row+diffX >= 0 &&
+				col+diffY < len(grid[0]) && col+diffY >= 0 {
+				visible := grid[row+diffX][col+diffY]
+				if visible == *registry.occupiedSeat {
+					fmt.Printf("(%d, %d) is occupied seat\n", row+diffX, col+diffY)
+					count++
+					break
+				} else if visible == *registry.emptySeat {
+					fmt.Printf("(%d, %d) is empty seat\n", row+diffX, col+diffY)
+					break
+				} else if visible == *registry.floor {
+					fmt.Printf("(%d, %d) is floor\n", row+diffX, col+diffY)
+					diffX += directionRow
+					diffY += directionCol
+				}
 			}
 		}
 	}
