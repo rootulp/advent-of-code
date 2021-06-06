@@ -11,24 +11,59 @@ func main() {
 	fmt.Println("Starting day11")
 
 	// Part one
-	result1 := GetCountOfOccupiedSeats("input.txt")
-	fmt.Printf("The number of occupied seats after the grid stabalizes is %v\n", result1)
+	result1 := GetCountOfOccupiedSeatsPartOne("input.txt")
+	fmt.Printf("Part one: the number of occupied seats after the grid stabalizes is %v\n", result1)
+
+	// Part two
+	result2 := GetCountOfOccupiedSeatsPartTwo("input2.txt")
+	fmt.Printf("Part two: the number of occupied seats after the grid stabalizes is %v\n", result2)
 }
 
-// GetCountOfOccupiedSeats returns the number of occupied seats after the grid stabalizes.
-func GetCountOfOccupiedSeats(filename string) int {
+// GetCountOfOccupiedSeatsPartOne returns the number of occupied seats after the grid stabalizes.
+func GetCountOfOccupiedSeatsPartOne(filename string) int {
 	lines := readFile(filename)
 	grid := getGrid(lines)
 
 	for i := 0; i < 100; i++ {
 		fmt.Printf("Iteration %v count of occupied seats %v\n", i, getCountOfOccupiedSeats(grid))
-		grid = tick(grid)
+		grid = tickPartOne(grid)
 	}
 
 	return getCountOfOccupiedSeats(grid)
 }
 
-func tick(grid [][]gridValue) [][]gridValue {
+// GetCountOfOccupiedSeatsPartTwo returns the number of occupied seats after the grid stabalizes.
+func GetCountOfOccupiedSeatsPartTwo(filename string) int {
+	lines := readFile(filename)
+	grid := getGrid(lines)
+
+	for i := 0; i < 100; i++ {
+		fmt.Printf("Iteration %v count of occupied seats %v\n", i, getCountOfOccupiedSeats(grid))
+		grid = tickPartTwo(grid)
+	}
+
+	return getCountOfOccupiedSeats(grid)
+}
+
+func tickPartOne(grid [][]gridValue) [][]gridValue {
+	next := duplicateGrid(grid)
+
+	for x, row := range grid {
+		for y, val := range row {
+			countOfOccupiedNeighbors := getCountOfOccupiedNeighbors(grid, x, y)
+			if val == *registry.emptySeat && countOfOccupiedNeighbors == 0 {
+				next[x][y] = *registry.occupiedSeat
+			} else if val == *registry.occupiedSeat && countOfOccupiedNeighbors >= 4 {
+				next[x][y] = *registry.emptySeat
+			}
+		}
+	}
+
+	printGrid(next)
+	return next
+}
+
+func tickPartTwo(grid [][]gridValue) [][]gridValue {
 	next := duplicateGrid(grid)
 
 	for x, row := range grid {

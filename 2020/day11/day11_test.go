@@ -6,7 +6,7 @@ import (
 
 func TestGetCountOfOccupiedSeats(t *testing.T) {
 	t.Run("input_test", func(t *testing.T) {
-		got := GetCountOfOccupiedSeats("input_test.txt")
+		got := GetCountOfOccupiedSeatsPartOne("input_test.txt")
 		want := 37
 
 		if got != want {
@@ -14,7 +14,7 @@ func TestGetCountOfOccupiedSeats(t *testing.T) {
 		}
 	})
 	t.Run("input", func(t *testing.T) {
-		got := GetCountOfOccupiedSeats("input.txt")
+		got := GetCountOfOccupiedSeatsPartOne("input.txt")
 		want := 2277
 
 		if got != want {
@@ -24,7 +24,7 @@ func TestGetCountOfOccupiedSeats(t *testing.T) {
 	t.Run("input_test after one round", func(t *testing.T) {
 		lines := readFile("input_test.txt")
 		grid := getGrid(lines)
-		got := toString(tick(grid))
+		got := toString(tickPartOne(grid))
 
 		lines_after_one_round := readFile("input_test_after_one_round.txt")
 		want := toString(getGrid(lines_after_one_round))
