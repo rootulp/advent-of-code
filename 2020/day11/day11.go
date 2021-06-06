@@ -114,7 +114,6 @@ func getCountOfOccupiedNeighbors(grid [][]gridValue, row int, col int) int {
 }
 
 func getCountOfOccupiedVisible(grid [][]gridValue, row int, col int) int {
-	printGrid(grid)
 	count := 0
 	// fmt.Printf("Getting count of visible for (%d, %d)\n", row, col)
 	for _, directionRow := range []int{-1, 0, 1} {
@@ -123,11 +122,11 @@ func getCountOfOccupiedVisible(grid [][]gridValue, row int, col int) int {
 			if directionRow == 0 && directionCol == 0 {
 				continue
 			}
-			diffX := directionRow
-			diffY := directionCol
-			for row+diffX < len(grid) && row+diffX >= 0 &&
-				col+diffY < len(grid[0]) && col+diffY >= 0 {
-				visible := grid[row+diffX][col+diffY]
+			diffRow := directionRow
+			diffCol := directionCol
+			for row+diffRow < len(grid) && row+diffRow >= 0 &&
+				col+diffCol < len(grid[0]) && col+diffCol >= 0 {
+				visible := grid[row+diffRow][col+diffCol]
 				if visible == *registry.occupiedSeat {
 					// fmt.Printf("(%d, %d) is occupied seat\n", row+diffX, col+diffY)
 					count++
@@ -137,8 +136,8 @@ func getCountOfOccupiedVisible(grid [][]gridValue, row int, col int) int {
 					break
 				} else if visible == *registry.floor {
 					// fmt.Printf("(%d, %d) is floor\n", row+diffX, col+diffY)
-					diffX += directionRow
-					diffY += directionCol
+					diffRow += directionRow
+					diffCol += directionCol
 				}
 			}
 		}

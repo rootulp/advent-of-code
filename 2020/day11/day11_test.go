@@ -5,7 +5,7 @@ import (
 )
 
 func TestGetCountOfOccupiedSeats(t *testing.T) {
-	t.Run("input_test part one count of occupied seats", func(t *testing.T) {
+	t.Run("GetCountOfOccupiedSeatsPartOne input_test", func(t *testing.T) {
 		got := GetCountOfOccupiedSeatsPartOne("input_test.txt")
 		want := 37
 
@@ -32,12 +32,12 @@ func TestGetCountOfOccupiedSeats(t *testing.T) {
 			t.Errorf("Input test part one after five rounds incorrect got %v want %v", got, want)
 		}
 	})
-	t.Run("input_test part two count of occupied seats", func(t *testing.T) {
+	t.Run("GetCountOfOccupiedSeatsPartTwo input_test", func(t *testing.T) {
 		got := GetCountOfOccupiedSeatsPartTwo("input_test.txt")
 		want := 26
 
 		if got != want {
-			t.Errorf("GetCountOfOccupiedSeats part two incorrect got %v want %v", got, want)
+			t.Errorf("GetCountOfOccupiedSeatsPartTwo incorrect got %v want %v", got, want)
 		}
 	})
 	t.Run("input_test part two after five rounds", func(t *testing.T) {
@@ -59,12 +59,20 @@ func TestGetCountOfOccupiedSeats(t *testing.T) {
 			t.Errorf("Input test part two after five rounds incorrect got \n%v want \n%v", got, want)
 		}
 	})
-	t.Run("input part one", func(t *testing.T) {
+	t.Run("GetCountOfOccupiedSeatsPartOne input part one", func(t *testing.T) {
 		got := GetCountOfOccupiedSeatsPartOne("input.txt")
 		want := 2277
 
 		if got != want {
-			t.Errorf("GetCountOfOccupiedSeats incorrect got %v want %v", got, want)
+			t.Errorf("GetCountOfOccupiedSeatsPartOne incorrect got %v want %v", got, want)
+		}
+	})
+	t.Run("GetCountOfOccupiedSeatsPartTwo input part two", func(t *testing.T) {
+		got := GetCountOfOccupiedSeatsPartTwo("input.txt")
+		want := 2066
+
+		if got != want {
+			t.Errorf("GetCountOfOccupiedSeatsPartTwo incorrect got %v want %v", got, want)
 		}
 	})
 }
