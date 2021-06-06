@@ -15,7 +15,7 @@ func main() {
 	fmt.Printf("Part one: the number of occupied seats after the grid stabalizes is %v\n", result1)
 
 	// Part two
-	result2 := GetCountOfOccupiedSeatsPartTwo("input2.txt")
+	result2 := GetCountOfOccupiedSeatsPartTwo("input.txt")
 	fmt.Printf("Part two: the number of occupied seats after the grid stabalizes is %v\n", result2)
 }
 
