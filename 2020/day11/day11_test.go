@@ -13,24 +13,31 @@ func TestGetCountOfOccupiedSeats(t *testing.T) {
 			t.Errorf("GetCountOfOccupiedSeats incorrect got %v want %v", got, want)
 		}
 	})
-	t.Run("input", func(t *testing.T) {
+	t.Run("input_test part one after five rounds", func(t *testing.T) {
+		lines := readFile("input_test.txt")
+		grid := getGrid(lines)
+
+		// Advance five rounds
+		grid = tickPartOne(grid)
+		grid = tickPartOne(grid)
+		grid = tickPartOne(grid)
+		grid = tickPartOne(grid)
+		grid = tickPartOne(grid)
+		got := toString(grid)
+
+		lines_after_five_rounds := readFile("input_test_part_one_after_five_rounds.txt")
+		want := toString(getGrid(lines_after_five_rounds))
+
+		if got != want {
+			t.Errorf("Grid after five rounds incorrect got %v want %v", got, want)
+		}
+	})
+	t.Run("input part one", func(t *testing.T) {
 		got := GetCountOfOccupiedSeatsPartOne("input.txt")
 		want := 2277
 
 		if got != want {
 			t.Errorf("GetCountOfOccupiedSeats incorrect got %v want %v", got, want)
-		}
-	})
-	t.Run("input_test after one round", func(t *testing.T) {
-		lines := readFile("input_test.txt")
-		grid := getGrid(lines)
-		got := toString(tickPartOne(grid))
-
-		lines_after_one_round := readFile("input_test_after_one_round.txt")
-		want := toString(getGrid(lines_after_one_round))
-
-		if got != want {
-			t.Errorf("Grid after one tick incorrect got %v want %v", got, want)
 		}
 	})
 }
