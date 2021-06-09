@@ -17,7 +17,8 @@ func main() {
 
 func GetManhattanDistance(filename string) (distance int) {
 	lines := readFile(filename)
-	log.Print(lines)
+	instructions := parseInstructions(lines)
+	log.Print(instructions)
 
 	return 0
 }
@@ -25,6 +26,14 @@ func GetManhattanDistance(filename string) (distance int) {
 type Instruction struct {
 	command  rune
 	distance int
+}
+
+func parseInstructions(lines []string) (instructions []Instruction) {
+	for _, line := range lines {
+		instruction := parseInstruction(line)
+		instructions = append(instructions, instruction)
+	}
+	return instructions
 }
 
 func parseInstruction(line string) (instruction Instruction) {
