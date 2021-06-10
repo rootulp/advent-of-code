@@ -9,6 +9,28 @@ import (
 	"unicode/utf8"
 )
 
+type Direction string
+
+const (
+	North   = "North"
+	East    = "East"
+	South   = "South"
+	West    = "West"
+	Left    = "Left"
+	Right   = "Right"
+	Forward = "Forward"
+)
+
+var runeToDirection = map[rune]Direction{
+	'N': North,
+	'E': East,
+	'S': South,
+	'W': West,
+	'L': Left,
+	'R': Right,
+	'F': Forward,
+}
+
 func main() {
 	fmt.Printf("Starting day 12")
 
@@ -24,7 +46,7 @@ func GetManhattanDistance(filename string) (distance int) {
 }
 
 type Instruction struct {
-	command  rune
+	command  Direction
 	distance int
 }
 
@@ -43,7 +65,7 @@ func parseInstruction(line string) (instruction Instruction) {
 		log.Fatal(err)
 	}
 	return Instruction{
-		command:  command,
+		command:  runeToDirection[command],
 		distance: distance,
 	}
 }
