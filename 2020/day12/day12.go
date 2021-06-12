@@ -60,7 +60,11 @@ func GetManhattanDistance(filename string) (distance int) {
 		location = executeInstruction(instruction, location)
 		fmt.Printf("location %v after %v\n", location, instruction)
 	}
-	return 0
+	return int(manhattanDistance(location.x, location.y))
+}
+
+func manhattanDistance(x float64, y float64) float64 {
+	return math.Abs(x) + math.Abs(y)
 }
 
 func executeInstruction(instruction Instruction, location Location) Location {
@@ -93,12 +97,11 @@ func executeInstruction(instruction Instruction, location Location) Location {
 	return location
 }
 
+// degrees = radians * (180/pi)
 // radians = degrees * (pi/180)
 func getRadians(degrees int) float64 {
 	return float64(degrees) * math.Pi / 180.0
 }
-
-// degrees = radians * (180/pi)
 
 func parseInstructions(lines []string) (instructions []Instruction) {
 	for _, line := range lines {
