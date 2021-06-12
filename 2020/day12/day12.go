@@ -10,6 +10,15 @@ import (
 )
 
 type Direction string
+type Location struct {
+	x     int
+	y     int
+	angle int // angle between 0 and 360. East = 90 degrees.
+}
+type Instruction struct {
+	direction Direction
+	distance  int
+}
 
 const (
 	North   = "North"
@@ -42,12 +51,29 @@ func GetManhattanDistance(filename string) (distance int) {
 	instructions := parseInstructions(lines)
 	log.Print(instructions)
 
+	location := Location{
+		x: 0, y: 0, angle: 90,
+	}
+	fmt.Printf("Starting location %v\n", location)
+	for _, instruction := range instructions {
+		location = executeInstruction(instruction, location)
+		fmt.Printf("location %v after %v\n", location, instruction)
+	}
 	return 0
 }
 
-type Instruction struct {
-	command  Direction
-	distance int
+func executeInstruction(instruction Instruction, location Location) Location {
+	switch instruction.direction {
+	case North:
+		location.y += instruction.distance
+	case East:
+		location.x += instruction.distance
+	case South:
+		location.y -= instruction.distance
+	case West:
+		location.x -= instruction.distance
+	}
+	return location
 }
 
 func parseInstructions(lines []string) (instructions []Instruction) {
@@ -65,8 +91,8 @@ func parseInstruction(line string) (instruction Instruction) {
 		log.Fatal(err)
 	}
 	return Instruction{
-		command:  runeToDirection[command],
-		distance: distance,
+		direction: runeToDirection[command],
+		distance:  distance,
 	}
 }
 
