@@ -60,7 +60,9 @@ func GetManhattanDistance(filename string) (distance int) {
 		location = executeInstruction(instruction, location)
 		fmt.Printf("location %v after %v\n", location, instruction)
 	}
-	return int(manhattanDistance(location.x, location.y))
+	md := int(math.Round(manhattanDistance(location.x, location.y)))
+	fmt.Printf("Manhattan distance: %v\n", md)
+	return md
 }
 
 func manhattanDistance(x float64, y float64) float64 {

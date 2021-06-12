@@ -16,7 +16,7 @@ func TestGetManhattanDistance(t *testing.T) {
 
 	t.Run("GetManhattanDistance input", func(t *testing.T) {
 		got := GetManhattanDistance("input.txt")
-		want := 0
+		want := 1294
 
 		if got != want {
 			t.Errorf("GetManhattanDistance input_test incorrect got %v want %v", got, want)
