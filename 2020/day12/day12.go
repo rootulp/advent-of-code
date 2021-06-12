@@ -75,7 +75,12 @@ func executeInstruction(instruction Instruction, location Location) Location {
 	case Right:
 		location.angle = location.angle + instruction.distance%360
 	case Left:
-		location.angle = location.angle - instruction.distance%360
+		diff := location.angle - instruction.distance
+		if diff < 0 {
+			// diff is negative so we have to wrap around 360
+			diff = 360 + diff
+		}
+		location.angle = diff
 	}
 	return location
 }
