@@ -44,7 +44,7 @@ var runeToDirection = map[rune]Direction{
 func main() {
 	fmt.Printf("Starting day 12")
 
-	GetManhattanDistance("input_test.txt")
+	GetManhattanDistance("input.txt")
 }
 
 func GetManhattanDistance(filename string) (distance int) {
