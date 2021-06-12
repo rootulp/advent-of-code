@@ -72,6 +72,10 @@ func executeInstruction(instruction Instruction, location Location) Location {
 		location.y -= instruction.distance
 	case West:
 		location.x -= instruction.distance
+	case Right:
+		location.angle = location.angle + instruction.distance%360
+	case Left:
+		location.angle = location.angle - instruction.distance%360
 	}
 	return location
 }
