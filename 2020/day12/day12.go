@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"unicode/utf8"
@@ -11,8 +12,8 @@ import (
 
 type Direction string
 type Location struct {
-	x     int
-	y     int
+	x     float64
+	y     float64
 	angle int // angle between 0 and 360. East = 90 degrees.
 }
 type Instruction struct {
@@ -65,13 +66,13 @@ func GetManhattanDistance(filename string) (distance int) {
 func executeInstruction(instruction Instruction, location Location) Location {
 	switch instruction.direction {
 	case North:
-		location.y += instruction.distance
+		location.y += float64(instruction.distance)
 	case East:
-		location.x += instruction.distance
+		location.x += float64(instruction.distance)
 	case South:
-		location.y -= instruction.distance
+		location.y -= float64(instruction.distance)
 	case West:
-		location.x -= instruction.distance
+		location.x -= float64(instruction.distance)
 	case Right:
 		location.angle = location.angle + instruction.distance%360
 	case Left:
@@ -81,9 +82,23 @@ func executeInstruction(instruction Instruction, location Location) Location {
 			diff = 360 + diff
 		}
 		location.angle = diff
+	case Forward:
+		hypot := instruction.distance
+		dy := float64(hypot) * math.Sin(getRadians(90-location.angle))
+		dx := float64(hypot) * math.Cos(getRadians(90-location.angle))
+		location.x += dx
+		location.y += dy
 	}
+
 	return location
 }
+
+// radians = degrees * (pi/180)
+func getRadians(degrees int) float64 {
+	return float64(degrees) * math.Pi / 180.0
+}
+
+// degrees = radians * (180/pi)
 
 func parseInstructions(lines []string) (instructions []Instruction) {
 	for _, line := range lines {
