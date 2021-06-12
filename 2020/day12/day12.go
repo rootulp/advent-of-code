@@ -42,24 +42,24 @@ var runeToDirection = map[rune]Direction{
 }
 
 func main() {
-	fmt.Printf("Starting day 12")
+	fmt.Printf("Starting day 12\n")
 
 	md := GetManhattanDistance("input.txt")
 	fmt.Printf("Manhattan distance: %v\n", md)
 }
 
-func GetManhattanDistance(filename string) (distance int) {
+func GetManhattanDistance(filename string) int {
 	lines := readFile(filename)
 	instructions := parseInstructions(lines)
-	log.Print(instructions)
+	// log.Print(instructions)
 
 	location := Location{
 		x: 0, y: 0, angle: 90,
 	}
-	fmt.Printf("Starting location %v\n", location)
+	// fmt.Printf("Starting location %v\n", location)
 	for _, instruction := range instructions {
 		location = executeInstruction(instruction, location)
-		fmt.Printf("location %v after %v\n", location, instruction)
+		// fmt.Printf("location %v after %v\n", location, instruction)
 	}
 	return int(math.Round(manhattanDistance(location.x, location.y)))
 }
