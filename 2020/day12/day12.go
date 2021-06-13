@@ -20,7 +20,7 @@ const (
 	Forward = "Forward"
 )
 
-var runeToDirection = map[rune]Direction{
+var runeToCommand = map[rune]Command{
 	'N': North,
 	'E': East,
 	'S': South,
@@ -30,7 +30,6 @@ var runeToDirection = map[rune]Direction{
 	'F': Forward,
 }
 
-type Direction string
 type Location struct {
 	x float64
 	y float64
@@ -41,9 +40,10 @@ type LocationWithHeading struct {
 	// North = 0 degrees. East = 90 degrees.
 	angle int
 }
+type Command string
 type Instruction struct {
-	direction Direction
-	distance  int
+	command Command
+	val     int
 }
 
 func main() {
@@ -56,7 +56,7 @@ func main() {
 	fmt.Printf("Part two manhattan distance: %v\n", partTwo)
 }
 
-// Get the manhattan distance of the ship for part one
+// Get the Manhattan distance of the ship for part one
 func GetManhattanDistancePartOne(filename string) int {
 	lines := readFile(filename)
 	instructions := parseInstructions(lines)
@@ -65,15 +65,14 @@ func GetManhattanDistancePartOne(filename string) int {
 	location := LocationWithHeading{
 		Location: Location{x: 0, y: 0}, angle: 90,
 	}
-	// fmt.Printf("Starting location %v\n", location)
+
 	for _, instruction := range instructions {
 		location = executeInstruction(instruction, location)
-		// fmt.Printf("location %v after %v\n", location, instruction)
 	}
 	return int(math.Round(manhattanDistance(location.x, location.y)))
 }
 
-// Get the manhattan distance of the ship for part two
+// Get the Manhattan distance of the ship for part two
 func GetManhattanDistancePartTwo(filename string) int {
 	lines := readFile(filename)
 	instructions := parseInstructions(lines)
@@ -81,12 +80,10 @@ func GetManhattanDistancePartTwo(filename string) int {
 	location := Location{
 		x: 0, y: 0,
 	}
-	// TODO it is possible to create a new type for waypoint that doesn't include angle
 	waypoint := Location{
 		x: 10, y: 1,
 	}
 
-	// fmt.Printf("Starting location %v waypoint %v\n", location, waypoint)
 	for _, instruction := range instructions {
 		location, waypoint = executeInstructionWithWaypoint(instruction, location, waypoint)
 		// fmt.Printf("Executed instruction %v. New location %v waypoint %v\n", instruction, location, waypoint)
@@ -99,26 +96,26 @@ func manhattanDistance(x float64, y float64) float64 {
 }
 
 func executeInstruction(instruction Instruction, location LocationWithHeading) LocationWithHeading {
-	switch instruction.direction {
+	switch instruction.command {
 	case North:
-		location.y += float64(instruction.distance)
+		location.y += float64(instruction.val)
 	case East:
-		location.x += float64(instruction.distance)
+		location.x += float64(instruction.val)
 	case South:
-		location.y -= float64(instruction.distance)
+		location.y -= float64(instruction.val)
 	case West:
-		location.x -= float64(instruction.distance)
+		location.x -= float64(instruction.val)
 	case Right:
-		location.angle = location.angle + instruction.distance%360
+		location.angle = location.angle + instruction.val%360
 	case Left:
-		diff := location.angle - instruction.distance
+		diff := location.angle - instruction.val
 		if diff < 0 {
 			// diff is negative so we have to wrap around 360
 			diff = 360 + diff
 		}
 		location.angle = diff
 	case Forward:
-		hypot := instruction.distance
+		hypot := instruction.val
 		dy := float64(hypot) * math.Sin(getRadians(90-location.angle))
 		dx := float64(hypot) * math.Cos(getRadians(90-location.angle))
 		location.x += dx
@@ -129,26 +126,26 @@ func executeInstruction(instruction Instruction, location LocationWithHeading) L
 }
 
 func executeInstructionWithWaypoint(instruction Instruction, location Location, waypoint Location) (Location, Location) {
-	switch instruction.direction {
+	switch instruction.command {
 	case North:
-		waypoint.y += float64(instruction.distance)
+		waypoint.y += float64(instruction.val)
 	case East:
-		waypoint.x += float64(instruction.distance)
+		waypoint.x += float64(instruction.val)
 	case South:
-		waypoint.y -= float64(instruction.distance)
+		waypoint.y -= float64(instruction.val)
 	case West:
-		waypoint.x -= float64(instruction.distance)
+		waypoint.x -= float64(instruction.val)
 	case Right:
 		// rotate the waypoint around the ship right (clockwise) the given number of degrees.
-		radians := getRadians(instruction.distance)
+		radians := getRadians(instruction.val)
 		waypoint = rotate(location, waypoint, -1.0*radians)
 	case Left:
 		// rotate the waypoint around the ship left (counter-clockwise) the given number of degrees.
-		radians := getRadians(instruction.distance)
+		radians := getRadians(instruction.val)
 		waypoint = rotate(location, waypoint, radians)
 	case Forward:
-		dx := float64(instruction.distance) * (waypoint.x - location.x)
-		dy := float64(instruction.distance) * (waypoint.y - location.y)
+		dx := float64(instruction.val) * (waypoint.x - location.x)
+		dy := float64(instruction.val) * (waypoint.y - location.y)
 		location.x += dx
 		location.y += dy
 		waypoint.x += dx
@@ -191,13 +188,13 @@ func parseInstructions(lines []string) (instructions []Instruction) {
 
 func parseInstruction(line string) (instruction Instruction) {
 	command, i := utf8.DecodeRuneInString(line)
-	distance, err := strconv.Atoi(line[i:])
+	val, err := strconv.Atoi(line[i:])
 	if err != nil {
 		log.Fatal(err)
 	}
 	return Instruction{
-		direction: runeToDirection[command],
-		distance:  distance,
+		command: runeToCommand[command],
+		val:     val,
 	}
 }
 
