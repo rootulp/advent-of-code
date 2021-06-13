@@ -81,10 +81,10 @@ func GetManhattanDistancePartTwo(filename string) int {
 		x: 10, y: 1,
 	}
 
-	fmt.Printf("Starting location %v waypoint %v\n", location, waypoint)
+	// fmt.Printf("Starting location %v waypoint %v\n", location, waypoint)
 	for _, instruction := range instructions {
 		location, waypoint = executeInstructionWithWaypoint(instruction, location, waypoint)
-		fmt.Printf("Executed instruction %v. New location %v waypoint %v\n", instruction, location, waypoint)
+		// fmt.Printf("Executed instruction %v. New location %v waypoint %v\n", instruction, location, waypoint)
 	}
 	return int(math.Round(manhattanDistance(location.x, location.y)))
 }
