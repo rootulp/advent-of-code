@@ -11,7 +11,9 @@ import (
 func main() {
 	log.Println("Starting day13")
 
-	GetProductOfEarliestBusAndTimeToWait("input_test.txt")
+	// Part one
+	partOne := GetProductOfEarliestBusAndTimeToWait("input.txt")
+	log.Printf("Part one %v", partOne)
 }
 
 func GetProductOfEarliestBusAndTimeToWait(filename string) int {
