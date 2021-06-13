@@ -16,15 +16,21 @@ func main() {
 
 func GetProductOfEarliestBusAndTimeToWait(filename string) int {
 	lines := readLines(filename)
-	earliestTimestamp, err := strconv.Atoi(lines[0])
+
+	earliestTimestamp := getEarliestTimestamp(lines[0])
+	busIds := getBusIds(lines[1])
+	log.Printf("earliestTimestamp %v busIds %v", earliestTimestamp, busIds)
+
+	getEarliestBus(earliestTimestamp, busIds)
+	return 0
+}
+
+func getEarliestTimestamp(input string) int {
+	earliestTimestamp, err := strconv.Atoi(input)
 	if err != nil {
 		log.Fatal("Failed to conver earliest timestamp to int ", err)
 	}
-	busIds := getBusIds(lines[1])
-
-	log.Printf("earliestTimestamp %v busIds %v", earliestTimestamp, busIds)
-	getEarliestBus(earliestTimestamp, busIds)
-	return 0
+	return earliestTimestamp
 }
 
 func getBusIds(input string) []int {
