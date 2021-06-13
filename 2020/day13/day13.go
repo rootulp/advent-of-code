@@ -21,18 +21,29 @@ func GetProductOfEarliestBusAndTimeToWait(filename string) int {
 	busIds := getBusIds(lines[1])
 	log.Printf("earliestTimestamp %v busIds %v", earliestTimestamp, busIds)
 
-	getEarliestBus(earliestTimestamp, busIds)
-	return 0
+	busId, timeToWait := getEarliestBus(earliestTimestamp, busIds)
+	log.Printf("busId %v timeToWait %v", busId, timeToWait)
+	return busId * timeToWait
 }
 
-func getEarliestBus(earliestTimestamp int, busIds []int) int {
-	return 0
+func getEarliestBus(earliestTimestamp int, busIds []int) (busId int, timeToWait int) {
+	currentTime := earliestTimestamp
+	for {
+		for _, busId := range busIds {
+			// log.Printf("currentTime %v busId %v", currentTime, busId)
+			if currentTime%busId == 0 {
+				timeToWait = currentTime - earliestTimestamp
+				return busId, timeToWait
+			}
+		}
+		currentTime += 1
+	}
 }
 
 func getEarliestTimestamp(input string) int {
 	earliestTimestamp, err := strconv.Atoi(input)
 	if err != nil {
-		log.Fatal("Failed to conver earliest timestamp to int ", err)
+		log.Fatal("Failed to convert earliest timestamp to int ", err)
 	}
 	return earliestTimestamp
 }
