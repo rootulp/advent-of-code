@@ -33,7 +33,7 @@ func TestGetManhattanDistance(t *testing.T) {
 	})
 
 	t.Run("GetManhattanDistancePartTwo input_test", func(t *testing.T) {
-		got := GetManhattanDistancePartTwo("input_test.txt")
+		got := GetManhattanDistancePartTwo("input.txt")
 		want := 20592
 
 		if got != want {

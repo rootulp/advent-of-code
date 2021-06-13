@@ -10,17 +10,6 @@ import (
 	"unicode/utf8"
 )
 
-type Direction string
-type Location struct {
-	x     float64
-	y     float64
-	angle int // angle between 0 and 360. East = 90 degrees.
-}
-type Instruction struct {
-	direction Direction
-	distance  int
-}
-
 const (
 	North   = "North"
 	East    = "East"
@@ -41,6 +30,22 @@ var runeToDirection = map[rune]Direction{
 	'F': Forward,
 }
 
+type Direction string
+type Location struct {
+	x float64
+	y float64
+}
+type LocationWithHeading struct {
+	Location
+	// Angle between 0 and 360.
+	// North = 0 degrees. East = 90 degrees.
+	angle int
+}
+type Instruction struct {
+	direction Direction
+	distance  int
+}
+
 func main() {
 	fmt.Printf("Starting day 12\n")
 
@@ -57,8 +62,8 @@ func GetManhattanDistancePartOne(filename string) int {
 	instructions := parseInstructions(lines)
 	// log.Print(instructions)
 
-	location := Location{
-		x: 0, y: 0, angle: 90,
+	location := LocationWithHeading{
+		Location: Location{x: 0, y: 0}, angle: 90,
 	}
 	// fmt.Printf("Starting location %v\n", location)
 	for _, instruction := range instructions {
@@ -74,7 +79,7 @@ func GetManhattanDistancePartTwo(filename string) int {
 	instructions := parseInstructions(lines)
 
 	location := Location{
-		x: 0, y: 0, angle: 90,
+		x: 0, y: 0,
 	}
 	// TODO it is possible to create a new type for waypoint that doesn't include angle
 	waypoint := Location{
@@ -93,7 +98,7 @@ func manhattanDistance(x float64, y float64) float64 {
 	return math.Abs(x) + math.Abs(y)
 }
 
-func executeInstruction(instruction Instruction, location Location) Location {
+func executeInstruction(instruction Instruction, location LocationWithHeading) LocationWithHeading {
 	switch instruction.direction {
 	case North:
 		location.y += float64(instruction.distance)
