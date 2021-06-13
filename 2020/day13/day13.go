@@ -25,6 +25,10 @@ func GetProductOfEarliestBusAndTimeToWait(filename string) int {
 	return 0
 }
 
+func getEarliestBus(earliestTimestamp int, busIds []int) int {
+	return 0
+}
+
 func getEarliestTimestamp(input string) int {
 	earliestTimestamp, err := strconv.Atoi(input)
 	if err != nil {
@@ -35,16 +39,16 @@ func getEarliestTimestamp(input string) int {
 
 func getBusIds(input string) []int {
 	strings := strings.Split(input, ",")
-	busIds := make([]int, len(strings))
+	busIds := []int{}
 
-	for i, s := range strings {
-		busIds[i], _ = strconv.Atoi(s)
+	for _, s := range strings {
+		busId, err := strconv.Atoi(s)
+		// Filter out "X" and any other string that is not an int
+		if err == nil {
+			busIds = append(busIds, busId)
+		}
 	}
 	return busIds
-}
-
-func getEarliestBus(earliestTimestamp int, busIds []int) int {
-	return 0
 }
 
 func readLines(filename string) (lines []string) {
