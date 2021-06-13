@@ -52,10 +52,13 @@ func tickPartOne(grid [][]gridValue) [][]gridValue {
 		for y, val := range row {
 			countOfOccupiedNeighbors := getCountOfOccupiedNeighbors(grid, x, y)
 			if val == *registry.emptySeat && countOfOccupiedNeighbors == 0 {
+				// If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied.
 				next[x][y] = *registry.occupiedSeat
 			} else if val == *registry.occupiedSeat && countOfOccupiedNeighbors >= 4 {
+				// If a seat is occupied (#) and four or more seats adjacent to it are also occupied, the seat becomes empty.
 				next[x][y] = *registry.emptySeat
 			}
+			// Otherwise, the seat's state does not change.
 		}
 	}
 
