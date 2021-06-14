@@ -15,11 +15,11 @@ func main() {
 
 	// Part one
 	partOne := GetProductOfEarliestBusAndTimeToWait("input.txt")
-	log.Printf("Part one %v\n", partOne)
+	log.Printf("Part one result: %v\n", partOne)
 
 	// Part two
 	partTwo := GetEarliestBusWithSubsequentDepartures("input.txt")
-	log.Printf("Part two %v\n", partTwo)
+	log.Printf("Part two result: %v\n", partTwo)
 }
 
 func GetProductOfEarliestBusAndTimeToWait(filename string) int {
@@ -68,12 +68,12 @@ func getEarliestBusWithSubsequentDepartures(busIds []int) (timestamp int) {
 		a = append(a, big.NewInt(int64(busId-i)))
 		n = append(n, big.NewInt(int64(busId)))
 	}
-	fmt.Printf("a %v, n %v\n", a, n)
 
 	result, err := chineseRemainderTheorem(a, n)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to run chinese remainder theorem ", err)
 	}
+
 	return int(result.Int64())
 }
 
