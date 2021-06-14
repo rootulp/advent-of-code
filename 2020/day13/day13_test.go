@@ -29,4 +29,13 @@ func TestDay13(t *testing.T) {
 			t.Errorf("GetProductOfEarliestBusAndTimeToWait incorrect got %v want %v", got, want)
 		}
 	})
+
+	t.Run("GetEarliestBusWithSubsequentDepartures input_test", func(t *testing.T) {
+		got := GetEarliestBusWithSubsequentDepartures("input.txt")
+		want := 554865447501099
+
+		if got != want {
+			t.Errorf("GetProductOfEarliestBusAndTimeToWait incorrect got %v want %v", got, want)
+		}
+	})
 }
