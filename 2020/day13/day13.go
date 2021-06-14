@@ -38,7 +38,7 @@ func GetEarliestBusWithSubsequentDepartures(filename string) int {
 	busIds := getBusIdsWithX(lines[1])
 	log.Printf("busIds %v\n", busIds)
 
-	return 0
+	return getEarliestBusWithSubsequentDepartures(busIds)
 }
 
 func getEarliestBus(earliestTimestamp int, busIds []int) (busId int, timeToWait int) {
@@ -53,6 +53,32 @@ func getEarliestBus(earliestTimestamp int, busIds []int) (busId int, timeToWait 
 		}
 		currentTime += 1
 	}
+}
+
+func getEarliestBusWithSubsequentDepartures(busIds []int) (timestamp int) {
+	currentTime := 1
+	for {
+		if isBusWithSubsequentDepartures(currentTime, busIds) {
+			return currentTime
+		}
+		currentTime += 1
+	}
+}
+
+func isBusWithSubsequentDepartures(time int, busIds []int) bool {
+	// log.Printf("isBusWithSubsequentDepartures time %v busIds %v", time, busIds)
+	currentTime := time
+	for _, busId := range busIds {
+		if busId == 0 {
+			currentTime += 1
+			continue
+		} else if currentTime%busId != 0 {
+			return false
+		} else {
+			currentTime += 1
+		}
+	}
+	return true
 }
 
 func getEarliestTimestamp(input string) int {
