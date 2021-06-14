@@ -16,7 +16,7 @@ func main() {
 	log.Printf("Part one %v\n", partOne)
 
 	// Part two
-	partTwo := GetEarliestBusWithSubsequentDepartures("input_test.txt")
+	partTwo := GetEarliestBusWithSubsequentDepartures("input.txt")
 	log.Printf("Part two %v\n", partTwo)
 }
 
