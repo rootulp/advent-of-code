@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
+	"math/big"
 	"os"
 	"strconv"
 	"strings"
@@ -56,29 +58,23 @@ func getEarliestBus(earliestTimestamp int, busIds []int) (busId int, timeToWait 
 }
 
 func getEarliestBusWithSubsequentDepartures(busIds []int) (timestamp int) {
-	currentTime := 1
-	for {
-		if isBusWithSubsequentDepartures(currentTime, busIds) {
-			return currentTime
-		}
-		currentTime += 1
-	}
-}
+	var a []*big.Int
+	var n []*big.Int
 
-func isBusWithSubsequentDepartures(time int, busIds []int) bool {
-	// log.Printf("isBusWithSubsequentDepartures time %v busIds %v", time, busIds)
-	currentTime := time
-	for _, busId := range busIds {
+	for i, busId := range busIds {
 		if busId == 0 {
-			currentTime += 1
 			continue
-		} else if currentTime%busId != 0 {
-			return false
-		} else {
-			currentTime += 1
 		}
+		a = append(a, big.NewInt(int64(busId-i)))
+		n = append(n, big.NewInt(int64(busId)))
 	}
-	return true
+	fmt.Printf("a %v, n %v\n", a, n)
+
+	result, err := chineseRemainderTheorem(a, n)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return int(result.Int64())
 }
 
 func getEarliestTimestamp(input string) int {
@@ -129,4 +125,25 @@ func readLines(filename string) (lines []string) {
 		log.Fatal(err)
 	}
 	return lines
+}
+
+// Shamelessly copied from https://rosettacode.org/wiki/Chinese_remainder_theorem#Go
+// See https://brilliant.org/wiki/chinese-remainder-theorem/
+var one = big.NewInt(1)
+
+func chineseRemainderTheorem(a, n []*big.Int) (*big.Int, error) {
+	p := new(big.Int).Set(n[0])
+	for _, n1 := range n[1:] {
+		p.Mul(p, n1)
+	}
+	var x, q, s, z big.Int
+	for i, n1 := range n {
+		q.Div(p, n1)
+		z.GCD(nil, &s, n1, &q)
+		if z.Cmp(one) != 0 {
+			return nil, fmt.Errorf("%d not coprime", n1)
+		}
+		x.Add(&x, s.Mul(a[i], s.Mul(&s, &q)))
+	}
+	return x.Mod(&x, p), nil
 }
