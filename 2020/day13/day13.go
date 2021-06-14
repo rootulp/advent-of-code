@@ -13,7 +13,11 @@ func main() {
 
 	// Part one
 	partOne := GetProductOfEarliestBusAndTimeToWait("input.txt")
-	log.Printf("Part one %v", partOne)
+	log.Printf("Part one %v\n", partOne)
+
+	// Part two
+	partTwo := GetEarliestBusWithSubsequentDepartures("input_test.txt")
+	log.Printf("Part two %v\n", partTwo)
 }
 
 func GetProductOfEarliestBusAndTimeToWait(filename string) int {
@@ -21,11 +25,20 @@ func GetProductOfEarliestBusAndTimeToWait(filename string) int {
 
 	earliestTimestamp := getEarliestTimestamp(lines[0])
 	busIds := getBusIds(lines[1])
-	log.Printf("earliestTimestamp %v busIds %v", earliestTimestamp, busIds)
+	log.Printf("earliestTimestamp %v busIds %v\n", earliestTimestamp, busIds)
 
 	busId, timeToWait := getEarliestBus(earliestTimestamp, busIds)
-	log.Printf("busId %v timeToWait %v", busId, timeToWait)
+	log.Printf("busId %v timeToWait %v\n", busId, timeToWait)
 	return busId * timeToWait
+}
+
+func GetEarliestBusWithSubsequentDepartures(filename string) int {
+	lines := readLines(filename)
+
+	busIds := getBusIdsWithX(lines[1])
+	log.Printf("busIds %v\n", busIds)
+
+	return 0
 }
 
 func getEarliestBus(earliestTimestamp int, busIds []int) (busId int, timeToWait int) {
@@ -60,6 +73,18 @@ func getBusIds(input string) []int {
 		if err == nil {
 			busIds = append(busIds, busId)
 		}
+	}
+	return busIds
+}
+
+func getBusIdsWithX(input string) []int {
+	strings := strings.Split(input, ",")
+	busIds := []int{}
+
+	for _, s := range strings {
+		busId, _ := strconv.Atoi(s)
+		// Include "X" in input as 0 in busIds
+		busIds = append(busIds, busId)
 	}
 	return busIds
 }
