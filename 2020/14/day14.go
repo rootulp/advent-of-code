@@ -9,19 +9,14 @@ import (
 	"strconv"
 )
 
-type command struct {
-	command string
-}
+const mem = "mem"
+const mask = "mask"
 
-type maskCommand struct {
-	command
-	mask string
-}
-
-type writeCommand struct {
-	command string
-	address int
-	value   int
+type instruction struct {
+	operation string
+	bitmask   string
+	address   int
+	value     int
 }
 
 type memory map[int]int
@@ -44,40 +39,33 @@ func SumOfBitmaskedValues(filename string) (sum int) {
 }
 
 func execute(line string, mask string, memory memory) (newMask string, newMemory memory) {
-	command := parse(line)
-	fmt.Printf("command %v", command.command)
+	instruction := parse(line)
+	fmt.Printf("operation %v address %v value %v bitmask %v\n", instruction.operation, instruction.address, instruction.value, instruction.bitmask)
 	return newMask, newMemory
 }
 
-func parse(line string) command {
-	r := regexp.MustCompile(`(?P<command>\w*)(\[(?P<address>\d*)\])?\s=\s(?P<value>\w*)`)
-	match := r.FindStringSubmatch(line)
-	if match[1] == "mask" {
-		address, err := strconv.Atoi(match[3])
-		if err != nil {
-			log.Fatal(err)
+func parse(line string) instruction {
+	regex := regexp.MustCompile(`(?P<command>\w*)(\[(?P<address>\d*)\])?\s=\s(?P<value>\w*)`)
+	match := regex.FindStringSubmatch(line)
+	switch operation := match[1]; operation {
+	case mem:
+		address, _ := strconv.Atoi(match[3])
+		value, _ := strconv.Atoi(match[4])
+		return instruction{
+			operation: operation,
+			address:   address,
+			value:     value,
 		}
-		value, err := strconv.Atoi(match[4])
-		if err != nil {
-			log.Fatal(err)
+	case mask:
+		bitmask := match[4]
+		return instruction{
+			operation: operation,
+			bitmask:   bitmask,
 		}
-		result := writeCommand{
-			command: match[1],
-			address: address,
-			value:   value,
-		}
-		return result
+	default:
+		log.Fatalf("Operation %v is not a valid operation: mem or mask", operation)
+		return instruction{}
 	}
-	fmt.Printf(match[0])
-	return result
-	// _, command, _, address, value :=
-	// fmt.Printf("%#v\n", r.FindStringSubmatch(line))
-	// fmt.Printf("%#v\n", r.SubexpNames())
-	// return command{
-	// 	command: command,
-	// 	address: address,
-	// 	value:   value,
-	// }
 }
 
 func sumOfValues(state map[int]int) (result int) {
