@@ -9,3 +9,11 @@ func TestSumOfBitmaskedValues(t *testing.T) {
 		t.Errorf("TestSumOfBitmaskedValues incorrect got %v want %v", got, want)
 	}
 }
+
+func TestPartOne(t *testing.T) {
+	got := SumOfBitmaskedValues("input.txt")
+	want := 9967721333886
+	if got != want {
+		t.Errorf("TestSumOfBitmaskedValues incorrect got %v want %v", got, want)
+	}
+}

@@ -24,7 +24,8 @@ func main() {
 	fmt.Println("Starting day 14")
 
 	// Part one
-	SumOfBitmaskedValues("example.txt")
+	partOne := SumOfBitmaskedValues("input.txt")
+	fmt.Printf("Sum of bitmasked values: %v\n", partOne)
 }
 
 func SumOfBitmaskedValues(filename string) (sum int) {
