@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 const mem = "mem"
@@ -40,8 +41,9 @@ func execute(line string, mask string, memory map[int]int) (string, map[int]int)
 	instruction := parse(line)
 	switch operation := instruction.operation; operation {
 	case "mem":
-		fmt.Printf("attempting to set address: %v, value: %v\n", instruction.address, instruction.value)
-		memory[instruction.address] = instruction.value
+		value := applyMask(mask, instruction.value)
+		fmt.Printf("attempting to set address: %v, value: %v\n", instruction.address, value)
+		memory[instruction.address] = value
 	case "mask":
 		mask = instruction.bitmask
 	default:
@@ -49,6 +51,33 @@ func execute(line string, mask string, memory map[int]int) (string, map[int]int)
 	}
 	fmt.Printf("mask: %v, memory %v\n", mask, memory)
 	return mask, memory
+}
+
+func applyMask(mask string, value int) int {
+	fmt.Printf("applying mask: %v, value %v\n", mask, strconv.FormatInt(int64(value), 2))
+	orMask := getOrMask(mask)
+	andMask := getAndMask(mask)
+	value = int(orMask) | value
+	value = int(andMask) & value
+	return value
+}
+
+func getOrMask(mask string) int64 {
+	s := strings.Replace(mask, "X", "0", -1)
+	result, err := strconv.ParseInt(s, 2, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return result
+}
+
+func getAndMask(mask string) int64 {
+	s := strings.Replace(mask, "X", "1", -1)
+	result, err := strconv.ParseInt(s, 2, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return result
 }
 
 func parse(line string) (i instruction) {
