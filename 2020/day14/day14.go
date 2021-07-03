@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 const mem = "mem"
@@ -24,11 +25,11 @@ func main() {
 	fmt.Println("Starting day 14")
 
 	// Part one
-	partOne := PartOne("input.txt")
-	fmt.Printf("Part one: %v\n", partOne)
+	// partOne := PartOne("input.txt")
+	// fmt.Printf("Part one: %v\n", partOne)
 
 	// Part two
-	partTwo := PartTwo("input.txt")
+	partTwo := PartTwo("example.txt")
 	fmt.Printf("Part two: %v\n", partTwo)
 }
 
@@ -78,7 +79,7 @@ func executePartTwo(line string, mask string, memory map[int]int) (string, map[i
 	default:
 		log.Fatalf("operation %v is not supported\n", operation)
 	}
-	// fmt.Printf("mask: %v, memory %v\n", mask, memory)
+	fmt.Printf("mask: %v, memory %v\n", mask, memory)
 	return mask, memory
 }
 
@@ -92,15 +93,82 @@ func applyMask(mask string, value int) int {
 }
 
 func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, value int) map[int]int {
-	possibleAddresses := getPossibleAddresses(mask, address)
+	fmt.Printf("applying memory access decoder: %v, %v, %v, %v\n", memory, mask, address, value)
+	addressStr := strconv.FormatInt(int64(address), 2)
+	possibleAddresses := getPossibleAddresses(mask, addressStr, []string{})
 	for _, possible := range possibleAddresses {
-		memory[possible] = value
+		possibleInt64, err := strconv.ParseInt(possible, 2, 64)
+		if err != nil {
+			log.Fatal(err)
+		}
+		memory[int(possibleInt64)] = value
 	}
 	return memory
 }
 
-func getPossibleAddresses(mask string, address int) []int {
-	return []int{}
+func getPossibleAddresses(mask string, address string, possibleSoFar []string) []string {
+	fmt.Printf("get possibleAddresses %v, %v, %v\n", mask, address, possibleSoFar)
+	if len(mask) == 0 || len(address) == 0 {
+		return possibleSoFar
+	}
+	maskBit, size := utf8.DecodeRuneInString(mask)
+	if len(mask) > size {
+		mask = mask[size:]
+	} else {
+		mask = ""
+	}
+	addressBit, size := utf8.DecodeRuneInString(mask)
+	if len(address) > size {
+		address = address[size:]
+	} else {
+		address = ""
+	}
+	fmt.Printf("maskBit is %v, addressBit is %v\n", maskBit, addressBit)
+
+	if len(possibleSoFar) == 0 {
+		if maskBit == '0' {
+			possibleSoFar = append(possibleSoFar, string(addressBit))
+		} else if maskBit == '1' {
+			possibleSoFar = append(possibleSoFar, "1")
+		} else if maskBit == 'X' {
+			possibleSoFar = append(possibleSoFar, "0", "1")
+		}
+	} else {
+		if maskBit == '0' {
+			for _, possible := range possibleSoFar {
+				possible += string(addressBit)
+			}
+		} else if maskBit == '1' {
+			for _, possible := range possibleSoFar {
+				possible += "1"
+			}
+		} else if maskBit == 'X' {
+			a := []string{}
+			b := []string{}
+			copy(a, possibleSoFar)
+			copy(b, possibleSoFar)
+			for _, possible := range a {
+				possible += "1"
+			}
+			for _, possible := range b {
+				possible += "0"
+			}
+			possibleSoFar = append(a, b...)
+		}
+
+	}
+
+	return getPossibleAddresses(mask, address, possibleSoFar)
+}
+
+func getRuneFromString(str string, index int) (r rune) {
+	for i, c := range str {
+		if i == index {
+			return c
+		}
+	}
+	log.Fatalf("Couldn't get rune at index %v from string %v", index, str)
+	return
 }
 
 func getOrMask(mask string) int64 {
