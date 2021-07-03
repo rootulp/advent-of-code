@@ -101,13 +101,6 @@ func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, valu
 	return memory
 }
 
-func leftPad(str string) string {
-	for len(str) < 36 {
-		str = "0" + str
-	}
-	return str
-}
-
 func getPossibleAddresses(mask string, address string, possibleSoFar []string) []string {
 	if len(mask) == 0 || len(address) == 0 {
 		return possibleSoFar
@@ -181,6 +174,14 @@ func getAndMask(mask string) int64 {
 		log.Fatal(err)
 	}
 	return result
+}
+
+// leftPad a string with zeros until it has length 36
+func leftPad(str string) string {
+	for len(str) < 36 {
+		str = "0" + str
+	}
+	return str
 }
 
 func parse(line string) (i instruction) {
