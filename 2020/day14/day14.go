@@ -25,11 +25,11 @@ func main() {
 	fmt.Println("Starting day 14")
 
 	// Part one
-	// partOne := PartOne("input.txt")
-	// fmt.Printf("Part one: %v\n", partOne)
+	partOne := PartOne("input.txt")
+	fmt.Printf("Part one: %v\n", partOne)
 
 	// Part two
-	partTwo := PartTwo("example2.txt")
+	partTwo := PartTwo("input.txt")
 	fmt.Printf("Part two: %v\n", partTwo)
 }
 
@@ -58,7 +58,7 @@ func executePartOne(line string, mask string, memory map[int]int) (string, map[i
 	switch operation := instruction.operation; operation {
 	case "mem":
 		value := applyMask(mask, instruction.value)
-		fmt.Printf("attempting to set address: %v, value: %v\n", instruction.address, value)
+		// fmt.Printf("attempting to set address: %v, value: %v\n", instruction.address, value)
 		memory[instruction.address] = value
 	case "mask":
 		mask = instruction.bitmask
@@ -79,12 +79,12 @@ func executePartTwo(line string, mask string, memory map[int]int) (string, map[i
 	default:
 		log.Fatalf("operation %v is not supported\n", operation)
 	}
-	fmt.Printf("mask: %v, memory %v\n", mask, memory)
+	// fmt.Printf("mask: %v, memory %v\n", mask, memory)
 	return mask, memory
 }
 
 func applyMask(mask string, value int) int {
-	fmt.Printf("applying mask: %v, value %v\n", mask, strconv.FormatInt(int64(value), 2))
+	// fmt.Printf("applying mask: %v, value %v\n", mask, strconv.FormatInt(int64(value), 2))
 	orMask := getOrMask(mask)
 	andMask := getAndMask(mask)
 	value = int(orMask) | value
@@ -93,7 +93,7 @@ func applyMask(mask string, value int) int {
 }
 
 func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, value int) map[int]int {
-	fmt.Printf("applying memory access decoder: %v, %v, %v, %v\n", memory, mask, address, value)
+	// fmt.Printf("applying memory access decoder: %v, %v, %v, %v\n", memory, mask, address, value)
 	addressStr := leftPad(strconv.FormatInt(int64(address), 2))
 	possibleAddresses := getPossibleAddresses(mask, addressStr, []string{})
 	for _, possible := range possibleAddresses {
@@ -114,7 +114,7 @@ func leftPad(str string) string {
 }
 
 func getPossibleAddresses(mask string, address string, possibleSoFar []string) []string {
-	fmt.Printf("get possibleAddresses %v, %v, %v\n", mask, address, possibleSoFar)
+	// fmt.Printf("get possibleAddresses %v, %v, %v\n", mask, address, possibleSoFar)
 	if len(mask) == 0 || len(address) == 0 {
 		return possibleSoFar
 	}
@@ -130,7 +130,7 @@ func getPossibleAddresses(mask string, address string, possibleSoFar []string) [
 	} else {
 		address = ""
 	}
-	fmt.Printf("maskBit is %v, addressBit is %v\n", string(maskBit), string(addressBit))
+	// fmt.Printf("maskBit is %v, addressBit is %v\n", string(maskBit), string(addressBit))
 
 	if len(possibleSoFar) == 0 {
 		if maskBit == '0' {
