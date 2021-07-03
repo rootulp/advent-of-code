@@ -2,13 +2,25 @@ package main
 
 import "testing"
 
-func TestPartOneExample(t *testing.T) {
-	example := []int{0, 3, 6}
-	got := MemoryGame(example, 10)
-	want := 0
+var exampleTests = []struct {
+	startingNumbers []int
+	turns           int
+	want            int
+}{
+	{[]int{0, 3, 6}, 10, 0},
+	{[]int{1, 3, 2}, 2020, 1},
+}
 
-	if got != want {
-		t.Errorf("MemoryGame incorrect got %v want %v", got, want)
+func TestPartOneExample(t *testing.T) {
+	for _, tt := range exampleTests {
+		t.Run("Example", func(t *testing.T) {
+			got := MemoryGame(tt.startingNumbers, tt.turns)
+			want := tt.want
+
+			if got != want {
+				t.Errorf("MemoryGame incorrect got %v want %v", got, want)
+			}
+		})
 	}
 }
 
