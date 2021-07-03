@@ -80,6 +80,7 @@ func executePartTwo(line string, mask string, memory map[int]int) (string, map[i
 	return mask, memory
 }
 
+// applyMask for part one
 func applyMask(mask string, value int) int {
 	orMask := getOrMask(mask)
 	andMask := getAndMask(mask)
@@ -88,6 +89,7 @@ func applyMask(mask string, value int) int {
 	return value
 }
 
+// applyMemoryAccessDecoder for part two
 func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, value int) map[int]int {
 	addressStr := leftPad(strconv.FormatInt(int64(address), 2))
 	possibleAddresses := getPossibleAddresses(mask, addressStr, []string{})
@@ -105,18 +107,8 @@ func getPossibleAddresses(mask string, address string, possibleSoFar []string) [
 	if len(mask) == 0 || len(address) == 0 {
 		return possibleSoFar
 	}
-	maskBit, size := utf8.DecodeRuneInString(mask)
-	if len(mask) > size {
-		mask = mask[size:]
-	} else {
-		mask = ""
-	}
-	addressBit, size := utf8.DecodeRuneInString(address)
-	if len(address) > size {
-		address = address[size:]
-	} else {
-		address = ""
-	}
+	maskBit, mask := shiftRune(mask)
+	addressBit, address := shiftRune(address)
 
 	if len(possibleSoFar) == 0 {
 		if maskBit == '0' {
@@ -184,6 +176,24 @@ func leftPad(str string) string {
 	return str
 }
 
+// shiftRune returns the first rune of str and the remainder of str
+func shiftRune(str string) (r rune, s string) {
+	r, size := utf8.DecodeRuneInString(str)
+	if len(str) > size {
+		s = str[size:]
+	} else {
+		s = ""
+	}
+	return r, s
+}
+
+func sumOfValues(memory map[int]int) (result int) {
+	for _, v := range memory {
+		result += v
+	}
+	return result
+}
+
 func parse(line string) (i instruction) {
 	regex := regexp.MustCompile(`(?P<command>\w*)(\[(?P<address>\d*)\])?\s=\s(?P<value>\w*)`)
 	match := regex.FindStringSubmatch(line)
@@ -207,13 +217,6 @@ func parse(line string) (i instruction) {
 		i = instruction{}
 	}
 	return i
-}
-
-func sumOfValues(memory map[int]int) (result int) {
-	for _, v := range memory {
-		result += v
-	}
-	return result
 }
 
 func readLines(filename string) (lines []string) {
