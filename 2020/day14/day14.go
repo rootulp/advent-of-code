@@ -103,31 +103,29 @@ func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, valu
 	return memory
 }
 
-func getPossibleAddresses(mask string, address string, possibleSoFar []string) []string {
+func getPossibleAddresses(mask string, address string, possibilities []string) []string {
 	if len(mask) == 0 || len(address) == 0 {
-		return possibleSoFar
+		return possibilities
 	}
 	maskBit, mask := shiftRune(mask)
 	addressBit, address := shiftRune(address)
 
-	newPossibleSoFar := []string{}
+	newPossibilities := []string{}
 	if maskBit == '0' {
-		for _, possible := range possibleSoFar {
-			newPossibleSoFar = append(newPossibleSoFar, possible+string(addressBit))
+		for _, possible := range possibilities {
+			newPossibilities = append(newPossibilities, possible+string(addressBit))
 		}
 	} else if maskBit == '1' {
-		for _, possible := range possibleSoFar {
-			newPossibleSoFar = append(newPossibleSoFar, possible+"1")
+		for _, possible := range possibilities {
+			newPossibilities = append(newPossibilities, possible+"1")
 		}
 	} else if maskBit == 'X' {
-		for _, possible := range possibleSoFar {
-			newPossibleSoFar = append(newPossibleSoFar, possible+"1")
-			newPossibleSoFar = append(newPossibleSoFar, possible+"0")
+		for _, possible := range possibilities {
+			newPossibilities = append(newPossibilities, possible+"1")
+			newPossibilities = append(newPossibilities, possible+"0")
 		}
 	}
-	possibleSoFar = newPossibleSoFar
-
-	return getPossibleAddresses(mask, address, possibleSoFar)
+	return getPossibleAddresses(mask, address, newPossibilities)
 }
 
 func getRuneFromString(str string, index int) (r rune) {
