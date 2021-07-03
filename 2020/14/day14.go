@@ -24,27 +24,55 @@ func main() {
 	fmt.Println("Starting day 14")
 
 	// Part one
-	partOne := SumOfBitmaskedValues("input.txt")
-	fmt.Printf("Sum of bitmasked values: %v\n", partOne)
+	partOne := PartOne("input.txt")
+	fmt.Printf("Part one: %v\n", partOne)
+
+	// Part two
+	partTwo := PartTwo("input.txt")
+	fmt.Printf("Part two: %v\n", partTwo)
 }
 
-func SumOfBitmaskedValues(filename string) (sum int) {
+func PartOne(filename string) (sum int) {
 	lines := readLines(filename)
 	memory := make(map[int]int)
 	var mask string
 	for _, line := range lines {
-		mask, memory = execute(line, mask, memory)
+		mask, memory = executePartOne(line, mask, memory)
 	}
 	return sumOfValues(memory)
 }
 
-func execute(line string, mask string, memory map[int]int) (string, map[int]int) {
+func PartTwo(filename string) (sum int) {
+	lines := readLines(filename)
+	memory := make(map[int]int)
+	var mask string
+	for _, line := range lines {
+		mask, memory = executePartTwo(line, mask, memory)
+	}
+	return sumOfValues(memory)
+}
+
+func executePartOne(line string, mask string, memory map[int]int) (string, map[int]int) {
 	instruction := parse(line)
 	switch operation := instruction.operation; operation {
 	case "mem":
 		value := applyMask(mask, instruction.value)
 		fmt.Printf("attempting to set address: %v, value: %v\n", instruction.address, value)
 		memory[instruction.address] = value
+	case "mask":
+		mask = instruction.bitmask
+	default:
+		log.Fatalf("operation %v is not supported\n", operation)
+	}
+	fmt.Printf("mask: %v, memory %v\n", mask, memory)
+	return mask, memory
+}
+
+func executePartTwo(line string, mask string, memory map[int]int) (string, map[int]int) {
+	instruction := parse(line)
+	switch operation := instruction.operation; operation {
+	case "mem":
+		memory = applyMemoryAccessDecoder(memory, mask, instruction.address, instruction.value)
 	case "mask":
 		mask = instruction.bitmask
 	default:
@@ -61,6 +89,18 @@ func applyMask(mask string, value int) int {
 	value = int(orMask) | value
 	value = int(andMask) & value
 	return value
+}
+
+func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, value int) map[int]int {
+	possibleAddresses := getPossibleAddresses(mask, address)
+	for _, possible := range possibleAddresses {
+		memory[possible] = value
+	}
+	return memory
+}
+
+func getPossibleAddresses(mask string, address int) []int {
+
 }
 
 func getOrMask(mask string) int64 {
@@ -103,12 +143,12 @@ func parse(line string) (i instruction) {
 		log.Fatalf("operation %v is not supported\n", operation)
 		i = instruction{}
 	}
-	fmt.Printf("operation: %v, address: %v, value: %v, bitmask: %v\n", i.operation, i.address, i.value, i.bitmask)
+	// fmt.Printf("operation: %v, address: %v, value: %v, bitmask: %v\n", i.operation, i.address, i.value, i.bitmask)
 	return i
 }
 
-func sumOfValues(state map[int]int) (result int) {
-	for _, v := range state {
+func sumOfValues(memory map[int]int) (result int) {
+	for _, v := range memory {
 		result += v
 	}
 	return result
