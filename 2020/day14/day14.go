@@ -13,6 +13,7 @@ import (
 
 const mem = "mem"
 const mask = "mask"
+const bitmask_length = 36
 
 type instruction struct {
 	operation string
@@ -109,17 +110,19 @@ func getPossibleAddresses(mask string, address string, possibilities []string) [
 	}
 	maskBit, mask := shiftRune(mask)
 	addressBit, address := shiftRune(address)
-
 	newPossibilities := []string{}
 	if maskBit == '0' {
+		// If the bitmask bit is 0, the corresponding memory address bit is unchanged.
 		for _, possible := range possibilities {
 			newPossibilities = append(newPossibilities, possible+string(addressBit))
 		}
 	} else if maskBit == '1' {
+		// If the bitmask bit is 1, the corresponding memory address bit is overwritten with 1.
 		for _, possible := range possibilities {
 			newPossibilities = append(newPossibilities, possible+"1")
 		}
 	} else if maskBit == 'X' {
+		// If the bitmask bit is X, the corresponding memory address bit is floating.
 		for _, possible := range possibilities {
 			newPossibilities = append(newPossibilities, possible+"1")
 			newPossibilities = append(newPossibilities, possible+"0")
@@ -128,6 +131,7 @@ func getPossibleAddresses(mask string, address string, possibilities []string) [
 	return getPossibleAddresses(mask, address, newPossibilities)
 }
 
+// getRuneFromString returns the rune at index from str
 func getRuneFromString(str string, index int) (r rune) {
 	for i, c := range str {
 		if i == index {
@@ -156,9 +160,9 @@ func getAndMask(mask string) int64 {
 	return result
 }
 
-// leftPad a string with zeros until it has length 36
+// leftPad a string with zeros until it has length bitmask_length
 func leftPad(str string) string {
-	for len(str) < 36 {
+	for len(str) < bitmask_length {
 		str = "0" + str
 	}
 	return str
@@ -175,6 +179,7 @@ func shiftRune(str string) (r rune, s string) {
 	return r, s
 }
 
+// sumOfValues returns the sum of values in memory
 func sumOfValues(memory map[int]int) (result int) {
 	for _, v := range memory {
 		result += v
