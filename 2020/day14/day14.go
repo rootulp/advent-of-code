@@ -29,7 +29,7 @@ func main() {
 	// fmt.Printf("Part one: %v\n", partOne)
 
 	// Part two
-	partTwo := PartTwo("example.txt")
+	partTwo := PartTwo("example2.txt")
 	fmt.Printf("Part two: %v\n", partTwo)
 }
 
@@ -94,7 +94,7 @@ func applyMask(mask string, value int) int {
 
 func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, value int) map[int]int {
 	fmt.Printf("applying memory access decoder: %v, %v, %v, %v\n", memory, mask, address, value)
-	addressStr := strconv.FormatInt(int64(address), 2)
+	addressStr := leftPad(strconv.FormatInt(int64(address), 2))
 	possibleAddresses := getPossibleAddresses(mask, addressStr, []string{})
 	for _, possible := range possibleAddresses {
 		possibleInt64, err := strconv.ParseInt(possible, 2, 64)
@@ -104,6 +104,13 @@ func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, valu
 		memory[int(possibleInt64)] = value
 	}
 	return memory
+}
+
+func leftPad(str string) string {
+	for len(str) < 36 {
+		str = "0" + str
+	}
+	return str
 }
 
 func getPossibleAddresses(mask string, address string, possibleSoFar []string) []string {
@@ -117,13 +124,13 @@ func getPossibleAddresses(mask string, address string, possibleSoFar []string) [
 	} else {
 		mask = ""
 	}
-	addressBit, size := utf8.DecodeRuneInString(mask)
+	addressBit, size := utf8.DecodeRuneInString(address)
 	if len(address) > size {
 		address = address[size:]
 	} else {
 		address = ""
 	}
-	fmt.Printf("maskBit is %v, addressBit is %v\n", maskBit, addressBit)
+	fmt.Printf("maskBit is %v, addressBit is %v\n", string(maskBit), string(addressBit))
 
 	if len(possibleSoFar) == 0 {
 		if maskBit == '0' {
@@ -134,28 +141,22 @@ func getPossibleAddresses(mask string, address string, possibleSoFar []string) [
 			possibleSoFar = append(possibleSoFar, "0", "1")
 		}
 	} else {
+		newPossibleSoFar := []string{}
 		if maskBit == '0' {
 			for _, possible := range possibleSoFar {
-				possible += string(addressBit)
+				newPossibleSoFar = append(newPossibleSoFar, possible+string(addressBit))
 			}
 		} else if maskBit == '1' {
 			for _, possible := range possibleSoFar {
-				possible += "1"
+				newPossibleSoFar = append(newPossibleSoFar, possible+"1")
 			}
 		} else if maskBit == 'X' {
-			a := []string{}
-			b := []string{}
-			copy(a, possibleSoFar)
-			copy(b, possibleSoFar)
-			for _, possible := range a {
-				possible += "1"
+			for _, possible := range possibleSoFar {
+				newPossibleSoFar = append(newPossibleSoFar, possible+"1")
+				newPossibleSoFar = append(newPossibleSoFar, possible+"0")
 			}
-			for _, possible := range b {
-				possible += "0"
-			}
-			possibleSoFar = append(a, b...)
 		}
-
+		possibleSoFar = newPossibleSoFar
 	}
 
 	return getPossibleAddresses(mask, address, possibleSoFar)
