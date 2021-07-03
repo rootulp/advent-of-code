@@ -64,7 +64,7 @@ func executePartOne(line string, mask string, memory map[int]int) (string, map[i
 	default:
 		log.Fatalf("operation %v is not supported\n", operation)
 	}
-	fmt.Printf("mask: %v, memory %v\n", mask, memory)
+	// fmt.Printf("mask: %v, memory %v\n", mask, memory)
 	return mask, memory
 }
 
@@ -78,7 +78,7 @@ func executePartTwo(line string, mask string, memory map[int]int) (string, map[i
 	default:
 		log.Fatalf("operation %v is not supported\n", operation)
 	}
-	fmt.Printf("mask: %v, memory %v\n", mask, memory)
+	// fmt.Printf("mask: %v, memory %v\n", mask, memory)
 	return mask, memory
 }
 
@@ -100,7 +100,7 @@ func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, valu
 }
 
 func getPossibleAddresses(mask string, address int) []int {
-
+	return []int{}
 }
 
 func getOrMask(mask string) int64 {
