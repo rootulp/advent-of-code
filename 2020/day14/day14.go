@@ -92,7 +92,7 @@ func applyMask(mask string, value int) int {
 // applyMemoryAccessDecoder for part two
 func applyMemoryAccessDecoder(memory map[int]int, mask string, address int, value int) map[int]int {
 	addressStr := leftPad(strconv.FormatInt(int64(address), 2))
-	possibleAddresses := getPossibleAddresses(mask, addressStr, []string{})
+	possibleAddresses := getPossibleAddresses(mask, addressStr, []string{""})
 	for _, possible := range possibleAddresses {
 		possibleInt64, err := strconv.ParseInt(possible, 2, 64)
 		if err != nil {
@@ -110,32 +110,22 @@ func getPossibleAddresses(mask string, address string, possibleSoFar []string) [
 	maskBit, mask := shiftRune(mask)
 	addressBit, address := shiftRune(address)
 
-	if len(possibleSoFar) == 0 {
-		if maskBit == '0' {
-			possibleSoFar = append(possibleSoFar, string(addressBit))
-		} else if maskBit == '1' {
-			possibleSoFar = append(possibleSoFar, "1")
-		} else if maskBit == 'X' {
-			possibleSoFar = append(possibleSoFar, "0", "1")
+	newPossibleSoFar := []string{}
+	if maskBit == '0' {
+		for _, possible := range possibleSoFar {
+			newPossibleSoFar = append(newPossibleSoFar, possible+string(addressBit))
 		}
-	} else {
-		newPossibleSoFar := []string{}
-		if maskBit == '0' {
-			for _, possible := range possibleSoFar {
-				newPossibleSoFar = append(newPossibleSoFar, possible+string(addressBit))
-			}
-		} else if maskBit == '1' {
-			for _, possible := range possibleSoFar {
-				newPossibleSoFar = append(newPossibleSoFar, possible+"1")
-			}
-		} else if maskBit == 'X' {
-			for _, possible := range possibleSoFar {
-				newPossibleSoFar = append(newPossibleSoFar, possible+"1")
-				newPossibleSoFar = append(newPossibleSoFar, possible+"0")
-			}
+	} else if maskBit == '1' {
+		for _, possible := range possibleSoFar {
+			newPossibleSoFar = append(newPossibleSoFar, possible+"1")
 		}
-		possibleSoFar = newPossibleSoFar
+	} else if maskBit == 'X' {
+		for _, possible := range possibleSoFar {
+			newPossibleSoFar = append(newPossibleSoFar, possible+"1")
+			newPossibleSoFar = append(newPossibleSoFar, possible+"0")
+		}
 	}
+	possibleSoFar = newPossibleSoFar
 
 	return getPossibleAddresses(mask, address, possibleSoFar)
 }
