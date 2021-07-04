@@ -38,3 +38,14 @@ func TestPartOne(t *testing.T) {
 		t.Errorf("MemoryGame incorrect got %v want %v", got, want)
 	}
 }
+
+func TestPartTwo(t *testing.T) {
+	t.Skip("Skipping test because it takes forever to run")
+	input := []int{18, 11, 9, 0, 5, 1}
+	got := MemoryGameOptimized(input, 30000000)
+	want := 116590
+
+	if got != want {
+		t.Errorf("MemoryGame incorrect got %v want %v", got, want)
+	}
+}
