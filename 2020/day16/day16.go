@@ -48,7 +48,7 @@ func ProductOfDepartureValues(filename string) int {
 	validNumbers := getValidNumbers(rules)
 	validTickets := getValidTickets(nearbyTickets, validNumbers)
 	rulePositions := getRulePositions(rules, validTickets)
-	fmt.Printf("rulePositions %v", rulePositions)
+	fmt.Printf("rulePositions %v\n", rulePositions)
 	return 0
 }
 
@@ -56,7 +56,9 @@ func getRulePositions(rules []Rule, validTickets [][]int) (rulePositions map[Rul
 	rulePositions = map[Rule]int{}
 	for _, rule := range rules {
 		for position := 0; position < len(rules); position++ {
-			if isValidRulePosition(rule, position, validTickets) {
+			if _, isPresent := rulePositions[rule]; isPresent {
+				continue
+			} else if isValidRulePosition(rule, position, validTickets) {
 				rulePositions[rule] = position
 			}
 		}
@@ -69,12 +71,17 @@ func isValidRulePosition(rule Rule, position int, validTickets [][]int) bool {
 	startB, endB := parseRange(rule.rangeB)
 	for _, ticket := range validTickets {
 		num := ticket[position]
-		if num >= startA && num <= endA && num >= startB && num <= endB {
+		fmt.Printf("Checking if num %v is in range %v-%v %v-%v\n", num, startA, endA, startB, endB)
+		if (num >= startA && num <= endA) ||
+			(num >= startB && num <= endB) {
+			fmt.Println("It is!")
 			continue
 		} else {
+			fmt.Println("It is not.")
 			return false
 		}
 	}
+	fmt.Println("Returning true")
 	return true
 }
 
