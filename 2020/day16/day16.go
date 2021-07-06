@@ -11,6 +11,7 @@ import (
 
 const YOUR_TICKET = "your ticket:"
 const NEARBY_TICKETS = "nearby tickets:"
+const DEPARTURE = "departure"
 
 type Rule struct {
 	category string
@@ -26,7 +27,7 @@ func main() {
 	fmt.Printf("Part one: %v\n", partOne)
 
 	// Part two
-	partTwo := ProductOfDepartureValues("example2.txt")
+	partTwo := ProductOfDepartureValues("input.txt")
 	fmt.Printf("Part two: %v\n", partTwo)
 }
 
@@ -48,8 +49,26 @@ func ProductOfDepartureValues(filename string) int {
 	validNumbers := getValidNumbers(rules)
 	validTickets := getValidTickets(nearbyTickets, validNumbers)
 	rulePositions := getRulePositions(rules, validTickets)
-	fmt.Printf("rulePositions %v\n", rulePositions)
+	departureRules := getDepartureRules(rules)
+	departureRulePositions := getDepartureRulePositions(rulePositions, departureRules)
+	fmt.Printf("departureRulePositions %v", departureRulePositions)
 	return 0
+}
+
+func getDepartureRulePositions(rulePositions map[Rule]int, departureRules []Rule) (positions []int) {
+	for _, rule := range departureRules {
+		positions = append(positions, rulePositions[rule])
+	}
+	return positions
+}
+
+func getDepartureRules(rules []Rule) (departureRules []Rule) {
+	for _, rule := range rules {
+		if strings.HasPrefix(rule.category, DEPARTURE) {
+			departureRules = append(departureRules, rule)
+		}
+	}
+	return departureRules
 }
 
 func getRulePositions(rules []Rule, validTickets [][]int) (rulePositions map[Rule]int) {
@@ -71,17 +90,13 @@ func isValidRulePosition(rule Rule, position int, validTickets [][]int) bool {
 	startB, endB := parseRange(rule.rangeB)
 	for _, ticket := range validTickets {
 		num := ticket[position]
-		fmt.Printf("Checking if num %v is in range %v-%v %v-%v\n", num, startA, endA, startB, endB)
 		if (num >= startA && num <= endA) ||
 			(num >= startB && num <= endB) {
-			fmt.Println("It is!")
 			continue
 		} else {
-			fmt.Println("It is not.")
 			return false
 		}
 	}
-	fmt.Println("Returning true")
 	return true
 }
 
