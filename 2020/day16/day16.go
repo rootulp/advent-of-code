@@ -32,8 +32,9 @@ func main() {
 
 func TicketScanningErrorRate(filename string) (errorRate int) {
 	lines := readFile(filename)
-	unparsedRules, _, nearbyTickets := split(lines)
+	unparsedRules, _, unparsedNearbyTickets := split(lines)
 	rules := parseRules(unparsedRules)
+	nearbyTickets := parseTickets(unparsedNearbyTickets)
 
 	validNumbers := getValidNumbers(rules)
 	for _, ticket := range nearbyTickets {
@@ -44,8 +45,9 @@ func TicketScanningErrorRate(filename string) (errorRate int) {
 
 func ProductOfDepartureValues(filename string) int {
 	lines := readFile(filename)
-	unparsedRules, _, nearbyTickets := split(lines)
+	unparsedRules, _, unparsedNearbyTickets := split(lines)
 	rules := parseRules(unparsedRules)
+	nearbyTickets := parseTickets(unparsedNearbyTickets)
 
 	validNumbers := getValidNumbers(rules)
 	validTickets := getValidTickets(nearbyTickets, validNumbers)
@@ -54,7 +56,7 @@ func ProductOfDepartureValues(filename string) int {
 	return 0
 }
 
-func getRulePositions(rules []Rule, validTickets []string) (rulePositions map[Rule]int) {
+func getRulePositions(rules []Rule, validTickets [][]int) (rulePositions map[Rule]int) {
 	rulePositions = map[Rule]int{}
 	for _, rule := range rules {
 		for position := 0; position < len(rules); position++ {
@@ -66,12 +68,11 @@ func getRulePositions(rules []Rule, validTickets []string) (rulePositions map[Ru
 	return rulePositions
 }
 
-func isValidRulePosition(rule Rule, position int, validTickets []string) bool {
+func isValidRulePosition(rule Rule, position int, validTickets [][]int) bool {
 	startA, endA := parseRange(rule.rangeA)
 	startB, endB := parseRange(rule.rangeB)
 	for _, ticket := range validTickets {
-		ticketNumbers := getNumbers(ticket)
-		num := ticketNumbers[position]
+		num := ticket[position]
 		if num >= startA && num <= endA && num >= startB && num <= endB {
 			continue
 		} else {
@@ -81,8 +82,8 @@ func isValidRulePosition(rule Rule, position int, validTickets []string) bool {
 	return true
 }
 
-func getValidTickets(nearbyTickets []string, validNumbers map[int]bool) []string {
-	validTickets := []string{}
+func getValidTickets(nearbyTickets [][]int, validNumbers map[int]bool) [][]int {
+	validTickets := [][]int{}
 	for _, ticket := range nearbyTickets {
 		if isValidTicket(ticket, validNumbers) {
 			validTickets = append(validTickets, ticket)
@@ -92,9 +93,8 @@ func getValidTickets(nearbyTickets []string, validNumbers map[int]bool) []string
 	return validTickets
 }
 
-func getErrorRate(ticket string, validNumbers map[int]bool) (errorRate int) {
-	ticketNumbers := getNumbers(ticket)
-	for _, num := range ticketNumbers {
+func getErrorRate(ticket []int, validNumbers map[int]bool) (errorRate int) {
+	for _, num := range ticket {
 		if validNumbers[num] {
 			continue
 		} else {
@@ -104,7 +104,7 @@ func getErrorRate(ticket string, validNumbers map[int]bool) (errorRate int) {
 	return errorRate
 }
 
-func isValidTicket(ticket string, validNumbers map[int]bool) bool {
+func isValidTicket(ticket []int, validNumbers map[int]bool) bool {
 	return getErrorRate(ticket, validNumbers) == 0
 }
 
@@ -124,7 +124,15 @@ func getValidNumbers(rules []Rule) (validNumbers map[int]bool) {
 	return validNumbers
 }
 
-func getNumbers(ticket string) (numbers []int) {
+func parseTickets(unparsed []string) (tickets [][]int) {
+	for _, unp := range unparsed {
+		ticketNumbers := getTicketNumbers(unp)
+		tickets = append(tickets, ticketNumbers)
+	}
+	return tickets
+}
+
+func getTicketNumbers(ticket string) (numbers []int) {
 	strs := strings.Split(ticket, ",")
 	for _, s := range strs {
 		number, err := strconv.Atoi(s)
