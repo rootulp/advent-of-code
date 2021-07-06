@@ -32,9 +32,7 @@ func main() {
 
 func TicketScanningErrorRate(filename string) (errorRate int) {
 	lines := readFile(filename)
-	unparsedRules, _, unparsedNearbyTickets := split(lines)
-	rules := parseRules(unparsedRules)
-	nearbyTickets := parseTickets(unparsedNearbyTickets)
+	rules, _, nearbyTickets := split(lines)
 
 	validNumbers := getValidNumbers(rules)
 	for _, ticket := range nearbyTickets {
@@ -45,9 +43,7 @@ func TicketScanningErrorRate(filename string) (errorRate int) {
 
 func ProductOfDepartureValues(filename string) int {
 	lines := readFile(filename)
-	unparsedRules, _, unparsedNearbyTickets := split(lines)
-	rules := parseRules(unparsedRules)
-	nearbyTickets := parseTickets(unparsedNearbyTickets)
+	rules, _, nearbyTickets := split(lines)
 
 	validNumbers := getValidNumbers(rules)
 	validTickets := getValidTickets(nearbyTickets, validNumbers)
@@ -175,7 +171,9 @@ func parseRange(r string) (start int, end int) {
 }
 
 // split lines into rules, myTicket, and nearbyTickets
-func split(lines []string) (rules []string, myTicket string, nearbyTickets []string) {
+func split(lines []string) (rules []Rule, myTicket string, nearbyTickets [][]int) {
+	unparsedNearbyTickets := []string{}
+	unparsedRules := []string{}
 	seenYourTicket := false
 	seenNearbyTickets := false
 
@@ -187,13 +185,16 @@ func split(lines []string) (rules []string, myTicket string, nearbyTickets []str
 		} else if line == "" {
 			continue
 		} else if seenNearbyTickets && seenYourTicket {
-			nearbyTickets = append(nearbyTickets, line)
+			unparsedNearbyTickets = append(unparsedNearbyTickets, line)
 		} else if seenYourTicket {
 			myTicket = line
 		} else {
-			rules = append(rules, line)
+			unparsedRules = append(unparsedRules, line)
 		}
 	}
+
+	rules = parseRules(unparsedRules)
+	nearbyTickets = parseTickets(unparsedNearbyTickets)
 	return rules, myTicket, nearbyTickets
 }
 
