@@ -122,22 +122,22 @@ func getValidNumbers(rules []Rule) (validNumbers map[int]bool) {
 
 func parseTickets(unparsed []string) (tickets [][]int) {
 	for _, unp := range unparsed {
-		ticketNumbers := getTicketNumbers(unp)
-		tickets = append(tickets, ticketNumbers)
+		ticket := parseTicket(unp)
+		tickets = append(tickets, ticket)
 	}
 	return tickets
 }
 
-func getTicketNumbers(ticket string) (numbers []int) {
-	strs := strings.Split(ticket, ",")
+func parseTicket(unparsed string) (ticket []int) {
+	strs := strings.Split(unparsed, ",")
 	for _, s := range strs {
 		number, err := strconv.Atoi(s)
 		if err != nil {
 			log.Fatal(err)
 		}
-		numbers = append(numbers, number)
+		ticket = append(ticket, number)
 	}
-	return numbers
+	return ticket
 }
 
 func parseRules(unparsed []string) (rules []Rule) {
@@ -171,7 +171,7 @@ func parseRange(r string) (start int, end int) {
 }
 
 // split lines into rules, myTicket, and nearbyTickets
-func split(lines []string) (rules []Rule, myTicket string, nearbyTickets [][]int) {
+func split(lines []string) (rules []Rule, myTicket []int, nearbyTickets [][]int) {
 	unparsedNearbyTickets := []string{}
 	unparsedRules := []string{}
 	seenYourTicket := false
@@ -187,7 +187,7 @@ func split(lines []string) (rules []Rule, myTicket string, nearbyTickets [][]int
 		} else if seenNearbyTickets && seenYourTicket {
 			unparsedNearbyTickets = append(unparsedNearbyTickets, line)
 		} else if seenYourTicket {
-			myTicket = line
+			myTicket = parseTicket(line)
 		} else {
 			unparsedRules = append(unparsedRules, line)
 		}
