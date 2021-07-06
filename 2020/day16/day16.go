@@ -27,7 +27,7 @@ func main() {
 	fmt.Printf("Part one: %v\n", partOne)
 
 	// Part two
-	partTwo := ProductOfDepartureValues("input.txt")
+	partTwo := ProductOfDepartureValues("example2.txt")
 	fmt.Printf("Part two: %v\n", partTwo)
 }
 
@@ -49,12 +49,17 @@ func ProductOfDepartureValues(filename string) int {
 	validNumbers := getValidNumbers(rules)
 	validTickets := getValidTickets(nearbyTickets, validNumbers)
 	rulePositions := getRulePositions(rules, validTickets)
+	fmt.Printf("rulePositions: %v\n", rulePositions)
+
 	departureRules := getDepartureRules(rules)
+	fmt.Printf("departureRules: %v\n", departureRules)
+
 	departureRulePositions := getDepartureRulePositions(rulePositions, departureRules)
-	fmt.Printf("departureRulePositions %v\n", departureRulePositions)
+	fmt.Printf("departureRulePositions: %v\n", departureRulePositions)
 
 	values := getValuesAtPosition(myTicket, departureRulePositions)
-	fmt.Printf("Values %v\n", values)
+	fmt.Printf("values: %v\n", values)
+
 	product := getProduct(values)
 	return product
 }
