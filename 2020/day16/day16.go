@@ -24,6 +24,10 @@ func main() {
 	// Part one
 	partOne := TicketScanningErrorRate("input.txt")
 	fmt.Printf("Part one: %v\n", partOne)
+
+	// Part two
+	partTwo := ProductOfDepartureValues("example2.txt")
+	fmt.Printf("Part two: %v\n", partTwo)
 }
 
 func TicketScanningErrorRate(filename string) (errorRate int) {
@@ -33,9 +37,56 @@ func TicketScanningErrorRate(filename string) (errorRate int) {
 	for _, ticket := range nearbyTickets {
 		errorRate += getErrorRate(ticket, validNumbers)
 	}
-	// fmt.Printf("validNumbers %v\n", validNumbers)
-	// fmt.Printf("nearbyTickets %v\n", nearbyTickets)
 	return errorRate
+}
+
+func ProductOfDepartureValues(filename string) int {
+	lines := readFile(filename)
+	rules, _, nearbyTickets := split(lines)
+	validNumbers := getValidNumbers(rules)
+	validTickets := getValidTickets(nearbyTickets, validNumbers)
+	rulePositions := getRulePositions(rules, validTickets)
+	fmt.Printf("rulePositions %v", rulePositions)
+	return 0
+}
+
+func getRulePositions(rules []string, validTickets []string) (rulePositions map[Rule]int) {
+	rulePositions = map[Rule]int{}
+	for _, rule := range rules {
+		for position := 0; position < len(rules); position++ {
+			parsed := parseRule(rule)
+			if isValidRulePosition(parsed, position, validTickets) {
+				rulePositions[parsed] = position
+			}
+		}
+	}
+	return rulePositions
+}
+
+func isValidRulePosition(rule Rule, position int, validTickets []string) bool {
+	startA, endA := parseRange(rule.rangeA)
+	startB, endB := parseRange(rule.rangeB)
+	for _, ticket := range validTickets {
+		ticketNumbers := getNumbers(ticket)
+		num := ticketNumbers[position]
+		if num >= startA && num <= endA && num >= startB && num <= endB {
+			continue
+		} else {
+			return false
+		}
+	}
+	return true
+}
+
+func getValidTickets(nearbyTickets []string, validNumbers map[int]bool) []string {
+	validTickets := []string{}
+	for _, ticket := range nearbyTickets {
+		if isValidTicket(ticket, validNumbers) {
+			validTickets = append(validTickets, ticket)
+		}
+	}
+	fmt.Printf("Valid tickets %v\n", validTickets)
+	return validTickets
 }
 
 func getErrorRate(ticket string, validNumbers map[int]bool) (errorRate int) {
@@ -50,12 +101,15 @@ func getErrorRate(ticket string, validNumbers map[int]bool) (errorRate int) {
 	return errorRate
 }
 
+func isValidTicket(ticket string, validNumbers map[int]bool) bool {
+	return getErrorRate(ticket, validNumbers) == 0
+}
+
 func getValidNumbers(rules []string) (validNumbers map[int]bool) {
 	validNumbers = map[int]bool{}
 
 	for _, rule := range rules {
 		parsed := parseRule(rule)
-		// fmt.Printf("Parsed %+v\n", parsed)
 		startA, endA := parseRange(parsed.rangeA)
 		startB, endB := parseRange(parsed.rangeB)
 		for i := startA; i <= endA; i++ {
