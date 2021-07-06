@@ -27,7 +27,7 @@ func main() {
 	fmt.Printf("Part one: %v\n", partOne)
 
 	// Part two
-	partTwo := ProductOfDepartureValues("example2.txt")
+	partTwo := ProductOfDepartureValues("input.txt")
 	fmt.Printf("Part two: %v\n", partTwo)
 }
 
@@ -135,7 +135,7 @@ func getValidTickets(nearbyTickets [][]int, validNumbers map[int]bool) [][]int {
 			validTickets = append(validTickets, ticket)
 		}
 	}
-	fmt.Printf("Valid tickets %v\n", validTickets)
+	// fmt.Printf("Valid tickets %v\n", validTickets)
 	return validTickets
 }
 
@@ -151,7 +151,14 @@ func getErrorRate(ticket []int, validNumbers map[int]bool) (errorRate int) {
 }
 
 func isValidTicket(ticket []int, validNumbers map[int]bool) bool {
-	return getErrorRate(ticket, validNumbers) == 0
+	for _, num := range ticket {
+		if validNumbers[num] {
+			continue
+		} else {
+			return false
+		}
+	}
+	return true
 }
 
 func getValidNumbers(rules []Rule) (validNumbers map[int]bool) {
