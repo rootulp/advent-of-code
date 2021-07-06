@@ -22,7 +22,7 @@ func main() {
 	fmt.Println("Starting day16")
 
 	// Part one
-	partOne := TicketScanningErrorRate("example.txt")
+	partOne := TicketScanningErrorRate("input.txt")
 	fmt.Printf("Part one: %v\n", partOne)
 }
 
