@@ -44,15 +44,34 @@ func TicketScanningErrorRate(filename string) (errorRate int) {
 
 func ProductOfDepartureValues(filename string) int {
 	lines := readFile(filename)
-	rules, _, nearbyTickets := split(lines)
+	rules, myTicket, nearbyTickets := split(lines)
 
 	validNumbers := getValidNumbers(rules)
 	validTickets := getValidTickets(nearbyTickets, validNumbers)
 	rulePositions := getRulePositions(rules, validTickets)
 	departureRules := getDepartureRules(rules)
 	departureRulePositions := getDepartureRulePositions(rulePositions, departureRules)
-	fmt.Printf("departureRulePositions %v", departureRulePositions)
-	return 0
+	fmt.Printf("departureRulePositions %v\n", departureRulePositions)
+
+	values := getValuesAtPosition(myTicket, departureRulePositions)
+	fmt.Printf("Values %v\n", values)
+	product := getProduct(values)
+	return product
+}
+
+func getProduct(arr []int) (product int) {
+	product = 1
+	for _, v := range arr {
+		product *= v
+	}
+	return product
+}
+
+func getValuesAtPosition(ticket []int, departureRulePositions []int) (values []int) {
+	for _, position := range departureRulePositions {
+		values = append(values, ticket[position])
+	}
+	return values
 }
 
 func getDepartureRulePositions(rulePositions map[Rule]int, departureRules []Rule) (positions []int) {
