@@ -77,8 +77,12 @@ func getRulePositions(rules []Rule, validTickets [][]int) (rulePositions map[Rul
 		for position := 0; position < len(rules); position++ {
 			if _, isPresent := rulePositions[rule]; isPresent {
 				continue
-			} else if isValidRulePosition(rule, position, validTickets) {
-				rulePositions[rule] = position
+			} else if mapContainsValue(rulePositions, position) {
+				continue
+			} else {
+				if isValidRulePosition(rule, position, validTickets) {
+					rulePositions[rule] = position
+				}
 			}
 		}
 	}
@@ -190,6 +194,15 @@ func parseRange(r string) (start int, end int) {
 		log.Fatal(err)
 	}
 	return start, end
+}
+
+func mapContainsValue(m map[Rule]int, position int) bool {
+	for _, v := range m {
+		if v == position {
+			return true
+		}
+	}
+	return false
 }
 
 // split lines into rules, myTicket, and nearbyTickets
