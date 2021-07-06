@@ -32,7 +32,9 @@ func main() {
 
 func TicketScanningErrorRate(filename string) (errorRate int) {
 	lines := readFile(filename)
-	rules, _, nearbyTickets := split(lines)
+	unparsedRules, _, nearbyTickets := split(lines)
+	rules := parseRules(unparsedRules)
+
 	validNumbers := getValidNumbers(rules)
 	for _, ticket := range nearbyTickets {
 		errorRate += getErrorRate(ticket, validNumbers)
@@ -42,7 +44,9 @@ func TicketScanningErrorRate(filename string) (errorRate int) {
 
 func ProductOfDepartureValues(filename string) int {
 	lines := readFile(filename)
-	rules, _, nearbyTickets := split(lines)
+	unparsedRules, _, nearbyTickets := split(lines)
+	rules := parseRules(unparsedRules)
+
 	validNumbers := getValidNumbers(rules)
 	validTickets := getValidTickets(nearbyTickets, validNumbers)
 	rulePositions := getRulePositions(rules, validTickets)
@@ -50,13 +54,12 @@ func ProductOfDepartureValues(filename string) int {
 	return 0
 }
 
-func getRulePositions(rules []string, validTickets []string) (rulePositions map[Rule]int) {
+func getRulePositions(rules []Rule, validTickets []string) (rulePositions map[Rule]int) {
 	rulePositions = map[Rule]int{}
 	for _, rule := range rules {
 		for position := 0; position < len(rules); position++ {
-			parsed := parseRule(rule)
-			if isValidRulePosition(parsed, position, validTickets) {
-				rulePositions[parsed] = position
+			if isValidRulePosition(rule, position, validTickets) {
+				rulePositions[rule] = position
 			}
 		}
 	}
@@ -105,13 +108,12 @@ func isValidTicket(ticket string, validNumbers map[int]bool) bool {
 	return getErrorRate(ticket, validNumbers) == 0
 }
 
-func getValidNumbers(rules []string) (validNumbers map[int]bool) {
+func getValidNumbers(rules []Rule) (validNumbers map[int]bool) {
 	validNumbers = map[int]bool{}
 
 	for _, rule := range rules {
-		parsed := parseRule(rule)
-		startA, endA := parseRange(parsed.rangeA)
-		startB, endB := parseRange(parsed.rangeB)
+		startA, endA := parseRange(rule.rangeA)
+		startB, endB := parseRange(rule.rangeB)
 		for i := startA; i <= endA; i++ {
 			validNumbers[i] = true
 		}
@@ -132,6 +134,14 @@ func getNumbers(ticket string) (numbers []int) {
 		numbers = append(numbers, number)
 	}
 	return numbers
+}
+
+func parseRules(unparsed []string) (rules []Rule) {
+	for _, unp := range unparsed {
+		rule := parseRule(unp)
+		rules = append(rules, rule)
+	}
+	return rules
 }
 
 func parseRule(rule string) (parsed Rule) {
