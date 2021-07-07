@@ -50,6 +50,8 @@ func ProductOfDepartureValues(filename string) int {
 	validTickets := getValidTickets(nearbyTickets, validNumbers)
 	rulePositions := getRulePositions(rules, validTickets)
 	fmt.Printf("rulePositions: %v\n", rulePositions)
+	fmt.Printf("rulePositions length %v\n", len(rulePositions))
+	fmt.Printf("myTicket length %v\n", len(myTicket))
 
 	departureRules := getDepartureRules(rules)
 	fmt.Printf("departureRules: %v\n", departureRules)
@@ -96,21 +98,46 @@ func getDepartureRules(rules []Rule) (departureRules []Rule) {
 }
 
 func getRulePositions(rules []Rule, validTickets [][]int) (rulePositions map[Rule]int) {
-	rulePositions = map[Rule]int{}
+	possibleRulePositions := map[int][]Rule{}
 	for _, rule := range rules {
 		for position := 0; position < len(rules); position++ {
-			if _, isPresent := rulePositions[rule]; isPresent {
-				continue
-			} else if mapContainsValue(rulePositions, position) {
-				continue
-			} else {
-				if isValidRulePosition(rule, position, validTickets) {
-					rulePositions[rule] = position
-				}
+			if isValidRulePosition(rule, position, validTickets) {
+				possibleRulePositions[position] = append(possibleRulePositions[position], rule)
 			}
 		}
 	}
+	// fmt.Printf("possibleRulePositions %v", possibleRulePositions)
+	return prunePossibleRulePositions(possibleRulePositions, len(rules))
+}
+
+func prunePossibleRulePositions(possibleRulePositions map[int][]Rule, numRules int) map[Rule]int {
+	rulePositions := map[Rule]int{}
+	for len(rulePositions) < numRules {
+		for position, v := range possibleRulePositions {
+			if len(v) == 1 {
+				rule := v[0]
+				rulePositions[rule] = position
+				delete(possibleRulePositions, position)
+				possibleRulePositions = removeRule(possibleRulePositions, rule)
+			}
+		}
+
+	}
 	return rulePositions
+}
+
+func removeRule(possibleRulePositions map[int][]Rule, rule Rule) map[int][]Rule {
+	result := map[int][]Rule{}
+	for k, v := range possibleRulePositions {
+		filtered := []Rule{}
+		for _, r := range v {
+			if r != rule {
+				filtered = append(filtered, r)
+			}
+		}
+		result[k] = filtered
+	}
+	return result
 }
 
 func isValidRulePosition(rule Rule, position int, validTickets [][]int) bool {
