@@ -53,6 +53,7 @@ func ProductOfDepartureValues(filename string) int {
 	departureRulePositions := getDepartureRulePositions(rulePositions, departureRules)
 	values := getValuesAtPosition(myTicket, departureRulePositions)
 	product := getProduct(values)
+
 	return product
 }
 
@@ -103,6 +104,10 @@ func prunePossibleRulePositions(possibleRulePositions map[int][]Rule, numRules i
 	rulePositions := map[Rule]int{}
 	for len(rulePositions) < numRules {
 		for position, v := range possibleRulePositions {
+			// One rule can only correspond to one position. If the current
+			// position only has one possible rule, it must be correct.
+			// Therefore, add it to rulePositions and remove it as a possible
+			// rule for any other position.
 			if len(v) == 1 {
 				rule := v[0]
 				rulePositions[rule] = position
@@ -110,23 +115,28 @@ func prunePossibleRulePositions(possibleRulePositions map[int][]Rule, numRules i
 				possibleRulePositions = removeRule(possibleRulePositions, rule)
 			}
 		}
-
 	}
 	return rulePositions
 }
 
+// removeRule removes rule from all entries in possibleRulePositions
 func removeRule(possibleRulePositions map[int][]Rule, rule Rule) map[int][]Rule {
 	result := map[int][]Rule{}
 	for k, v := range possibleRulePositions {
-		filtered := []Rule{}
-		for _, r := range v {
-			if r != rule {
-				filtered = append(filtered, r)
-			}
-		}
-		result[k] = filtered
+		result[k] = filter(v, rule)
 	}
 	return result
+}
+
+// filter returns a list of rules that do not include the provided rule
+func filter(arr []Rule, rule Rule) []Rule {
+	filtered := []Rule{}
+	for _, r := range arr {
+		if r != rule {
+			filtered = append(filtered, r)
+		}
+	}
+	return filtered
 }
 
 func isValidRulePosition(rule Rule, position int, validTickets [][]int) bool {
