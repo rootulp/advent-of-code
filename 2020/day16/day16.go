@@ -49,19 +49,9 @@ func ProductOfDepartureValues(filename string) int {
 	validNumbers := getValidNumbers(rules)
 	validTickets := getValidTickets(nearbyTickets, validNumbers)
 	rulePositions := getRulePositions(rules, validTickets)
-	fmt.Printf("rulePositions: %v\n", rulePositions)
-	fmt.Printf("rulePositions length %v\n", len(rulePositions))
-	fmt.Printf("myTicket length %v\n", len(myTicket))
-
 	departureRules := getDepartureRules(rules)
-	fmt.Printf("departureRules: %v\n", departureRules)
-
 	departureRulePositions := getDepartureRulePositions(rulePositions, departureRules)
-	fmt.Printf("departureRulePositions: %v\n", departureRulePositions)
-
 	values := getValuesAtPosition(myTicket, departureRulePositions)
-	fmt.Printf("values: %v\n", values)
-
 	product := getProduct(values)
 	return product
 }
@@ -106,7 +96,6 @@ func getRulePositions(rules []Rule, validTickets [][]int) (rulePositions map[Rul
 			}
 		}
 	}
-	// fmt.Printf("possibleRulePositions %v", possibleRulePositions)
 	return prunePossibleRulePositions(possibleRulePositions, len(rules))
 }
 
@@ -162,7 +151,6 @@ func getValidTickets(nearbyTickets [][]int, validNumbers map[int]bool) [][]int {
 			validTickets = append(validTickets, ticket)
 		}
 	}
-	// fmt.Printf("Valid tickets %v\n", validTickets)
 	return validTickets
 }
 
@@ -252,15 +240,6 @@ func parseRange(r string) (start int, end int) {
 		log.Fatal(err)
 	}
 	return start, end
-}
-
-func mapContainsValue(m map[Rule]int, position int) bool {
-	for _, v := range m {
-		if v == position {
-			return true
-		}
-	}
-	return false
 }
 
 // split lines into rules, myTicket, and nearbyTickets
