@@ -3,8 +3,8 @@ package main
 import "testing"
 
 func TestGetFirstNumberThatIsNotSumOfPair(t *testing.T) {
-	t.Run("input_test", func(t *testing.T) {
-		got := GetFirstNumberThatIsNotSumOfPair("input_test.txt", 5)
+	t.Run("example", func(t *testing.T) {
+		got := GetFirstNumberThatIsNotSumOfPair("example.txt", 5)
 		want := 127
 
 		if got != want {
@@ -22,8 +22,8 @@ func TestGetFirstNumberThatIsNotSumOfPair(t *testing.T) {
 }
 
 func TestGetSumOfSmallestAndLargestInContiguousRange(t *testing.T) {
-	t.Run("input_test", func(t *testing.T) {
-		got := GetSumOfSmallestAndLargestInContiguousRange("input_test.txt", 5)
+	t.Run("example", func(t *testing.T) {
+		got := GetSumOfSmallestAndLargestInContiguousRange("example.txt", 5)
 		want := 62
 
 		if got != want {

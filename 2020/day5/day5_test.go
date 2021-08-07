@@ -45,7 +45,7 @@ func TestGetCol4(t *testing.T) {
 }
 
 func TestReadFile(t *testing.T) {
-	result := ReadFile("input_test.txt")
+	result := ReadFile("example.txt")
 	expectedLines := []string{"FFFBBFBLLR",
 		"BFBBBFFRLR",
 		"BFBBBBFLRR",

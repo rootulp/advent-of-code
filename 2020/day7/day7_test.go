@@ -7,7 +7,7 @@ import (
 
 // Part one
 func TestGetNumberOfContainersWithInputTest(t *testing.T) {
-	testGetNumberOfContainers(t, "input_test.txt", ShinyGold, 4)
+	testGetNumberOfContainers(t, "example.txt", ShinyGold, 4)
 }
 
 func TestGetNumberOfContainersWithInput(t *testing.T) {
@@ -16,10 +16,10 @@ func TestGetNumberOfContainersWithInput(t *testing.T) {
 
 // Part two
 func TestGetNumberOfContainedBagsWithInputTest(t *testing.T) {
-	testGetNumberOfContainedBags(t, "input_test.txt", ShinyGold, 32)
+	testGetNumberOfContainedBags(t, "example.txt", ShinyGold, 32)
 }
 func TestGetNumberOfContainedBagsWithInputTestTwo(t *testing.T) {
-	testGetNumberOfContainedBags(t, "input_test2.txt", ShinyGold, 126)
+	testGetNumberOfContainedBags(t, "example2.txt", ShinyGold, 126)
 }
 func TestGetNumberOfContainedBagsWith(t *testing.T) {
 	testGetNumberOfContainedBags(t, "input.txt", ShinyGold, 5956)

@@ -44,7 +44,7 @@ func TestReadFileIntoGroups(t *testing.T) {
 		{"a", "a", "a", "a"},
 		{"b"},
 	}
-	result := ReadFileIntoGroups("./input_test.txt")
+	result := ReadFileIntoGroups("example.txt")
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("ReadFile failed. Received %v expected %v", result, expected)
 	}

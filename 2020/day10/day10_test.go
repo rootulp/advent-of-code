@@ -3,8 +3,8 @@ package main
 import "testing"
 
 func TestGetProductOfOneJoltDifferencesAndThreeJoltDifferences(t *testing.T) {
-	t.Run("input_test.txt", func(t *testing.T) {
-		got := GetProductOfOneJoltDifferencesAndThreeJoltDifferences("input_test.txt")
+	t.Run("example.txt", func(t *testing.T) {
+		got := GetProductOfOneJoltDifferencesAndThreeJoltDifferences("example.txt")
 		want := 35
 
 		if got != want {
@@ -19,8 +19,8 @@ func TestGetProductOfOneJoltDifferencesAndThreeJoltDifferences(t *testing.T) {
 			t.Errorf("GetProductOfOneJoltDifferencesAndThreeJoltDifferences failed got %d want %d", got, want)
 		}
 	})
-	t.Run("input_test2.txt", func(t *testing.T) {
-		got := GetProductOfOneJoltDifferencesAndThreeJoltDifferences("input_test2.txt")
+	t.Run("example2.txt", func(t *testing.T) {
+		got := GetProductOfOneJoltDifferencesAndThreeJoltDifferences("example2.txt")
 		want := 220
 
 		if got != want {
@@ -30,8 +30,8 @@ func TestGetProductOfOneJoltDifferencesAndThreeJoltDifferences(t *testing.T) {
 }
 
 func TestGetNumberOfArrangements(t *testing.T) {
-	t.Run("input_test.txt", func(t *testing.T) {
-		got := GetNumberOfArrangements("input_test.txt")
+	t.Run("example.txt", func(t *testing.T) {
+		got := GetNumberOfArrangements("example.txt")
 		want := 8
 
 		if got != want {
@@ -46,8 +46,8 @@ func TestGetNumberOfArrangements(t *testing.T) {
 			t.Errorf("GetNumberOfArrangements failed got %d want %d", got, want)
 		}
 	})
-	t.Run("input_test2.txt", func(t *testing.T) {
-		got := GetNumberOfArrangements("input_test2.txt")
+	t.Run("example2.txt", func(t *testing.T) {
+		got := GetNumberOfArrangements("example2.txt")
 		want := 19208
 
 		if got != want {
