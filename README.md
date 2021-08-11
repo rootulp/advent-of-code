@@ -16,7 +16,6 @@ If you are new to Advent of Code, you can get started at [adventofcode.com](http
     ```bash
     mkdir 2020/day2
     cd 2020/day2
-    go mod init advent-of-code/2020/day2
     ```
 
 - Run an individual solution with
