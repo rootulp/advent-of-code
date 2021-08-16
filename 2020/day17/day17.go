@@ -31,17 +31,14 @@ func PartOne(filename string) int {
 }
 
 func newState(lines []string) (s state) {
+	zeroIndexSlice := getTwoDimensionalSlice(lines)
 	s = state{[gridSize][gridSize][gridSize]rune{
 		{ // z = -1
 			{'.', '.', '.'},
 			{'.', '.', '.'},
 			{'.', '.', '.'},
 		},
-		{ // z = 0
-			{'.', '.', '.'},
-			{'.', '.', '.'},
-			{'.', '.', '.'},
-		},
+		zeroIndexSlice,
 		{ // z = 1
 			{'.', '.', '.'},
 			{'.', '.', '.'},
@@ -65,4 +62,15 @@ func readFile(filename string) (lines []string) {
 		log.Fatal(err)
 	}
 	return lines
+}
+
+// getTwoDimensionalSlice returns a two dimensional slice for the input
+func getTwoDimensionalSlice(lines []string) (result [3][3]rune) {
+	result = [3][3]rune{}
+	for x, line := range lines {
+		for y, r := range line {
+			result[x][y] = r
+		}
+	}
+	return result
 }
