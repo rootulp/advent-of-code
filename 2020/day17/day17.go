@@ -13,6 +13,19 @@ type state struct {
 	grid [gridSize][gridSize][gridSize]rune
 }
 
+func (s state) String() (result string) {
+	for zIndex, z := range s.grid {
+		result += fmt.Sprintf("\nz=%d\n", zIndex)
+		for _, x := range z {
+			for _, y := range x {
+				result += string(y)
+			}
+			result += "\n"
+		}
+	}
+	return result
+}
+
 func main() {
 	fmt.Println("Starting day17")
 
@@ -26,7 +39,7 @@ func main() {
 func PartOne(filename string) int {
 	lines := readFile(filename)
 	state := newState(lines)
-	fmt.Printf("initialState %v\n", state)
+	fmt.Printf("initialState: \n%v\n", state)
 	return 0
 }
 
