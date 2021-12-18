@@ -26,6 +26,19 @@ func (s state) String() (result string) {
 	return result
 }
 
+func New() (s state) {
+	grid := emptyGrid()
+	return state{
+		grid: grid,
+	}
+}
+
+// NextCycle advances state by one cycle
+func (s state) NextCycle() (nextState state) {
+	nextState = New()
+	return nextState
+}
+
 func main() {
 	fmt.Println("Starting day17")
 
@@ -45,20 +58,11 @@ func PartOne(filename string) int {
 
 func newState(lines []string) (s state) {
 	zeroIndexSlice := getTwoDimensionalSlice(lines)
-	s = state{[gridSize][gridSize][gridSize]rune{
-		{ // z = -1
-			{'.', '.', '.'},
-			{'.', '.', '.'},
-			{'.', '.', '.'},
-		},
-		zeroIndexSlice,
-		{ // z = 1
-			{'.', '.', '.'},
-			{'.', '.', '.'},
-			{'.', '.', '.'},
-		},
-	}}
-	return s
+	grid := emptyGrid()
+	grid[1] = zeroIndexSlice
+	return state{
+		grid: grid,
+	}
 }
 
 func readFile(filename string) (lines []string) {
@@ -86,4 +90,24 @@ func getTwoDimensionalSlice(lines []string) (result [3][3]rune) {
 		}
 	}
 	return result
+}
+
+func emptyGrid() [gridSize][gridSize][gridSize]rune {
+	return [gridSize][gridSize][gridSize]rune{
+		{ // z = -1
+			{'.', '.', '.'},
+			{'.', '.', '.'},
+			{'.', '.', '.'},
+		},
+		{ // z = 0
+			{'.', '.', '.'},
+			{'.', '.', '.'},
+			{'.', '.', '.'},
+		},
+		{ // z = 1
+			{'.', '.', '.'},
+			{'.', '.', '.'},
+			{'.', '.', '.'},
+		},
+	}
 }
