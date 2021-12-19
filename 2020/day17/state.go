@@ -44,6 +44,7 @@ func (s *state) NextCycle() {
 
 func (s state) String() (result string) {
 	for zIndex, z := range s.grid {
+		// Z is 0 based and does not reflect negative values
 		result += fmt.Sprintf("\nz=%d\n", zIndex)
 		for _, x := range z {
 			for _, y := range x {
