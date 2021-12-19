@@ -29,17 +29,47 @@ func (s *state) Initialize(lines []string) {
 	s.grid[1] = zeroIndexSlice
 }
 
-// NextCycle advances state by one cycle
-func (s *state) NextCycle() {
-	for _, z := range s.grid {
-		for _, x := range z {
-			for _, y := range x {
-				y.NextCycle()
+func (source *state) Clone() (cloned *state) {
+	grid := emptyGrid()
+
+	for z, plane := range source.grid {
+		for x, line := range plane {
+			for y, c := range line {
+				grid[z][x][y] = &cell{
+					val: c.val,
+					z:   z,
+					x:   x,
+					y:   y,
+				}
 			}
 		}
 	}
 
-	s.cycle += 1
+	return &state{
+		grid:  grid,
+		cycle: source.cycle,
+	}
+}
+
+// NextCycle advances state by one cycle
+func (current *state) NextCycle() (next *state) {
+	next = current.Clone()
+
+	for z, plane := range current.grid {
+		for x, line := range plane {
+			for y, c := range line {
+				next.grid[z][x][y] = &cell{
+					val: c.NextCycle(current),
+					z:   z,
+					x:   x,
+					y:   y,
+				}
+			}
+		}
+	}
+
+	next.cycle = current.cycle + 1
+	return next
 }
 
 func (s state) String() (result string) {
@@ -72,8 +102,53 @@ func emptyGrid() (grid [gridSize][gridSize][gridSize]*cell) {
 	return grid
 }
 
-func (c cell) NextCycle() {
-	return
+func (c cell) NextCycle(s *state) rune {
+	if c.isActiveNextCycle(s) {
+		return '#'
+	} else {
+		return '.'
+	}
+}
+
+func (c cell) isActiveNextCycle(s *state) (isActive bool) {
+	activeNeighbors := s.getActiveNeighbors(c)
+	if c.isActive() {
+		return activeNeighbors == 2 || activeNeighbors == 3
+	} else {
+		return activeNeighbors == 3
+	}
+}
+
+func (c cell) isActive() bool {
+	return c.val == '#'
+}
+
+func (s *state) getActiveNeighbors(c cell) (activeNeighbors int) {
+	neighbors := s.getNeighbors(c)
+	for _, neighbor := range neighbors {
+		if neighbor.isActive() {
+			activeNeighbors += 1
+		}
+	}
+	return activeNeighbors
+}
+
+func (s *state) getNeighbors(c cell) (neighbors []*cell) {
+	for dz := -1; dz < 1; dz++ {
+		for dx := -1; dx < 1; dx++ {
+			for dy := -1; dy < 1; dy++ {
+				targetZ := c.z + dz
+				targetX := c.x + dx
+				targetY := c.z + dy
+				if targetZ >= 0 && targetZ < len(s.grid) &&
+					targetX >= 0 && targetX < len(s.grid[0]) &&
+					targetY >= 0 && targetY < len(s.grid[0][0]) {
+					neighbors = append(neighbors, s.grid[targetZ][targetX][targetY])
+				}
+			}
+		}
+	}
+	return neighbors
 }
 
 // getTwoDimensionalSlice returns a two dimensional slice for the input

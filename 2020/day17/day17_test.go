@@ -34,8 +34,7 @@ func TestPartOneExampleAfterOneCycle(t *testing.T) {
 	lines := readFile("example.txt")
 	s := NewState()
 	s.Initialize(lines)
-	s.NextCycle()
-	got := s.String()
+	got := s.NextCycle().String()
 	want := `
 z=0
 #..
