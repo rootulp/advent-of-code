@@ -6,8 +6,7 @@ import (
 
 func TestPartOneExampleInitialState(t *testing.T) {
 	lines := readFile("example.txt")
-	s := NewState()
-	s.Initialize(lines)
+	s := NewState(lines)
 	got := s.String()
 	want := `
 z=0
@@ -32,8 +31,7 @@ z=2
 
 func TestPartOneExampleAfterOneCycle(t *testing.T) {
 	lines := readFile("example.txt")
-	s := NewState()
-	s.Initialize(lines)
+	s := NewState(lines)
 	got := s.NextCycle().String()
 	want := `
 z=0

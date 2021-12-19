@@ -19,8 +19,7 @@ func main() {
 // life for the Conway Cubes given initial state in filename
 func PartOne(filename string) int {
 	lines := readFile(filename)
-	state := NewState()
-	state.Initialize(lines)
+	state := NewState(lines)
 	fmt.Printf("initialState: \n%v\n", state)
 	return 0
 }

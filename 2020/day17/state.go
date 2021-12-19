@@ -12,30 +12,29 @@ type cell struct {
 }
 
 type state struct {
-	grid  [gridSize][gridSize][gridSize]*cell
+	grid  [gridSize][gridSize][gridSize]cell
 	cycle int
 }
 
-func NewState() (s *state) {
-	return &state{
-		grid:  emptyGrid(),
+func NewState(lines []string) (s state) {
+	grid := emptyGrid()
+	zeroIndexSlice := getTwoDimensionalSlice(lines)
+	// s.grid is a slice of z = -1, 0, 1.
+	grid[1] = zeroIndexSlice
+
+	return state{
+		grid:  grid,
 		cycle: 0,
 	}
 }
 
-func (s *state) Initialize(lines []string) {
-	zeroIndexSlice := getTwoDimensionalSlice(lines)
-	// s.grid is a slice of z = -1, 0, 1.
-	s.grid[1] = zeroIndexSlice
-}
-
-func (source *state) Clone() (cloned *state) {
+func (source state) Clone() (cloned state) {
 	grid := emptyGrid()
 
 	for z, plane := range source.grid {
 		for x, line := range plane {
 			for y, c := range line {
-				grid[z][x][y] = &cell{
+				grid[z][x][y] = cell{
 					val: c.val,
 					z:   z,
 					x:   x,
@@ -45,20 +44,20 @@ func (source *state) Clone() (cloned *state) {
 		}
 	}
 
-	return &state{
+	return state{
 		grid:  grid,
 		cycle: source.cycle,
 	}
 }
 
 // NextCycle advances state by one cycle
-func (current *state) NextCycle() (next *state) {
+func (current state) NextCycle() (next state) {
 	next = current.Clone()
 
 	for z, plane := range current.grid {
 		for x, line := range plane {
 			for y, c := range line {
-				next.grid[z][x][y] = &cell{
+				next.grid[z][x][y] = cell{
 					val: c.NextCycle(current),
 					z:   z,
 					x:   x,
@@ -86,11 +85,11 @@ func (s state) String() (result string) {
 	return result
 }
 
-func emptyGrid() (grid [gridSize][gridSize][gridSize]*cell) {
+func emptyGrid() (grid [gridSize][gridSize][gridSize]cell) {
 	for z := 0; z < gridSize; z++ {
 		for x := 0; x < gridSize; x++ {
 			for y := 0; y < gridSize; y++ {
-				grid[z][x][y] = &cell{
+				grid[z][x][y] = cell{
 					val: '.',
 					z:   z,
 					x:   x,
@@ -102,7 +101,7 @@ func emptyGrid() (grid [gridSize][gridSize][gridSize]*cell) {
 	return grid
 }
 
-func (c cell) NextCycle(s *state) rune {
+func (c cell) NextCycle(s state) rune {
 	if c.isActiveNextCycle(s) {
 		return '#'
 	} else {
@@ -110,7 +109,7 @@ func (c cell) NextCycle(s *state) rune {
 	}
 }
 
-func (c cell) isActiveNextCycle(s *state) (isActive bool) {
+func (c cell) isActiveNextCycle(s state) (isActive bool) {
 	activeNeighbors := s.getActiveNeighbors(c)
 	if c.isActive() {
 		return activeNeighbors == 2 || activeNeighbors == 3
@@ -123,7 +122,7 @@ func (c cell) isActive() bool {
 	return c.val == '#'
 }
 
-func (s *state) getActiveNeighbors(c cell) (activeNeighbors int) {
+func (s state) getActiveNeighbors(c cell) (activeNeighbors int) {
 	neighbors := s.getNeighbors(c)
 	for _, neighbor := range neighbors {
 		if neighbor.isActive() {
@@ -133,7 +132,7 @@ func (s *state) getActiveNeighbors(c cell) (activeNeighbors int) {
 	return activeNeighbors
 }
 
-func (s *state) getNeighbors(c cell) (neighbors []*cell) {
+func (s state) getNeighbors(c cell) (neighbors []cell) {
 	for dz := -1; dz < 1; dz++ {
 		for dx := -1; dx < 1; dx++ {
 			for dy := -1; dy < 1; dy++ {
@@ -152,10 +151,10 @@ func (s *state) getNeighbors(c cell) (neighbors []*cell) {
 }
 
 // getTwoDimensionalSlice returns a two dimensional slice for the input
-func getTwoDimensionalSlice(lines []string) (result [gridSize][gridSize]*cell) {
+func getTwoDimensionalSlice(lines []string) (result [gridSize][gridSize]cell) {
 	for x, line := range lines {
 		for y, r := range line {
-			result[x][y] = &cell{
+			result[x][y] = cell{
 				val: r,
 				z:   0,
 				x:   x,
