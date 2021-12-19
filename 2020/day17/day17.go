@@ -40,14 +40,3 @@ func readFile(filename string) (lines []string) {
 	}
 	return lines
 }
-
-// getTwoDimensionalSlice returns a two dimensional slice for the input
-func getTwoDimensionalSlice(lines []string) (result [3][3]rune) {
-	result = [3][3]rune{}
-	for x, line := range lines {
-		for y, r := range line {
-			result[x][y] = r
-		}
-	}
-	return result
-}
