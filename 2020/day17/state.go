@@ -11,6 +11,10 @@ type cell struct {
 	x   int
 }
 
+func (c cell) String() string {
+	return fmt.Sprintf("(%d, %d, %d)=%v", c.z, c.x, c.y, string(c.val))
+}
+
 type state struct {
 	grid  [gridSize][gridSize][gridSize]cell
 	cycle int
@@ -129,16 +133,20 @@ func (s state) getActiveNeighbors(c cell) (activeNeighbors int) {
 			activeNeighbors += 1
 		}
 	}
+	fmt.Printf("%v has %d active neighbors\n", c, activeNeighbors)
 	return activeNeighbors
 }
 
 func (s state) getNeighbors(c cell) (neighbors []cell) {
-	for dz := -1; dz < 1; dz++ {
-		for dx := -1; dx < 1; dx++ {
-			for dy := -1; dy < 1; dy++ {
+	for dz := -1; dz <= 1; dz++ {
+		for dx := -1; dx <= 1; dx++ {
+			for dy := -1; dy <= 1; dy++ {
 				targetZ := c.z + dz
 				targetX := c.x + dx
-				targetY := c.z + dy
+				targetY := c.y + dy
+				if targetZ == c.z && targetX == c.x && targetY == c.y {
+					continue // skip if target is the current cell
+				}
 				if targetZ >= 0 && targetZ < len(s.grid) &&
 					targetX >= 0 && targetX < len(s.grid[0]) &&
 					targetY >= 0 && targetY < len(s.grid[0][0]) {
@@ -147,6 +155,7 @@ func (s state) getNeighbors(c cell) (neighbors []cell) {
 			}
 		}
 	}
+	// fmt.Printf("%v has neighbors %v\n", c, neighbors)
 	return neighbors
 }
 
@@ -156,7 +165,7 @@ func getTwoDimensionalSlice(lines []string) (result [gridSize][gridSize]cell) {
 		for y, r := range line {
 			result[x][y] = cell{
 				val: r,
-				z:   0,
+				z:   1,
 				x:   x,
 				y:   y,
 			}
