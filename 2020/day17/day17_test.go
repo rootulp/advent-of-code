@@ -4,52 +4,11 @@ import (
 	"testing"
 )
 
-func TestPartOneExampleInitialState(t *testing.T) {
-	lines := readFile("example.txt")
-	s := NewState(lines)
-	got := s.String()
-	want := `
-z=0
-...
-...
-...
+func TestPartOneExample(t *testing.T) {
+	got := PartOne("example.txt")
+	want := 112
 
-z=1
-.#.
-..#
-###
-
-z=2
-...
-...
-...
-`
 	if got != want {
-		t.Errorf("Incorrect example initial state got %v want %v", s, want)
-	}
-}
-
-func TestPartOneExampleAfterOneCycle(t *testing.T) {
-	lines := readFile("example.txt")
-	s := NewState(lines)
-	got := s.NextCycle().String()
-	want := `
-z=0
-#..
-..#
-.#.
-
-z=1
-#.#
-.##
-.#.
-
-z=2
-#..
-..#
-.#.
-`
-	if got != want {
-		t.Errorf("Incorrect example state after one cycle got %v want %v", got, want)
+		t.Errorf("Incorrect result for part one example got %v want %v", got, want)
 	}
 }
