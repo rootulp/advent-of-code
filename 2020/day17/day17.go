@@ -109,6 +109,16 @@ func getBounds3d(current map[point3d]bool) (min int, max int) {
 }
 
 func getCountActiveNeighbors3d(current map[point3d]bool, c point3d) (count int) {
+	neighbors := getNeighbors3d(current, c)
+	for _, neighbor := range neighbors {
+		if current[neighbor] {
+			count += 1
+		}
+	}
+	return count
+}
+
+func getNeighbors3d(current map[point3d]bool, c point3d) (neighbors []point3d) {
 	for dz := -1; dz <= 1; dz++ {
 		for dx := -1; dx <= 1; dx++ {
 			for dy := -1; dy <= 1; dy++ {
@@ -120,13 +130,11 @@ func getCountActiveNeighbors3d(current map[point3d]bool, c point3d) (count int) 
 					x: c.x + dx,
 					y: c.y + dy,
 				}
-				if current[neighbor] {
-					count += 1
-				}
+				neighbors = append(neighbors, neighbor)
 			}
 		}
 	}
-	return count
+	return neighbors
 }
 
 func getActiveCells3d(lines []string) (activeCells map[point3d]bool) {
