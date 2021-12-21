@@ -30,7 +30,7 @@ func main() {
 	fmt.Printf("Part one: %v\n", partOne)
 
 	// Part Two
-	partTwo := PartTwo("example.txt")
+	partTwo := PartTwo("input.txt")
 	fmt.Printf("Part two: %v\n", partTwo)
 }
 
