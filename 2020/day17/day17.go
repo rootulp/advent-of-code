@@ -19,7 +19,7 @@ func main() {
 	fmt.Println("Starting day17")
 
 	// Part One
-	partOne := PartOne("example.txt")
+	partOne := PartOne("input.txt")
 	fmt.Printf("Part one: %v\n", partOne)
 }
 
