@@ -7,13 +7,20 @@ import (
 	"os"
 )
 
-type cell struct {
+type point3d struct {
 	z int
 	x int
 	y int
 }
 
-const ACTIVE_CELL = '#'
+type point4d struct {
+	z int
+	w int
+	x int
+	y int
+}
+
+const ACTIVE = '#'
 
 func main() {
 	fmt.Println("Starting day17")
@@ -21,28 +28,46 @@ func main() {
 	// Part One
 	partOne := PartOne("input.txt")
 	fmt.Printf("Part one: %v\n", partOne)
+
+	// Part Two
+	partTwo := PartTwo("example.txt")
+	fmt.Printf("Part two: %v\n", partTwo)
 }
 
 // PartOne returns the number of active cubes after simulating six cycles of
-// life for the Conway Cubes given initial state in filename
+// life for the Conway Cubes given initial state in filename. Assumes three
+// dimensions.
 func PartOne(filename string) int {
 	lines := readFile(filename)
-	activeCells := setActiveCells(lines)
+	activeCells := getActiveCells3d(lines)
 	for i := 0; i < 6; i++ {
 		fmt.Printf("i=%d, len(activeCells)=%d\n", i, len(activeCells))
-		activeCells = nextCycle(activeCells)
+		activeCells = nextCycle3d(activeCells)
 	}
 	return len(activeCells)
 }
 
-func nextCycle(current map[cell]bool) (next map[cell]bool) {
-	next = make(map[cell]bool)
-	min, max := getBounds(current)
+// PartTwo returns the number of active cubes after simulating six cycles of
+// life for the Conway Cubes given initial state in filename. Assumes four
+// dimensions.
+func PartTwo(filename string) int {
+	lines := readFile(filename)
+	activeCells := getActiveCells3d(lines)
+	for i := 0; i < 6; i++ {
+		fmt.Printf("i=%d, len(activeCells)=%d\n", i, len(activeCells))
+		activeCells = nextCycle3d(activeCells)
+	}
+	return len(activeCells)
+}
+
+func nextCycle3d(current map[point3d]bool) (next map[point3d]bool) {
+	next = make(map[point3d]bool)
+	min, max := getBounds3d(current)
 	for z := min; z <= max; z++ {
 		for x := min; x <= max; x++ {
 			for y := min; y <= max; y++ {
-				c := cell{z, x, y}
-				activeNeighbors := getCountActiveNeighbors(current, c)
+				c := point3d{z, x, y}
+				activeNeighbors := getCountActiveNeighbors3d(current, c)
 				if current[c] && (activeNeighbors == 2 || activeNeighbors == 3) {
 					next[c] = true
 				}
@@ -55,7 +80,27 @@ func nextCycle(current map[cell]bool) (next map[cell]bool) {
 	return next
 }
 
-func getBounds(current map[cell]bool) (min int, max int) {
+// func nextCycle4d(current map[point4d]bool) (next map[point4d]bool) {
+// 	next = make(map[point4d]bool)
+// 	min, max := getBounds(current)
+// 	for z := min; z <= max; z++ {
+// 		for x := min; x <= max; x++ {
+// 			for y := min; y <= max; y++ {
+// 				c := point3d{z, x, y}
+// 				activeNeighbors := getCountActiveNeighbors(current, c)
+// 				if current[c] && (activeNeighbors == 2 || activeNeighbors == 3) {
+// 					next[c] = true
+// 				}
+// 				if !current[c] && activeNeighbors == 3 {
+// 					next[c] = true
+// 				}
+// 			}
+// 		}
+// 	}
+// 	return next
+// }
+
+func getBounds3d(current map[point3d]bool) (min int, max int) {
 	for c := range current {
 		min = minimum(min, minimum(c.z, minimum(c.x, c.y)))
 		max = maximum(max, maximum(c.z, maximum(c.x, c.y)))
@@ -63,28 +108,14 @@ func getBounds(current map[cell]bool) (min int, max int) {
 	return min - 1, max + 1
 }
 
-func minimum(a int, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func maximum(a int, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func getCountActiveNeighbors(current map[cell]bool, c cell) (count int) {
+func getCountActiveNeighbors3d(current map[point3d]bool, c point3d) (count int) {
 	for dz := -1; dz <= 1; dz++ {
 		for dx := -1; dx <= 1; dx++ {
 			for dy := -1; dy <= 1; dy++ {
 				if dz == 0 && dx == 0 && dy == 0 {
 					continue
 				}
-				neighbor := cell{
+				neighbor := point3d{
 					z: c.z + dz,
 					x: c.x + dx,
 					y: c.y + dy,
@@ -98,17 +129,16 @@ func getCountActiveNeighbors(current map[cell]bool, c cell) (count int) {
 	return count
 }
 
-func setActiveCells(lines []string) (activeCells map[cell]bool) {
-	activeCells = make(map[cell]bool)
+func getActiveCells3d(lines []string) (activeCells map[point3d]bool) {
+	activeCells = make(map[point3d]bool)
 	for x, line := range lines {
 		for y, r := range line {
-			if r == ACTIVE_CELL {
-				c := cell{
+			if r == ACTIVE {
+				activeCells[point3d{
 					z: 0, // every element in input is at z=0
 					x: x,
 					y: y,
-				}
-				activeCells[c] = true
+				}] = true
 			}
 		}
 	}
@@ -130,4 +160,18 @@ func readFile(filename string) (lines []string) {
 		log.Fatal(err)
 	}
 	return lines
+}
+
+func minimum(a int, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func maximum(a int, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
