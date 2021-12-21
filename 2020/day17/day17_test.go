@@ -21,3 +21,12 @@ func TestPartOne(t *testing.T) {
 		t.Errorf("Incorrect result for part one input got %v want %v", got, want)
 	}
 }
+
+func TestPartTwoExample(t *testing.T) {
+	got := PartTwo("example.txt")
+	want := 848
+
+	if got != want {
+		t.Errorf("Incorrect result for part two example got %v want %v", got, want)
+	}
+}
