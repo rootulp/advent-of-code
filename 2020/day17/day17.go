@@ -102,8 +102,8 @@ func nextCycle3d(current map[point3d]bool) (next map[point3d]bool) {
 
 func getBounds3d(current map[point3d]bool) (min int, max int) {
 	for c := range current {
-		min = minimum(min, minimum(c.z, minimum(c.x, c.y)))
-		max = maximum(max, maximum(c.z, maximum(c.x, c.y)))
+		min = getMin(min, c.z, c.x, c.y)
+		max = getMax(max, c.z, c.x, c.y)
 	}
 	return min - 1, max + 1
 }
@@ -170,16 +170,20 @@ func readFile(filename string) (lines []string) {
 	return lines
 }
 
-func minimum(a int, b int) int {
-	if a < b {
-		return a
+func getMin(elements ...int) (min int) {
+	for _, element := range elements {
+		if element < min {
+			min = element
+		}
 	}
-	return b
+	return min
 }
 
-func maximum(a int, b int) int {
-	if a > b {
-		return a
+func getMax(elements ...int) (result int) {
+	for _, element := range elements {
+		if element > result {
+			result = element
+		}
 	}
-	return b
+	return result
 }
