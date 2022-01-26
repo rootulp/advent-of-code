@@ -49,7 +49,7 @@ func ReversePolishNotation(expression string) (result string) {
 		}
 		if isOperator(token) {
 			for len(operatorStack) > 0 && isLeftParen(peek(operatorStack)) && operatorPrecedence[peek(operatorStack)] >= operatorPrecedence[token] {
-				output = append(output, token)
+				output = append(output, peek(operatorStack))
 				operatorStack = pop(operatorStack)
 			}
 			operatorStack = append(operatorStack, token)
@@ -66,8 +66,8 @@ func ReversePolishNotation(expression string) (result string) {
 				operatorStack = pop(operatorStack)
 			}
 			// Discard the left parenthesis at the top of the stack
-			leftParenthesis := operatorStack[len(operatorStack)-1]
-			operatorStack = operatorStack[:len(operatorStack)-1]
+			leftParenthesis := peek(operatorStack)
+			operatorStack = pop(operatorStack)
 			if !isLeftParen(leftParenthesis) {
 				panic(fmt.Sprintf("expected %v to be left parenthesis", leftParenthesis))
 			}
