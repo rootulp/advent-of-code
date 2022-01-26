@@ -40,7 +40,7 @@ func PartOne(filename string) (sum int, err error) {
 // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
 func ReversePolishNotation(expression string) (result string) {
 	output := []string{}
-	operatorStack := Stack{[]string{}}
+	operatorStack := Stack{[]string{}} // operatorStack includes parenthesis
 	stripped := strings.ReplaceAll(expression, " ", "")
 	tokens := strings.Split(stripped, "")
 	for _, token := range tokens {
@@ -59,7 +59,7 @@ func ReversePolishNotation(expression string) (result string) {
 		if isRightParen(token) {
 			for !isLeftParen(operatorStack.Peek()) {
 				if operatorStack.Len() == 0 {
-					panic("operatorStack empty but expected more tokens\n")
+					panic("operatorStack empty but expected to encounter a left parenthesis\n")
 				}
 				output = append(output, operatorStack.Pop())
 			}
