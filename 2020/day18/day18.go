@@ -84,23 +84,6 @@ func ReversePolishNotation(expression string) (result string) {
 	return strings.Join(output, " ")
 }
 
-func isNumber(s string) bool {
-	_, err := strconv.Atoi(s)
-	return err == nil
-}
-
-func isOperator(s string) bool {
-	return s == "+" || s == "*"
-}
-
-func isLeftParen(s string) bool {
-	return s == "("
-}
-
-func isRightParen(s string) bool {
-	return s == ")"
-}
-
 func Evaluate(expression string) (result int) {
 	// TODO
 	return 0
@@ -120,6 +103,23 @@ func readLines(filename string) (lines []string, err error) {
 		return lines, err
 	}
 	return lines, nil
+}
+
+func isNumber(s string) bool {
+	_, err := strconv.Atoi(s)
+	return err == nil
+}
+
+func isOperator(s string) bool {
+	return s == "+" || s == "*"
+}
+
+func isLeftParen(s string) bool {
+	return s == "("
+}
+
+func isRightParen(s string) bool {
+	return s == ")"
 }
 
 func peek(stack []string) (top string) {
