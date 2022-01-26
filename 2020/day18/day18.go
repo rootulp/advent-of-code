@@ -44,14 +44,13 @@ func ReversePolishNotation(expression string) (result string) {
 	stripped := strings.ReplaceAll(expression, " ", "")
 	tokens := strings.Split(stripped, "")
 	for _, token := range tokens {
-		fmt.Printf("processing token %v\n", token)
 		if isNumber(token) {
 			output = append(output, token)
 		}
 		if isOperator(token) {
-			for len(operatorStack) > 0 && isLeftParen(operatorStack[len(operatorStack)-1]) && operatorPrecedence[operatorStack[len(operatorStack)-1]] >= operatorPrecedence[token] {
+			for len(operatorStack) > 0 && isLeftParen(peek(operatorStack)) && operatorPrecedence[peek(operatorStack)] >= operatorPrecedence[token] {
 				output = append(output, token)
-				operatorStack = operatorStack[:len(operatorStack)-1]
+				operatorStack = pop(operatorStack)
 			}
 			operatorStack = append(operatorStack, token)
 		}
@@ -59,14 +58,12 @@ func ReversePolishNotation(expression string) (result string) {
 			operatorStack = append(operatorStack, token)
 		}
 		if isRightParen(token) {
-			fmt.Printf("isRightParen passed\n")
-			for !isLeftParen(operatorStack[len(operatorStack)-1]) {
+			for !isLeftParen(peek(operatorStack)) {
 				if len(operatorStack) == 0 {
 					panic("operatorStack empty but expected more tokens\n")
 				}
-				output = append(output, operatorStack[len(operatorStack)-1])
-				operatorStack = operatorStack[:len(operatorStack)-1]
-				fmt.Printf("popping top off operator stack\n")
+				output = append(output, peek(operatorStack))
+				operatorStack = pop(operatorStack)
 			}
 			// Discard the left parenthesis at the top of the stack
 			leftParenthesis := operatorStack[len(operatorStack)-1]
@@ -74,10 +71,7 @@ func ReversePolishNotation(expression string) (result string) {
 			if !isLeftParen(leftParenthesis) {
 				panic(fmt.Sprintf("expected %v to be left parenthesis", leftParenthesis))
 			}
-			fmt.Printf("discarded ")
 		}
-		fmt.Printf("operatorStack %v\n", operatorStack)
-		fmt.Printf("output %v\n", output)
 	}
 	for len(operatorStack) != 0 {
 		top := operatorStack[len(operatorStack)-1]
@@ -87,8 +81,6 @@ func ReversePolishNotation(expression string) (result string) {
 		}
 		output = append(output, top)
 	}
-	fmt.Printf("operatorStack %v\n", operatorStack)
-	fmt.Printf("output %v\n", output)
 	return strings.Join(output, " ")
 }
 
@@ -128,4 +120,12 @@ func readLines(filename string) (lines []string, err error) {
 		return lines, err
 	}
 	return lines, nil
+}
+
+func peek(stack []string) (top string) {
+	return stack[len(stack)-1]
+}
+
+func pop(stack []string) (remaining []string) {
+	return stack[:len(stack)-1]
 }
