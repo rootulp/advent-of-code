@@ -33,6 +33,7 @@ func TestReversePolishNotation(t *testing.T) {
 	tests := []test{
 		{"3 + 4", "3 4 +"},
 		{"7 + 8 * 6", "7 8 6 * +"},
+		{"2 * 3 + (4 * 5)", "2 3 4 5 * + *"},
 	}
 
 	for _, test := range tests {

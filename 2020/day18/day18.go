@@ -41,25 +41,32 @@ func PartOne(filename string) (sum int, err error) {
 func ReversePolishNotation(expression string) (result string) {
 	output := []string{}
 	operatorStack := []string{}
-	tokens := strings.Split(expression, " ")
+	stripped := strings.ReplaceAll(expression, " ", "")
+	tokens := strings.Split(stripped, "")
 	for _, token := range tokens {
-		switch {
-		case isNumber(token):
+		fmt.Printf("processing token %v\n", token)
+		if isNumber(token) {
 			output = append(output, token)
-		case isOperator(token):
+		}
+		if isOperator(token) {
 			for len(operatorStack) > 0 && isLeftParen(operatorStack[len(operatorStack)-1]) && operatorPrecedence[operatorStack[len(operatorStack)-1]] >= operatorPrecedence[token] {
 				output = append(output, token)
 				operatorStack = operatorStack[:len(operatorStack)-1]
 			}
 			operatorStack = append(operatorStack, token)
-		case isLeftParen(token):
+		}
+		if isLeftParen(token) {
 			operatorStack = append(operatorStack, token)
-		case isRightParen(token):
-			for top := operatorStack[len(operatorStack)-1]; !isLeftParen(top); {
+		}
+		if isRightParen(token) {
+			fmt.Printf("isRightParen passed\n")
+			for !isLeftParen(operatorStack[len(operatorStack)-1]) {
 				if len(operatorStack) == 0 {
-					panic("operatorStack empty but expected more tokens")
+					panic("operatorStack empty but expected more tokens\n")
 				}
-				output = append(output, top)
+				output = append(output, operatorStack[len(operatorStack)-1])
+				operatorStack = operatorStack[:len(operatorStack)-1]
+				fmt.Printf("popping top off operator stack\n")
 			}
 			// Discard the left parenthesis at the top of the stack
 			leftParenthesis := operatorStack[len(operatorStack)-1]
@@ -67,7 +74,10 @@ func ReversePolishNotation(expression string) (result string) {
 			if !isLeftParen(leftParenthesis) {
 				panic(fmt.Sprintf("expected %v to be left parenthesis", leftParenthesis))
 			}
+			fmt.Printf("discarded ")
 		}
+		fmt.Printf("operatorStack %v\n", operatorStack)
+		fmt.Printf("output %v\n", output)
 	}
 	for len(operatorStack) != 0 {
 		top := operatorStack[len(operatorStack)-1]
@@ -88,7 +98,7 @@ func isNumber(s string) bool {
 }
 
 func isOperator(s string) bool {
-	return s == "+" || s == "*" || s == "(" || s == ")"
+	return s == "+" || s == "*"
 }
 
 func isLeftParen(s string) bool {
