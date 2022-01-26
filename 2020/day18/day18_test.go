@@ -23,3 +23,23 @@ func TestEvaluateExpression(t *testing.T) {
 		}
 	}
 }
+
+func TestReversePolishNotation(t *testing.T) {
+	type test struct {
+		expression string
+		want       string
+	}
+
+	tests := []test{
+		{"3 + 4", "3 4 +"},
+	}
+
+	for _, test := range tests {
+		got := ReversePolishNotation(test.expression)
+		want := test.want
+		if got != want {
+			t.Errorf("ReversePolishNotation got %v want %v", got, want)
+		}
+	}
+
+}

@@ -12,7 +12,7 @@ func main() {
 	// Part One
 	partOne, err := PartOne("input.txt")
 	if err != nil {
-		fmt.Printf("Part one encountered err: %v", err)
+		fmt.Printf("Part one encountered error: %v", err)
 	}
 	fmt.Printf("Part one: %v\n", partOne)
 }
@@ -26,6 +26,10 @@ func PartOne(filename string) (sum int, err error) {
 		sum += Evaluate(expression)
 	}
 	return sum, nil
+}
+
+func ReversePolishNotation(expression string) (result string) {
+	return expression
 }
 
 func Evaluate(expression string) (result int) {
