@@ -40,7 +40,7 @@ func PartOne(filename string) (sum int, err error) {
 // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
 func ReversePolishNotation(expression string) (result string) {
 	output := []string{}
-	operatorStack := []string{}
+	operatorStack := Stack{[]string{}}
 	stripped := strings.ReplaceAll(expression, " ", "")
 	tokens := strings.Split(stripped, "")
 	for _, token := range tokens {
@@ -48,34 +48,30 @@ func ReversePolishNotation(expression string) (result string) {
 			output = append(output, token)
 		}
 		if isOperator(token) {
-			for len(operatorStack) > 0 && isLeftParen(peek(operatorStack)) && operatorPrecedence[peek(operatorStack)] >= operatorPrecedence[token] {
-				output = append(output, peek(operatorStack))
-				operatorStack = pop(operatorStack)
+			for operatorStack.Len() > 0 && isLeftParen(operatorStack.Peek()) && operatorPrecedence[operatorStack.Peek()] >= operatorPrecedence[token] {
+				output = append(output, operatorStack.Pop())
 			}
-			operatorStack = append(operatorStack, token)
+			operatorStack.Push(token)
 		}
 		if isLeftParen(token) {
-			operatorStack = append(operatorStack, token)
+			operatorStack.Push(token)
 		}
 		if isRightParen(token) {
-			for !isLeftParen(peek(operatorStack)) {
-				if len(operatorStack) == 0 {
+			for !isLeftParen(operatorStack.Peek()) {
+				if operatorStack.Len() == 0 {
 					panic("operatorStack empty but expected more tokens\n")
 				}
-				output = append(output, peek(operatorStack))
-				operatorStack = pop(operatorStack)
+				output = append(output, operatorStack.Pop())
 			}
 			// Discard the left parenthesis at the top of the stack
-			leftParenthesis := peek(operatorStack)
-			operatorStack = pop(operatorStack)
-			if !isLeftParen(leftParenthesis) {
-				panic(fmt.Sprintf("expected %v to be left parenthesis", leftParenthesis))
+			top := operatorStack.Pop()
+			if !isLeftParen(top) {
+				panic(fmt.Sprintf("expected %v to be left parenthesis", top))
 			}
 		}
 	}
-	for len(operatorStack) != 0 {
-		top := operatorStack[len(operatorStack)-1]
-		operatorStack = operatorStack[:len(operatorStack)-1]
+	for operatorStack.Len() != 0 {
+		top := operatorStack.Pop()
 		if isLeftParen(top) {
 			panic(fmt.Sprintf("expected %v to not be left parenthesis", top))
 		}
@@ -122,10 +118,21 @@ func isRightParen(s string) bool {
 	return s == ")"
 }
 
-func peek(stack []string) (top string) {
-	return stack[len(stack)-1]
+type Stack struct {
+	slice []string
 }
 
-func pop(stack []string) (remaining []string) {
-	return stack[:len(stack)-1]
+func (s *Stack) Push(element string) {
+	s.slice = append(s.slice, element)
+}
+func (s *Stack) Pop() (popped string) {
+	popped = s.Peek()
+	s.slice = s.slice[:len(s.slice)-1]
+	return popped
+}
+func (s *Stack) Peek() (top string) {
+	return s.slice[len(s.slice)-1]
+}
+func (s *Stack) Len() int {
+	return len(s.slice)
 }
