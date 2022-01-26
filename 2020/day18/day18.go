@@ -47,17 +47,15 @@ func ReversePolishNotation(expression string) (result string) {
 		case isNumber(token):
 			output = append(output, token)
 		case isOperator(token):
-			if len(operatorStack) > 0 {
-				for top := operatorStack[len(operatorStack)]; top != "(" && operatorPrecedence[top] >= operatorPrecedence[token]; {
-					output = append(output, token)
-					operatorStack = operatorStack[:len(operatorStack)-1]
-				}
+			for len(operatorStack) > 0 && isLeftParen(operatorStack[len(operatorStack)-1]) && operatorPrecedence[operatorStack[len(operatorStack)-1]] >= operatorPrecedence[token] {
+				output = append(output, token)
+				operatorStack = operatorStack[:len(operatorStack)-1]
 			}
 			operatorStack = append(operatorStack, token)
-		case token == "(":
+		case isLeftParen(token):
 			operatorStack = append(operatorStack, token)
-		case token == ")":
-			for top := operatorStack[len(operatorStack)]; top != "("; {
+		case isRightParen(token):
+			for top := operatorStack[len(operatorStack)-1]; !isLeftParen(top); {
 				if len(operatorStack) == 0 {
 					panic("operatorStack empty but expected more tokens")
 				}
@@ -66,7 +64,7 @@ func ReversePolishNotation(expression string) (result string) {
 			// Discard the left parenthesis at the top of the stack
 			leftParenthesis := operatorStack[len(operatorStack)-1]
 			operatorStack = operatorStack[:len(operatorStack)-1]
-			if leftParenthesis != "(" {
+			if !isLeftParen(leftParenthesis) {
 				panic(fmt.Sprintf("expected %v to be left parenthesis", leftParenthesis))
 			}
 		}
@@ -74,7 +72,7 @@ func ReversePolishNotation(expression string) (result string) {
 	for len(operatorStack) != 0 {
 		top := operatorStack[len(operatorStack)-1]
 		operatorStack = operatorStack[:len(operatorStack)-1]
-		if top == "(" {
+		if isLeftParen(top) {
 			panic(fmt.Sprintf("expected %v to not be left parenthesis", top))
 		}
 		output = append(output, top)
@@ -91,6 +89,14 @@ func isNumber(s string) bool {
 
 func isOperator(s string) bool {
 	return s == "+" || s == "*" || s == "(" || s == ")"
+}
+
+func isLeftParen(s string) bool {
+	return s == "("
+}
+
+func isRightParen(s string) bool {
+	return s == ")"
 }
 
 func Evaluate(expression string) (result int) {
