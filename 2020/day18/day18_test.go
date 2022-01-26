@@ -43,5 +43,23 @@ func TestReversePolishNotation(t *testing.T) {
 			t.Errorf("ReversePolishNotation got %v want %v", got, want)
 		}
 	}
+}
 
+func TestEvaluateReversePolishNotation(t *testing.T) {
+	type test struct {
+		expression string
+		want       int
+	}
+
+	tests := []test{
+		{"3 4 +", 7},
+	}
+
+	for _, test := range tests {
+		got := EvaluateReversePolishNotation(test.expression)
+		want := test.want
+		if got != want {
+			t.Errorf("EvaluateReversePolishNotation got %v want %v", got, want)
+		}
+	}
 }
