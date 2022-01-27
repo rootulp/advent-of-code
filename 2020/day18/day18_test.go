@@ -19,7 +19,7 @@ func TestPartOne(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got, _ := PartOne(test.filename)
+		got := PartOne(test.filename)
 		if got != test.want {
 			t.Errorf("PartOne(%v) got %v want %v", test.filename, got, test.want)
 		}
@@ -38,7 +38,7 @@ func TestPartTwo(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got, _ := PartTwo(test.filename)
+		got := PartTwo(test.filename)
 		if got != test.want {
 			t.Errorf("PartTwo(%v) got %v want %v", test.filename, got, test.want)
 		}

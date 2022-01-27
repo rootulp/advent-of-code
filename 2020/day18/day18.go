@@ -12,48 +12,36 @@ func main() {
 	fmt.Println("Starting day18")
 
 	// Part One
-	partOne, err := PartOne("input.txt")
-	if err != nil {
-		fmt.Printf("PartOne err: %v", err)
-	}
+	partOne := PartOne("input.txt")
 	fmt.Printf("PartOne: %v\n", partOne)
 
 	// Part Two
-	partTwo, err := PartTwo("input.txt")
-	if err != nil {
-		fmt.Printf("PartTwo err: %v", err)
-	}
+	partTwo := PartTwo("input.txt")
 	fmt.Printf("PartTwo: %v\n", partTwo)
 }
 
-func PartOne(filename string) (sum int, err error) {
+func PartOne(filename string) (sum int) {
 	var operatorPrecedence map[string]int = map[string]int{
 		"+": 1,
 		"*": 1,
 	}
-	expressions, err := readLines(filename)
-	if err != nil {
-		return sum, err
-	}
+	expressions := readLines(filename)
 	for _, expression := range expressions {
 		sum += Evaluate(expression, operatorPrecedence)
 	}
-	return sum, nil
+	return sum
 }
 
-func PartTwo(filename string) (sum int, err error) {
+func PartTwo(filename string) (sum int) {
 	var operatorPrecedence map[string]int = map[string]int{
 		"+": 2,
 		"*": 1,
 	}
-	expressions, err := readLines(filename)
-	if err != nil {
-		return sum, err
-	}
+	expressions := readLines(filename)
 	for _, expression := range expressions {
 		sum += Evaluate(expression, operatorPrecedence)
 	}
-	return sum, nil
+	return sum
 }
 
 func Evaluate(expression string, operatorPrecedence map[string]int) (result int) {
@@ -135,10 +123,10 @@ func evaluate(a int, b int, operator string) int {
 	}
 }
 
-func readLines(filename string) (lines []string, err error) {
+func readLines(filename string) (lines []string) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return []string{}, err
+		panic(err)
 	}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -146,9 +134,9 @@ func readLines(filename string) (lines []string, err error) {
 		lines = append(lines, line)
 	}
 	if err := scanner.Err(); err != nil {
-		return lines, err
+		panic(err)
 	}
-	return lines, nil
+	return lines
 }
 
 func isNumber(s string) bool {
@@ -168,6 +156,8 @@ func isRightParen(s string) bool {
 	return s == ")"
 }
 
+// OperatorStack and OperandStack can be consolidated into a universal
+// stack when Go supports generics
 type OperatorStack struct {
 	slice []string
 }
