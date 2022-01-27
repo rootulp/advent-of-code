@@ -2,6 +2,26 @@ package main
 
 import "testing"
 
+func TestPartOne(t *testing.T) {
+	type test struct {
+		filename string
+		want     int
+	}
+
+	tests := []test{
+		{"example.txt", 26335},
+		{"input.txt", 5019432542701},
+	}
+
+	for _, test := range tests {
+		got, _ := PartOne(test.filename)
+		if got != test.want {
+			t.Errorf("PartOne(%v) got %v want %v", test.filename, got, test.want)
+		}
+	}
+
+}
+
 func TestEvaluateExpression(t *testing.T) {
 	type test struct {
 		expression string
@@ -19,7 +39,7 @@ func TestEvaluateExpression(t *testing.T) {
 		got := Evaluate(test.expression)
 		want := test.want
 		if got != want {
-			t.Errorf("Evaluate got %v want %v", got, want)
+			t.Errorf("Evaluate(%v) got %v want %v", test.expression, got, want)
 		}
 	}
 }
@@ -40,7 +60,7 @@ func TestReversePolishNotation(t *testing.T) {
 		got := ReversePolishNotation(test.expression)
 		want := test.want
 		if got != want {
-			t.Errorf("ReversePolishNotation got %v want %v", got, want)
+			t.Errorf("ReversePolishNotation(%v) got %v want %v", test.expression, got, want)
 		}
 	}
 }

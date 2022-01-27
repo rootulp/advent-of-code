@@ -83,7 +83,7 @@ func ReversePolishNotation(expression string) (result string) {
 func Evaluate(expression string) (result int) {
 	rpn := ReversePolishNotation(expression)
 	evaluated := EvaluateReversePolishNotation(rpn)
-	fmt.Printf("rpn %v, evaluated %v\n", rpn, evaluated)
+	// fmt.Printf("rpn %v, evaluated %v\n", rpn, evaluated)
 	return evaluated
 }
 
