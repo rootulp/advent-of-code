@@ -24,7 +24,25 @@ func TestPartOne(t *testing.T) {
 			t.Errorf("PartOne(%v) got %v want %v", test.filename, got, test.want)
 		}
 	}
+}
 
+func TestPartTwo(t *testing.T) {
+	type test struct {
+		filename string
+		want     int
+	}
+
+	tests := []test{
+		{"example.txt", 693891},
+		{"input.txt", 70518821989947},
+	}
+
+	for _, test := range tests {
+		got, _ := PartTwo(test.filename)
+		if got != test.want {
+			t.Errorf("PartTwo(%v) got %v want %v", test.filename, got, test.want)
+		}
+	}
 }
 
 func TestEvaluateExpression(t *testing.T) {
