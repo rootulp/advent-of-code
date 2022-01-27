@@ -40,7 +40,7 @@ func PartOne(filename string) (sum int, err error) {
 // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
 func ReversePolishNotation(expression string) (result string) {
 	output := []string{}
-	operatorStack := Stack{[]string{}} // operatorStack includes parenthesis
+	operatorStack := OperatorStack{[]string{}} // operatorStack includes parenthesis
 	stripped := strings.ReplaceAll(expression, " ", "")
 	tokens := strings.Split(stripped, "")
 	for _, token := range tokens {
@@ -87,9 +87,32 @@ func Evaluate(expression string) (result int) {
 	return evaluated
 }
 
+func evaluate(a int, b int, operator string) int {
+	if operator == "+" {
+		return a + b
+	} else if operator == "*" {
+		return a * b
+	} else {
+		panic(fmt.Sprintf("operator %v is not + or *", operator))
+	}
+}
+
 func EvaluateReversePolishNotation(rpn string) (result int) {
-	// TODO
-	return 0
+	operandStack := OperandStack{[]int{}}
+	tokens := strings.Split(rpn, " ")
+	for _, token := range tokens {
+		if isNumber(token) {
+			operand, _ := strconv.Atoi(token)
+			operandStack.Push(operand)
+		} else if isOperator(token) {
+			a := operandStack.Pop()
+			b := operandStack.Pop()
+			operandStack.Push(evaluate(a, b, token))
+		} else {
+			panic(fmt.Sprintf("token %v is not a number or operator", token))
+		}
+	}
+	return operandStack.Pop()
 }
 
 func readLines(filename string) (lines []string, err error) {
@@ -125,21 +148,40 @@ func isRightParen(s string) bool {
 	return s == ")"
 }
 
-type Stack struct {
+type OperatorStack struct {
 	slice []string
 }
 
-func (s *Stack) Push(element string) {
+func (s *OperatorStack) Push(element string) {
 	s.slice = append(s.slice, element)
 }
-func (s *Stack) Pop() (popped string) {
+func (s *OperatorStack) Pop() (popped string) {
 	popped = s.Peek()
 	s.slice = s.slice[:len(s.slice)-1]
 	return popped
 }
-func (s *Stack) Peek() (top string) {
+func (s *OperatorStack) Peek() (top string) {
 	return s.slice[len(s.slice)-1]
 }
-func (s *Stack) Len() int {
+func (s *OperatorStack) Len() int {
+	return len(s.slice)
+}
+
+type OperandStack struct {
+	slice []int
+}
+
+func (s *OperandStack) Push(element int) {
+	s.slice = append(s.slice, element)
+}
+func (s *OperandStack) Pop() (popped int) {
+	popped = s.Peek()
+	s.slice = s.slice[:len(s.slice)-1]
+	return popped
+}
+func (s *OperandStack) Peek() (top int) {
+	return s.slice[len(s.slice)-1]
+}
+func (s *OperandStack) Len() int {
 	return len(s.slice)
 }
