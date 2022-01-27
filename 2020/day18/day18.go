@@ -48,7 +48,7 @@ func ReversePolishNotation(expression string) (result string) {
 			output = append(output, token)
 		}
 		if isOperator(token) {
-			for operatorStack.Len() > 0 && isLeftParen(operatorStack.Peek()) && operatorPrecedence[operatorStack.Peek()] >= operatorPrecedence[token] {
+			for operatorStack.Len() > 0 && !isLeftParen(operatorStack.Peek()) && operatorPrecedence[operatorStack.Peek()] >= operatorPrecedence[token] {
 				output = append(output, operatorStack.Pop())
 			}
 			operatorStack.Push(token)

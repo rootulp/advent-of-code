@@ -32,8 +32,8 @@ func TestReversePolishNotation(t *testing.T) {
 
 	tests := []test{
 		{"3 + 4", "3 4 +"},
-		{"7 + 8 * 6", "7 8 6 * +"},
-		{"2 * 3 + (4 * 5)", "2 3 4 5 * + *"},
+		{"7 + 8 * 6", "7 8 + 6 *"},
+		{"2 * 3 + (4 * 5)", "2 3 * 4 5 * +"},
 	}
 
 	for _, test := range tests {
@@ -53,13 +53,15 @@ func TestEvaluateReversePolishNotation(t *testing.T) {
 
 	tests := []test{
 		{"3 4 +", 7},
+		{"7 8 + 6 *", 90},
+		{"2 3 * 4 5 * +", 26},
 	}
 
 	for _, test := range tests {
 		got := EvaluateReversePolishNotation(test.expression)
 		want := test.want
 		if got != want {
-			t.Errorf("EvaluateReversePolishNotation got %v want %v", got, want)
+			t.Errorf("EvaluateReversePolishNotation(%v) got %v want %v", test.expression, got, want)
 		}
 	}
 }
