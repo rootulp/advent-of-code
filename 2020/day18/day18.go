@@ -19,9 +19,9 @@ func main() {
 	// Part One
 	partOne, err := PartOne("input.txt")
 	if err != nil {
-		fmt.Printf("Part one encountered error: %v", err)
+		fmt.Printf("PartOne err: %v", err)
 	}
-	fmt.Printf("Part one: %v\n", partOne)
+	fmt.Printf("PartOne: %v\n", partOne)
 }
 
 func PartOne(filename string) (sum int, err error) {
@@ -33,6 +33,12 @@ func PartOne(filename string) (sum int, err error) {
 		sum += Evaluate(expression)
 	}
 	return sum, nil
+}
+
+func Evaluate(expression string) (result int) {
+	rpn := ReversePolishNotation(expression)
+	evaluated := EvaluateReversePolishNotation(rpn)
+	return evaluated
 }
 
 // ReversePolishNotation converts expression to Reverse Polish Notation using
@@ -80,23 +86,6 @@ func ReversePolishNotation(expression string) (result string) {
 	return strings.Join(output, " ")
 }
 
-func Evaluate(expression string) (result int) {
-	rpn := ReversePolishNotation(expression)
-	evaluated := EvaluateReversePolishNotation(rpn)
-	// fmt.Printf("rpn %v, evaluated %v\n", rpn, evaluated)
-	return evaluated
-}
-
-func evaluate(a int, b int, operator string) int {
-	if operator == "+" {
-		return a + b
-	} else if operator == "*" {
-		return a * b
-	} else {
-		panic(fmt.Sprintf("operator %v is not + or *", operator))
-	}
-}
-
 func EvaluateReversePolishNotation(rpn string) (result int) {
 	operandStack := OperandStack{[]int{}}
 	tokens := strings.Split(rpn, " ")
@@ -113,6 +102,16 @@ func EvaluateReversePolishNotation(rpn string) (result int) {
 		}
 	}
 	return operandStack.Pop()
+}
+
+func evaluate(a int, b int, operator string) int {
+	if operator == "+" {
+		return a + b
+	} else if operator == "*" {
+		return a * b
+	} else {
+		panic(fmt.Sprintf("operator %v is not + or *", operator))
+	}
 }
 
 func readLines(filename string) (lines []string, err error) {
