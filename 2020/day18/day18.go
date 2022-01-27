@@ -8,11 +8,6 @@ import (
 	"strings"
 )
 
-var operatorPrecedence map[string]int = map[string]int{
-	"+": 1,
-	"*": 1,
-}
-
 func main() {
 	fmt.Println("Starting day18")
 
@@ -22,21 +17,47 @@ func main() {
 		fmt.Printf("PartOne err: %v", err)
 	}
 	fmt.Printf("PartOne: %v\n", partOne)
+
+	// Part Two
+	partTwo, err := PartTwo("input.txt")
+	if err != nil {
+		fmt.Printf("PartTwo err: %v", err)
+	}
+	fmt.Printf("PartTwo: %v\n", partTwo)
 }
 
 func PartOne(filename string) (sum int, err error) {
+	var operatorPrecedence map[string]int = map[string]int{
+		"+": 1,
+		"*": 1,
+	}
 	expressions, err := readLines(filename)
 	if err != nil {
 		return sum, err
 	}
 	for _, expression := range expressions {
-		sum += Evaluate(expression)
+		sum += Evaluate(expression, operatorPrecedence)
 	}
 	return sum, nil
 }
 
-func Evaluate(expression string) (result int) {
-	rpn := ReversePolishNotation(expression)
+func PartTwo(filename string) (sum int, err error) {
+	var operatorPrecedence map[string]int = map[string]int{
+		"+": 2,
+		"*": 1,
+	}
+	expressions, err := readLines(filename)
+	if err != nil {
+		return sum, err
+	}
+	for _, expression := range expressions {
+		sum += Evaluate(expression, operatorPrecedence)
+	}
+	return sum, nil
+}
+
+func Evaluate(expression string, operatorPrecedence map[string]int) (result int) {
+	rpn := ReversePolishNotation(expression, operatorPrecedence)
 	evaluated := EvaluateReversePolishNotation(rpn)
 	return evaluated
 }
@@ -44,7 +65,7 @@ func Evaluate(expression string) (result int) {
 // ReversePolishNotation converts expression to Reverse Polish Notation using
 // the Shunting-yard algorithm
 // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
-func ReversePolishNotation(expression string) (result string) {
+func ReversePolishNotation(expression string, operatorPrecedence map[string]int) (result string) {
 	output := []string{}
 	operatorStack := OperatorStack{[]string{}} // operatorStack includes parenthesis
 	stripped := strings.ReplaceAll(expression, " ", "")

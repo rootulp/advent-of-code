@@ -2,6 +2,11 @@ package main
 
 import "testing"
 
+var operatorPrecedence map[string]int = map[string]int{
+	"+": 1,
+	"*": 1,
+}
+
 func TestPartOne(t *testing.T) {
 	type test struct {
 		filename string
@@ -36,7 +41,7 @@ func TestEvaluateExpression(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got := Evaluate(test.expression)
+		got := Evaluate(test.expression, operatorPrecedence)
 		want := test.want
 		if got != want {
 			t.Errorf("Evaluate(%v) got %v want %v", test.expression, got, want)
@@ -57,7 +62,7 @@ func TestReversePolishNotation(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got := ReversePolishNotation(test.expression)
+		got := ReversePolishNotation(test.expression, operatorPrecedence)
 		want := test.want
 		if got != want {
 			t.Errorf("ReversePolishNotation(%v) got %v want %v", test.expression, got, want)
