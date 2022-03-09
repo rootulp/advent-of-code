@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/rootulp/advent-of-code)](https://goreportcard.com/report/github.com/rootulp/advent-of-code)
 [![Code Style](https://img.shields.io/badge/code_style-go_fmt-blue.svg)](https://golang.org/cmd/gofmt/)
 
-> [Advent of Code](https://adventofcode.com) solutions
+[Advent of Code](https://adventofcode.com) solutions
 
 ## Getting Started
 
@@ -12,23 +12,21 @@ If you are new to Advent of Code, you can get started at [adventofcode.com](http
 
 ## Local Development
 
-- Create a new solution directory with the steps [here](https://golang.org/doc/code.html):
-    ```bash
-    mkdir 2020/day2
-    cd 2020/day2
-    ```
+Create a new solution directory based on these [docs](https://golang.org/doc/code.html):
+```bash
+mkdir 2020/day2
+cd 2020/day2
+```
 
-- Run an individual solution with
+Run an individual solution with
+```bash
+go run day1.go
+```
 
-    ```bash
-    go run day1.go
-    ```
-
-- Run unit tests
-
-    ```bash
-    go test
-    ```
+Run unit tests
+```bash
+go test
+```
 
 ## Contribute
 
