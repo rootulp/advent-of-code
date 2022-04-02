@@ -9,6 +9,7 @@ import (
 
 func main() {
 	fmt.Printf("Starting day 19\n")
+
 	partOne := PartOne("input.txt")
 	fmt.Printf("Part one: %v\n", partOne)
 }
