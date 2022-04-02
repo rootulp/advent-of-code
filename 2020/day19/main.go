@@ -11,12 +11,11 @@ import (
 )
 
 type Rule struct {
-	number   int
 	contents []string
 }
 
 func (r Rule) String() string {
-	return fmt.Sprintf("rule number %v, contents: [%v]\n", r.number, strings.Join(r.contents, ","))
+	return fmt.Sprintf("rule contents: [%v]\n", strings.Join(r.contents, ","))
 }
 
 func (r Rule) isString() bool {
@@ -112,28 +111,26 @@ func splitRulesAndMessages(lines []string) (rawRules []string, messages []string
 func parseRules(rawRules []string) (rules map[int]Rule) {
 	rules = map[int]Rule{}
 	for _, raw := range rawRules {
-		rule := parseRule(raw)
-		rules[rule.number] = rule
+		ruleNumber, rule := parseRule(raw)
+		rules[ruleNumber] = rule
 	}
 	return rules
 }
 
-func parseRule(rule string) Rule {
+func parseRule(rule string) (ruleNumber int, r Rule) {
 	parts := strings.Split(rule, ":")
 	if len(parts) != 2 {
 		log.Fatalf("unexpected parts %v", parts)
 	}
 
-	number, err := strconv.Atoi(parts[0])
+	ruleNumber, err := strconv.Atoi(parts[0])
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	contents := strings.Split(strings.Trim(parts[1], " "), " | ")
-	return Rule{
-		number:   number,
-		contents: contents,
-	}
+	return ruleNumber, Rule{contents}
+
 }
 
 func readLines(filename string) (lines []string) {
