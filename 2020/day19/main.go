@@ -40,7 +40,11 @@ func PartOne(filename string) (result int) {
 	lines := readLines(filename)
 	rawRules, messages := splitRulesAndMessages(lines)
 	rules := parseRules(rawRules)
-	pattern := generateRegex(rules, 0, 25)
+
+	ruleNumber := 0
+	depth := 25
+	pattern := generateRegex(rules, ruleNumber, depth)
+
 	return numMatchingMessages(pattern, messages)
 }
 
@@ -51,9 +55,12 @@ func PartTwo(filename string) (result int) {
 	// Add partTwo specific loop rules
 	rawRules = append(rawRules, "8: 42 | 42 8")
 	rawRules = append(rawRules, "11: 42 31 | 42 11 31")
-
 	rules := parseRules(rawRules)
-	pattern := generateRegex(rules, 0, 25)
+
+	ruleNumber := 0
+	depth := 25
+	pattern := generateRegex(rules, ruleNumber, depth)
+
 	return numMatchingMessages(pattern, messages)
 }
 
