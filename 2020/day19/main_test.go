@@ -9,7 +9,7 @@ type testCase struct {
 
 var tests []testCase = []testCase{
 	{"example.txt", 2},
-	{"input.txt", 0},
+	{"input.txt", 142},
 }
 
 func TestPartOne(t *testing.T) {
