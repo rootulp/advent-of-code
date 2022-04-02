@@ -39,50 +39,26 @@ func main() {
 
 func PartOne(filename string) (result int) {
 	lines := readLines(filename)
-	fmt.Printf("lines: %v\n", lines)
-
 	rawRules, messages := splitRulesAndMessages(lines)
-	fmt.Printf("rawRules %v\n", rawRules)
-	fmt.Printf("messages %v\n", messages)
-
 	rules := parseRules(rawRules)
-	fmt.Printf("rules: %v\n", rules)
-
 	pattern := generateRegex(rules, 0, 25)
-	fmt.Printf("pattern: %v\n", pattern)
-
-	result = numMatchingMessages(pattern, messages)
-	fmt.Printf("result: %v\n", result)
-
-	return result
+	return numMatchingMessages(pattern, messages)
 }
 
 func PartTwo(filename string) (result int) {
 	lines := readLines(filename)
-	fmt.Printf("lines: %v\n", lines)
-
 	rawRules, messages := splitRulesAndMessages(lines)
-	fmt.Printf("rawRules %v\n", rawRules)
-	fmt.Printf("messages %v\n", messages)
 
 	// Add partTwo specific loop rules
 	rawRules = append(rawRules, "8: 42 | 42 8")
 	rawRules = append(rawRules, "11: 42 31 | 42 11 31")
 
 	rules := parseRules(rawRules)
-	fmt.Printf("rules: %v\n", rules)
-
 	pattern := generateRegex(rules, 0, 25)
-	fmt.Printf("pattern: %v\n", pattern)
-
-	result = numMatchingMessages(pattern, messages)
-	fmt.Printf("result: %v\n", result)
-
-	return result
+	return numMatchingMessages(pattern, messages)
 }
 
 func numMatchingMessages(pattern string, messages []string) (result int) {
-	var matching []string
 	for _, message := range messages {
 		matched, err := regexp.MatchString(pattern, message)
 		if err != nil {
@@ -90,11 +66,8 @@ func numMatchingMessages(pattern string, messages []string) (result int) {
 		}
 		if matched {
 			result += 1
-			matching = append(matching, message)
 		}
 	}
-	fmt.Printf("matching: %v\n", matching)
-
 	return result
 }
 
@@ -119,6 +92,7 @@ func generateRegex(rules map[int]Rule, ruleNumber int, depth int) (pattern strin
 		expressions = append(expressions, strings.Join(subExpressions, ""))
 	}
 	if ruleNumber == 0 {
+		// Anchor expression to start and end of string to ensure entire string matches
 		return fmt.Sprintf("^(%v)$", strings.Join(expressions, "|"))
 	}
 	return fmt.Sprintf("(%v)", strings.Join(expressions, "|"))
