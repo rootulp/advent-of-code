@@ -32,6 +32,9 @@ func main() {
 
 	partOne := PartOne("input.txt")
 	fmt.Printf("Part one: %v\n", partOne)
+
+	partTwo := PartTwo("example2.txt")
+	fmt.Printf("Part two: %v\n", partTwo)
 }
 
 func PartOne(filename string) (result int) {
@@ -45,7 +48,31 @@ func PartOne(filename string) (result int) {
 	rules := parseRules(rawRules)
 	fmt.Printf("rules: %v\n", rules)
 
-	pattern := generateRegex(rules, 0)
+	pattern := generateRegex(rules, 0, 25)
+	fmt.Printf("pattern: %v\n", pattern)
+
+	result = numMatchingMessages(pattern, messages)
+	fmt.Printf("result: %v\n", result)
+
+	return result
+}
+
+func PartTwo(filename string) (result int) {
+	lines := readLines(filename)
+	fmt.Printf("lines: %v\n", lines)
+
+	rawRules, messages := splitRulesAndMessages(lines)
+	fmt.Printf("rawRules %v\n", rawRules)
+	fmt.Printf("messages %v\n", messages)
+
+	// Add partTwo specific loop rules
+	rawRules = append(rawRules, "8: 42 | 42 8")
+	rawRules = append(rawRules, "11: 42 31 | 42 11 31")
+
+	rules := parseRules(rawRules)
+	fmt.Printf("rules: %v\n", rules)
+
+	pattern := generateRegex(rules, 0, 25)
 	fmt.Printf("pattern: %v\n", pattern)
 
 	result = numMatchingMessages(pattern, messages)
@@ -71,7 +98,10 @@ func numMatchingMessages(pattern string, messages []string) (result int) {
 	return result
 }
 
-func generateRegex(rules map[int]Rule, ruleNumber int) (pattern string) {
+func generateRegex(rules map[int]Rule, ruleNumber int, depth int) (pattern string) {
+	if depth == 0 {
+		return ""
+	}
 	if rules[ruleNumber].isString() {
 		return rules[ruleNumber].getString()
 	}
@@ -83,7 +113,7 @@ func generateRegex(rules map[int]Rule, ruleNumber int) (pattern string) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			subExpression := generateRegex(rules, ruleNum)
+			subExpression := generateRegex(rules, ruleNum, depth-1)
 			subExpressions = append(subExpressions, subExpression)
 		}
 		expressions = append(expressions, strings.Join(subExpressions, ""))
