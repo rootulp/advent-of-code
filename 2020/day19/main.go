@@ -18,6 +18,34 @@ func (r Rule) String() string {
 	return fmt.Sprintf("rule number %v, contents %v\n", r.number, r.contents)
 }
 
+func isString(contents string) bool {
+	return strings.HasPrefix(contents, "\"") && strings.HasSuffix(contents, "\"")
+}
+
+func generateMessages(rules map[int]Rule, ruleContents string) (messages []string) {
+	expressions := strings.Split(ruleContents, "|")
+	for _, expression := range expressions {
+		var message string
+		parts := strings.Split(expression, " ")
+		for _, part := range parts {
+			ruleNumber, err := strconv.Atoi(part)
+			if err != nil {
+				log.Fatal(err)
+			}
+			message += generateMessage(rules, rules[ruleNumber].contents)
+		}
+		messages = append(messages, message)
+	}
+	return messages
+}
+
+func generateMessage(rules map[int]Rule, contents string) string {
+	if isString(contents) {
+		return strings.Trim(contents, "\"")
+	}
+	return ""
+}
+
 func main() {
 	fmt.Printf("Starting day 19\n")
 
@@ -36,7 +64,15 @@ func PartOne(filename string) (result int) {
 	rules := parseRules(rawRules)
 	fmt.Printf("rules: %v\n", rules)
 
-	return 0
+	firstRule := rules[0]
+	validMessages := generateMessages(rules, firstRule.contents)
+	for _, message := range messages {
+		if contains(validMessages, message) {
+			result += 1
+		}
+	}
+
+	return result
 }
 
 func splitRulesAndMessages(lines []string) (rawRules []string, messages []string) {
@@ -50,10 +86,10 @@ func splitRulesAndMessages(lines []string) (rawRules []string, messages []string
 	return rawRules, messages
 }
 
-func parseRules(rawRules []string) (rules []Rule) {
+func parseRules(rawRules []string) (rules map[int]Rule) {
 	for _, raw := range rawRules {
 		rule := parseRule(raw)
-		rules = append(rules, rule)
+		rules[rule.number] = rule
 	}
 	return rules
 }
@@ -91,4 +127,13 @@ func readLines(filename string) (lines []string) {
 		log.Fatal(err)
 	}
 	return lines
+}
+
+func contains(validMessages []string, message string) bool {
+	for _, valid := range validMessages {
+		if valid == message {
+			return true
+		}
+	}
+	return false
 }
