@@ -14,8 +14,29 @@ type Tile struct {
 	contents []string
 }
 
-func (t Tile) borders() {
-	panic("implement me")
+func (t Tile) borders() []string {
+	return []string{
+		t.contents[0],
+		t.contents[len(t.contents)-1],
+		t.leftBorder(),
+		t.rightBorder(),
+	}
+}
+
+func (t Tile) leftBorder() (result string) {
+	for _, row := range t.contents {
+		vals := strings.Split(row, "")
+		result += vals[0]
+	}
+	return result
+}
+
+func (t Tile) rightBorder() (result string) {
+	for _, row := range t.contents {
+		vals := strings.Split(row, "")
+		result += vals[len(vals)-1]
+	}
+	return result
 }
 
 func main() {
@@ -28,8 +49,9 @@ func main() {
 func PartOne(filename string) int {
 	lines := readLines(filename)
 	tiles := parseTiles(lines)
-	fmt.Printf("tiles: %v", tiles)
+	fmt.Printf("tiles: %v\n", tiles)
 
+	fmt.Printf("borders for first tile: %v\n", tiles[0].borders())
 	return 0
 }
 
