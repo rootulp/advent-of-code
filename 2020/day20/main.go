@@ -23,6 +23,13 @@ func (t Tile) borders() []string {
 	}
 }
 
+func (t Tile) reversedBorders() (reversed []string) {
+	for _, border := range t.borders() {
+		reversed = append(reversed, reverse(border))
+	}
+	return reversed
+}
+
 func (t Tile) leftBorder() (result string) {
 	for _, row := range t.contents {
 		vals := strings.Split(row, "")
@@ -46,17 +53,52 @@ func main() {
 	fmt.Printf("Part one: %v\n", partOne)
 }
 
-func PartOne(filename string) int {
+func PartOne(filename string) (productOfCornerIds int) {
 	lines := readLines(filename)
 	tiles := parseTiles(lines)
 
 	fmt.Printf("tiles: %v\n", tiles)
+	fmt.Printf("len(tiles): %v\n", len(tiles))
 	fmt.Printf("borders for first tile: %v\n", tiles[0].borders())
 
-	borderOccurrences := countBorderOccurences(tiles)
-	fmt.Printf("borderOccurences %v\n", borderOccurrences)
+	occurences := countBorderOccurences(tiles)
+	fmt.Printf("occurences %v\n", occurences)
 
-	return 0
+	cornerTileIds := cornerTiles(tiles, occurences)
+	fmt.Printf("cornerTileIds %v\n", cornerTileIds)
+
+	productOfCornerIds = 1
+	for _, cornerTileId := range cornerTileIds {
+		productOfCornerIds *= cornerTileId
+	}
+
+	return productOfCornerIds
+}
+
+// cornerTiles returns the tile Ids for all corner tiles
+func cornerTiles(tiles []Tile, occurences map[string]int) (cornerTileIds []int) {
+	tileToSharedBorders := map[int]int{}
+	for _, tile := range tiles {
+		numSharedBorders := 0
+		borders := tile.borders()
+		for _, border := range borders {
+			numSharedBorders += (occurences[border])
+		}
+		reversedBorders := tile.reversedBorders()
+		for _, reversedBorder := range reversedBorders {
+			numSharedBorders += (occurences[reversedBorder])
+		}
+		tileToSharedBorders[tile.id] = numSharedBorders
+		// cornerTiles have two shared borders and two unique borders
+		// (2 * 2) + (2 * 1) == 6
+		// However we are double counting each border (because reversed borders) so
+		// 2 * 6 == 12
+		if numSharedBorders == 12 {
+			cornerTileIds = append(cornerTileIds, tile.id)
+		}
+	}
+	fmt.Printf("tileToSharedBorders %v\n", tileToSharedBorders)
+	return cornerTileIds
 }
 
 func countBorderOccurences(tiles []Tile) (occurences map[string]int) {
@@ -65,6 +107,10 @@ func countBorderOccurences(tiles []Tile) (occurences map[string]int) {
 		borders := tile.borders()
 		for _, border := range borders {
 			occurences[border] += 1
+		}
+		reversedBorders := tile.reversedBorders()
+		for _, reversedBorder := range reversedBorders {
+			occurences[reversedBorder] += 1
 		}
 	}
 	return occurences
@@ -87,6 +133,7 @@ func parseTiles(lines []string) (tiles []Tile) {
 			tiles = append(tiles, tile)
 		}
 	}
+	tiles = append(tiles, tile)
 	return tiles
 }
 
@@ -104,4 +151,11 @@ func readLines(filename string) (lines []string) {
 	}
 
 	return lines
+}
+
+func reverse(input string) (reversed string) {
+	for _, r := range input {
+		reversed = string(r) + reversed
+	}
+	return reversed
 }
