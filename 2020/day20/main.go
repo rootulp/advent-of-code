@@ -49,10 +49,25 @@ func main() {
 func PartOne(filename string) int {
 	lines := readLines(filename)
 	tiles := parseTiles(lines)
-	fmt.Printf("tiles: %v\n", tiles)
 
+	fmt.Printf("tiles: %v\n", tiles)
 	fmt.Printf("borders for first tile: %v\n", tiles[0].borders())
+
+	borderOccurrences := countBorderOccurences(tiles)
+	fmt.Printf("borderOccurences %v\n", borderOccurrences)
+
 	return 0
+}
+
+func countBorderOccurences(tiles []Tile) (occurences map[string]int) {
+	occurences = map[string]int{}
+	for _, tile := range tiles {
+		borders := tile.borders()
+		for _, border := range borders {
+			occurences[border] += 1
+		}
+	}
+	return occurences
 }
 
 func parseTiles(lines []string) (tiles []Tile) {
