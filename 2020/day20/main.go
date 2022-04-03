@@ -49,7 +49,7 @@ func (t Tile) rightBorder() (result string) {
 func main() {
 	fmt.Printf("Starting day20...\n")
 
-	partOne := PartOne("example.txt")
+	partOne := PartOne("input.txt")
 	fmt.Printf("Part one: %v\n", partOne)
 }
 
