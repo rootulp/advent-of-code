@@ -41,7 +41,7 @@ func PartOne(filename string) int {
 	lines := readFile(filename)
 	activeCells := getActiveCells3d(lines)
 	for i := 0; i < 6; i++ {
-		fmt.Printf("i=%d, len(activeCells)=%d\n", i, len(activeCells))
+		// fmt.Printf("i=%d, len(activeCells)=%d\n", i, len(activeCells))
 		activeCells = nextCycle3d(activeCells)
 	}
 	return len(activeCells)
@@ -54,7 +54,7 @@ func PartTwo(filename string) int {
 	lines := readFile(filename)
 	activeCells := getActiveCells4d(lines)
 	for i := 0; i < 6; i++ {
-		fmt.Printf("i=%d, len(activeCells)=%d\n", i, len(activeCells))
+		// fmt.Printf("i=%d, len(activeCells)=%d\n", i, len(activeCells))
 		activeCells = nextCycle4d(activeCells)
 	}
 	return len(activeCells)
