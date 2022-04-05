@@ -25,7 +25,6 @@ func GetCountOfOccupiedSeatsPartOne(filename string) int {
 	grid := getGrid(lines)
 
 	for i := 0; i < 100; i++ {
-		fmt.Printf("Iteration %v count of occupied seats %v\n", i, getCountOfOccupiedSeats(grid))
 		grid = tickPartOne(grid)
 	}
 
@@ -38,7 +37,6 @@ func GetCountOfOccupiedSeatsPartTwo(filename string) int {
 	grid := getGrid(lines)
 
 	for i := 0; i < 100; i++ {
-		fmt.Printf("Iteration %v count of occupied seats %v\n", i, getCountOfOccupiedSeats(grid))
 		grid = tickPartTwo(grid)
 	}
 
