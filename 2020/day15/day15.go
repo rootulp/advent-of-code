@@ -21,7 +21,6 @@ func MemoryGame(startingNumbers []int, turns int) int {
 	memory := map[int]int{}
 	turn := 0
 	for _, num := range startingNumbers {
-		fmt.Printf("Turn %v, spoke %v because starting number\n", turn, num)
 		memory[turn] = num
 		turn += 1
 	}
@@ -29,11 +28,9 @@ func MemoryGame(startingNumbers []int, turns int) int {
 		lastNumberSpoken := memory[turn-1]
 		mostRecentTurn := getMostRecentTurn(lastNumberSpoken, turn, memory)
 		if mostRecentTurn == -1 {
-			fmt.Printf("Turn %v, spoke %v because last number %v hasn't been seen\n", turn, 0, lastNumberSpoken)
 			memory[turn] = 0
 		} else {
 			spoke := (turn - 1) - mostRecentTurn
-			fmt.Printf("Turn %v, spoke %v because last number %v was spoken on %v and %v\n", turn, spoke, lastNumberSpoken, turn-1, mostRecentTurn)
 			memory[turn] = spoke
 		}
 		turn += 1
@@ -56,7 +53,6 @@ func MemoryGameOptimized(startingNumbers []int, turns int) int {
 	numberToMostRecentTurn := map[int]int{}
 	turn := 0
 	for _, num := range startingNumbers {
-		fmt.Printf("Turn %v, spoke %v because starting number\n", turn, num)
 		turnToNumberSpoken[turn] = num
 
 		lastTurn := turn - 1
@@ -69,11 +65,9 @@ func MemoryGameOptimized(startingNumbers []int, turns int) int {
 		lastNumberSpoken := turnToNumberSpoken[lastTurn]
 		if mostRecentTurn, ok := numberToMostRecentTurn[lastNumberSpoken]; ok {
 			spoke := lastTurn - mostRecentTurn
-			fmt.Printf("Turn %v, spoke %v because last number %v was spoken on %v and %v\n", turn, spoke, lastNumberSpoken, lastTurn, mostRecentTurn)
 			turnToNumberSpoken[turn] = spoke
 		} else {
 			spoke := 0
-			fmt.Printf("Turn %v, spoke %v because last number %v hasn't been seen\n", turn, spoke, lastNumberSpoken)
 			turnToNumberSpoken[turn] = spoke
 		}
 		numberToMostRecentTurn[lastNumberSpoken] = lastTurn
