@@ -68,7 +68,7 @@ func GetNumberOfContainers(filename string, targetBag string) int {
 	return len(containers)
 }
 
-// GetContainersOf retuns a list of strings that represent the bags that
+// GetContainersOf returns a list of strings that represent the bags that
 // contain the target bag.
 func GetContainersOf(colorsToContainers map[string][]string, targetBag string) []string {
 	containers := []string{}
