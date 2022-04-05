@@ -25,8 +25,8 @@ func TestGetCountOfOccupiedSeats(t *testing.T) {
 		grid = tickPartOne(grid)
 		got := toString(grid)
 
-		lines_after_five_rounds := readFile("example_part_one_after_five_rounds.txt")
-		want := toString(getGrid(lines_after_five_rounds))
+		linesAfterFiveRounds := readFile("example-part-one-after-five-rounds.txt")
+		want := toString(getGrid(linesAfterFiveRounds))
 
 		if got != want {
 			t.Errorf("Input test part one after five rounds incorrect got %v want %v", got, want)
@@ -52,8 +52,8 @@ func TestGetCountOfOccupiedSeats(t *testing.T) {
 		grid = tickPartTwo(grid)
 		got := toString(grid)
 
-		lines_after_five_rounds := readFile("example_part_two_after_five_rounds.txt")
-		want := toString(getGrid(lines_after_five_rounds))
+		linesAfterFiveRounds := readFile("example-part-two-after-five-rounds.txt")
+		want := toString(getGrid(linesAfterFiveRounds))
 
 		if got != want {
 			t.Errorf("Input test part two after five rounds incorrect got \n%v want \n%v", got, want)
