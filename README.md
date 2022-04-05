@@ -1,5 +1,6 @@
 # advent-of-code
 
+[![Build](https://github.com/rootulp/advent-of-code/actions/workflows/go.yml/badge.svg)](https://github.com/rootulp/advent-of-code/actions/workflows/go.yml)
 [![License](https://img.shields.io/:license-mit-blue.svg)](https://rootulp.mit-license.org)
 [![Go Report Card](https://goreportcard.com/badge/github.com/rootulp/advent-of-code)](https://goreportcard.com/report/github.com/rootulp/advent-of-code)
 [![Code Style](https://img.shields.io/badge/code_style-go_fmt-blue.svg)](https://golang.org/cmd/gofmt/)
