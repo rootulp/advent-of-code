@@ -14,17 +14,33 @@ type Tile struct {
 	contents []string
 }
 
-func (t Tile) borders() []string {
+func (t Tile) getSides() []string {
 	return []string{
-		t.contents[0],
-		t.contents[len(t.contents)-1],
-		t.leftBorder(),
-		t.rightBorder(),
+		t.getSide("top"),
+		t.getSide("bottom"),
+		t.getSide("left"),
+		t.getSide("right"),
 	}
 }
 
+func (t Tile) getSide(side string) string {
+	switch side {
+	case "top":
+		return t.contents[0]
+	case "bottom":
+		return t.contents[len(t.contents)-1]
+	case "right":
+		return t.rightBorder()
+	case "left":
+		return t.leftBorder()
+	default:
+		log.Fatalf("unrecognized side %v", side)
+	}
+	return ""
+}
+
 func (t Tile) reversedBorders() (reversed []string) {
-	for _, border := range t.borders() {
+	for _, border := range t.getSides() {
 		reversed = append(reversed, reverse(border))
 	}
 	return reversed
@@ -46,11 +62,36 @@ func (t Tile) rightBorder() (result string) {
 	return result
 }
 
+func (t *Tile) rotate() {
+	var rotated [][]string = [][]string{}
+	// var R = len(t.contents)
+	var C = len(t.contents[0])
+
+	for r, row := range t.contents {
+		for c := range row {
+			rotated[r][c] = string(t.contents[C-c-1][r])
+		}
+	}
+
+	var newContents []string
+	for _, r := range rotated {
+		newContents = append(newContents, strings.Join(r, ""))
+	}
+	t.contents = newContents
+}
+
+func (t *Tile) flip() {
+	t.contents = reverseSlice(t.contents)
+}
+
 func main() {
 	fmt.Printf("Starting day20...\n")
 
 	partOne := PartOne("input.txt")
 	fmt.Printf("Part one: %v\n", partOne)
+
+	partTwo := PartTwo("example.txt")
+	fmt.Printf("Part one: %v\n", partTwo)
 }
 
 func PartOne(filename string) (productOfCornerIds int) {
@@ -59,7 +100,7 @@ func PartOne(filename string) (productOfCornerIds int) {
 
 	fmt.Printf("tiles: %v\n", tiles)
 	fmt.Printf("len(tiles): %v\n", len(tiles))
-	fmt.Printf("borders for first tile: %v\n", tiles[0].borders())
+	fmt.Printf("borders for first tile: %v\n", tiles[0].getSides())
 
 	occurences := countBorderOccurences(tiles)
 	fmt.Printf("occurences %v\n", occurences)
@@ -75,12 +116,19 @@ func PartOne(filename string) (productOfCornerIds int) {
 	return productOfCornerIds
 }
 
+func PartTwo(filename string) (numberOfPoundSignsNotPartOfSeaMonsters int) {
+	// lines := readLines(filename)
+	// tiles := parseTiles(lines)
+
+	return numberOfPoundSignsNotPartOfSeaMonsters
+}
+
 // cornerTiles returns the tile Ids for all corner tiles
 func cornerTiles(tiles []Tile, occurences map[string]int) (cornerTileIds []int) {
 	tileToSharedBorders := map[int]int{}
 	for _, tile := range tiles {
 		numSharedBorders := 0
-		borders := tile.borders()
+		borders := tile.getSides()
 		for _, border := range borders {
 			numSharedBorders += (occurences[border])
 		}
@@ -104,7 +152,7 @@ func cornerTiles(tiles []Tile, occurences map[string]int) (cornerTileIds []int) 
 func countBorderOccurences(tiles []Tile) (occurences map[string]int) {
 	occurences = map[string]int{}
 	for _, tile := range tiles {
-		borders := tile.borders()
+		borders := tile.getSides()
 		for _, border := range borders {
 			occurences[border] += 1
 		}
@@ -156,6 +204,13 @@ func readLines(filename string) (lines []string) {
 func reverse(input string) (reversed string) {
 	for _, r := range input {
 		reversed = string(r) + reversed
+	}
+	return reversed
+}
+
+func reverseSlice(input []string) (reversed []string) {
+	for _, r := range input {
+		reversed = append([]string{r}, reversed...)
 	}
 	return reversed
 }
