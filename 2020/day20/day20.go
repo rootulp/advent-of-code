@@ -201,6 +201,24 @@ func readLines(filename string) (lines []string) {
 	return lines
 }
 
+func addTileToPic(pic []string, tile Tile, newline bool) (newPic []string) {
+	copy(newPic, pic)
+
+	if len(newPic) == 0 {
+		copy(newPic, tile.contents)
+		return newPic
+	}
+	if newline {
+		newPic = append(newPic, tile.contents...)
+		return newPic
+	}
+	var R = len(newPic) - len(tile.contents)
+	for index, row := range tile.contents {
+		newPic[R+index] += row
+	}
+	return newPic
+}
+
 func reverse(input string) (reversed string) {
 	for _, r := range input {
 		reversed = string(r) + reversed
