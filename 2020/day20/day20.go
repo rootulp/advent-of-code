@@ -78,7 +78,7 @@ func (t Tile) getRightSide() (result string) {
 	return result
 }
 
-func (t *Tile) rotate() {
+func (t *Tile) rotate() *Tile {
 	var rotated [][]string = [][]string{}
 	// var R = len(t.contents)
 	var C = len(t.contents[0])
@@ -94,6 +94,7 @@ func (t *Tile) rotate() {
 		newContents = append(newContents, strings.Join(r, ""))
 	}
 	t.contents = newContents
+	return t
 }
 
 func (t *Tile) flip() {
@@ -136,12 +137,12 @@ func PartTwo(filename string) (numberOfPoundSignsNotPartOfSeaMonsters int) {
 	lines := readLines(filename)
 	tiles := parseTiles(lines)
 	fmt.Printf("tiles %v\n", tiles)
-	// tilesMap := getTilesMap(tiles)
-	// occurences := countBorderOccurences(tiles)
-	// cornerTileIds := cornerTiles(tiles, occurences)
+	tilesMap := getTilesMap(tiles)
+	occurences := countBorderOccurences(tiles)
+	cornerTileIds := cornerTiles(tiles, occurences)
 
-	// pic := assemble(tilesMap, cornerTileIds)
-	// fmt.Printf("pic\n%v\n", pic)
+	pic := assemble(tilesMap, cornerTileIds)
+	fmt.Printf("pic\n%v\n", pic)
 
 	return numberOfPoundSignsNotPartOfSeaMonsters
 }
@@ -206,6 +207,7 @@ func parseTiles(lines []string) (tiles []Tile) {
 	}
 	tiles = append(tiles, tile)
 
+	// Identify neighbor based on shared sides
 	for a, tileA := range tiles {
 		for b, tileB := range tiles {
 			if a == b {
@@ -251,7 +253,7 @@ func readLines(filename string) (lines []string) {
 func assemble(tilesMap map[int]Tile, cornerTileIds []int) (fullpic []string) {
 	var r = 0
 	var c = 0
-	var gridmap map[Point]int
+	var gridmap map[Point]int = map[Point]int{}
 	// var fullpic = []string{}
 
 	for len(gridmap) < len(tilesMap) {
@@ -260,22 +262,26 @@ func assemble(tilesMap map[int]Tile, cornerTileIds []int) (fullpic []string) {
 			cornerTile := tilesMap[cornerTileId]
 			fmt.Printf("cornerTile %v\n", cornerTile)
 
-			// neighbors = list(tiles[idn]["neighbors"].values())
-			// neighbors += [n[::-1] for n in neighbors]
-			// while True:
-			// 	bottom, right = get_side(tile, "bottom"), get_side(tile, "right")
-			// 	if bottom in neighbors and right in neighbors:
-			// 		break
-			// 	tile = rotate(tile)
-			// gridmap[(r, c)] = idn
-			// tiles[idn]["grid"] = tile
-			// add_fullpic(tile)
+			sides := getValues(cornerTile.neighbors)
+			reversedSides := getReversedSides(sides)
+			allSides := append(sides, reversedSides...)
 
+			for {
+				bottom, right := cornerTile.getSide("bottom"), cornerTile.getSide("right")
+				if contains(allSides, bottom) && contains(allSides, right) {
+					break
+				}
+				cornerTile.rotate()
+			}
+			point := Point{row: r, col: c}
+			gridmap[point] = cornerTileId
+			addTileToPic(fullpic, cornerTile, false)
 			c += 1
 		} else if c == 0 {
 			// 	# add new tile based on first tile in previous row's bottom
 			// 	...[snip]...
 			c += 1
+			return fullpic
 		} else {
 			// 	# look for next in row
 			// 	...[snip]...
@@ -285,6 +291,7 @@ func assemble(tilesMap map[int]Tile, cornerTileIds []int) (fullpic []string) {
 			// 		c += 1
 			// 	else:
 			// 		r, c = r + 1, 0
+			return fullpic
 		}
 	}
 	return fullpic
@@ -328,4 +335,27 @@ func reverseSlice(input []string) (reversed []string) {
 		reversed = append([]string{r}, reversed...)
 	}
 	return reversed
+}
+
+func getValues(input map[int]string) (result []string) {
+	for _, v := range input {
+		result = append(result, v)
+	}
+	return result
+}
+
+func getReversedSides(input []string) (reversed []string) {
+	for _, v := range input {
+		reversed = append(reversed, reverse(v))
+	}
+	return reversed
+}
+
+func contains(input []string, item string) bool {
+	for _, v := range input {
+		if v == item {
+			return true
+		}
+	}
+	return false
 }
