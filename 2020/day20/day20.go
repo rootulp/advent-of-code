@@ -1,361 +1,526 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"log"
-	"os"
-	"strconv"
+	"io/ioutil"
+	"math"
 	"strings"
 )
 
-type Point struct {
-	row int
-	col int
+type Vector2 struct {
+	X, Y int
 }
 
-type Tile struct {
-	id        int
-	contents  []string
-	neighbors map[int]string // map from tile id to side
-}
-
-func (t Tile) String() string {
-	return fmt.Sprintf("Tile: %v\nContents:\n%v\nNeighbors: %v\n\n", t.id, strings.Join(t.contents, "\n"), t.neighbors)
-}
-
-func (t Tile) getAllSides() (allSides []string) {
-	allSides = append(allSides, t.getSides()...)
-	allSides = append(allSides, t.getSidesReversed()...)
-	return allSides
-}
-
-func (t Tile) getSides() []string {
-	return []string{
-		t.getSide("top"),
-		t.getSide("bottom"),
-		t.getSide("left"),
-		t.getSide("right"),
+func (v *Vector2) Add(v2 Vector2) Vector2 {
+	return Vector2{
+		X: v.X + v2.X,
+		Y: v.Y + v2.Y,
 	}
 }
 
-func (t Tile) getSide(side string) string {
-	switch side {
-	case "top":
-		return t.contents[0]
-	case "bottom":
-		return t.contents[len(t.contents)-1]
-	case "right":
-		return t.getRightSide()
-	case "left":
-		return t.getLeftSide()
-	default:
-		log.Fatalf("unrecognized side %v", side)
-	}
-	return ""
-}
-
-func (t Tile) getSidesReversed() (reversed []string) {
-	for _, border := range t.getSides() {
-		reversed = append(reversed, reverse(border))
-	}
-	return reversed
-}
-
-func (t Tile) getLeftSide() (result string) {
-	for _, row := range t.contents {
-		vals := strings.Split(row, "")
-		result += vals[0]
-	}
-	return result
-}
-
-func (t Tile) getRightSide() (result string) {
-	for _, row := range t.contents {
-		vals := strings.Split(row, "")
-		result += vals[len(vals)-1]
-	}
-	return result
-}
-
-func (t *Tile) rotate() *Tile {
-	var rotated [][]string = [][]string{}
-	// var R = len(t.contents)
-	var C = len(t.contents[0])
-
-	for r, row := range t.contents {
-		for c := range row {
-			rotated[r][c] = string(t.contents[C-c-1][r])
-		}
+func ReadFile(filename string) string {
+	buf, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
 	}
 
-	var newContents []string
-	for _, r := range rotated {
-		newContents = append(newContents, strings.Join(r, ""))
-	}
-	t.contents = newContents
-	return t
-}
-
-func (t *Tile) flip() {
-	t.contents = reverseSlice(t.contents)
+	return strings.TrimSpace(string(buf))
 }
 
 func main() {
-	fmt.Printf("Starting day20...\n")
+	filename := "input.txt"
 
-	partOne := PartOne("input.txt")
-	fmt.Printf("Part one: %v\n", partOne)
+	fmt.Println("----- Part 1 -----")
+	fmt.Printf("Product of corner tile IDs: %d\n", PartOne(filename))
 
-	partTwo := PartTwo("example.txt")
-	fmt.Printf("Part one: %v\n", partTwo)
+	fmt.Println("----- Part 2 -----")
+	fmt.Printf("Roughness of the water: %d\n", PartTwo(filename))
 }
 
-func PartOne(filename string) (productOfCornerIds int) {
-	lines := readLines(filename)
-	tiles := parseTiles(lines)
+var SeaMonster map[Vector2]struct{}
 
-	// fmt.Printf("tiles: %v\n", tiles)
-	// fmt.Printf("len(tiles): %v\n", len(tiles))
-	// fmt.Printf("borders for first tile: %v\n", tiles[0].getSides())
+func init() {
+	buildSeaMonster()
+}
 
-	occurences := countBorderOccurences(tiles)
-	// fmt.Printf("occurences %v\n", occurences)
+func PartOne(filename string) int {
+	input := ReadFile(filename)
+	tiles := NewTileSet(input)
+	allEdges := tiles.CountAllPossibleEdges()
 
-	cornerTileIds := cornerTiles(tiles, occurences)
-	// fmt.Printf("cornerTileIds %v\n", cornerTileIds)
+	result := 1
 
-	productOfCornerIds = 1
-	for _, cornerTileId := range cornerTileIds {
-		productOfCornerIds *= cornerTileId
+	for id, tile := range tiles {
+		// Technically the corner tiles only have 2 unique, unshared edges, but remember that
+		// we've also checked for its reverse orientation, which doubles the number of edges,
+		// so we need to check for 4 instead of 2
+		if tile.CountUniqueEdges(allEdges) == 4 {
+			result *= id
+		}
 	}
 
-	return productOfCornerIds
+	return result
 }
 
-func PartTwo(filename string) (numberOfPoundSignsNotPartOfSeaMonsters int) {
-	lines := readLines(filename)
-	tiles := parseTiles(lines)
-	fmt.Printf("tiles %v\n", tiles)
-	tilesMap := getTilesMap(tiles)
-	occurences := countBorderOccurences(tiles)
-	cornerTileIds := cornerTiles(tiles, occurences)
+func PartTwo(filename string) int {
+	input := ReadFile(filename)
+	tiles := NewTileSet(input)
+	stitched := tiles.Stitch()
 
-	pic := assemble(tilesMap, cornerTileIds)
-	fmt.Printf("pic\n%v\n", pic)
-
-	return numberOfPoundSignsNotPartOfSeaMonsters
+	return calculateRoughness(stitched)
 }
 
-// cornerTiles returns the tile Ids for all corner tiles
-func cornerTiles(tiles []Tile, occurences map[string]int) (cornerTileIds []int) {
-	tileToSharedBorders := map[int]int{}
-	for _, tile := range tiles {
-		numSharedBorders := 0
-		borders := tile.getSides()
-		for _, border := range borders {
-			numSharedBorders += (occurences[border])
-		}
-		reversedBorders := tile.getSidesReversed()
-		for _, reversedBorder := range reversedBorders {
-			numSharedBorders += (occurences[reversedBorder])
-		}
-		tileToSharedBorders[tile.id] = numSharedBorders
-		// cornerTiles have two shared borders and two unique borders
-		// (2 * 2) + (2 * 1) == 6
-		// However we are double counting each border (because reversed borders) so
-		// 2 * 6 == 12
-		if numSharedBorders == 12 {
-			cornerTileIds = append(cornerTileIds, tile.id)
+type TileSet map[int]Tile
+
+type Tile struct {
+	num  int
+	grid [][]rune
+	size int
+}
+
+// Returns a list of all edges in all possible orientations, along with how many tile-orientation combos have that edge
+func (ts TileSet) CountAllPossibleEdges() map[string]int {
+	// Tracks the number of distinct edges found in all tiles
+	ret := make(map[string]int)
+
+	for _, t := range ts {
+		for _, edge := range t.AllPossibleEdges() {
+			ret[edge]++
 		}
 	}
-	// fmt.Printf("tileToSharedBorders %v\n", tileToSharedBorders)
-	return cornerTileIds
+
+	return ret
 }
 
-func countBorderOccurences(tiles []Tile) (occurences map[string]int) {
-	occurences = map[string]int{}
-	for _, tile := range tiles {
-		borders := tile.getSides()
-		for _, border := range borders {
-			occurences[border] += 1
-		}
-		reversedBorders := tile.getSidesReversed()
-		for _, reversedBorder := range reversedBorders {
-			occurences[reversedBorder] += 1
+// Parses a tile from text
+func NewTile(input string) Tile {
+	s := strings.SplitN(input, "\n", 2)
+	var id int
+	fmt.Sscanf(s[0], "Tile %d:", &id)
+
+	lines := strings.Split(s[1], "\n")
+	size := len(lines)
+
+	t := Tile{num: id, grid: make([][]rune, size), size: size}
+	for i, line := range lines {
+		t.grid[i] = make([]rune, size)
+		for j, char := range line {
+			t.grid[i][j] = char
 		}
 	}
-	return occurences
+
+	return t
 }
 
-func parseTiles(lines []string) (tiles []Tile) {
-	var tile Tile
-	for _, line := range lines {
-		if strings.HasPrefix(line, "Tile ") {
-			tileId := strings.TrimPrefix(line, "Tile ")
-			tileId = strings.TrimSuffix(tileId, ":")
-			id, err := strconv.Atoi(tileId)
-			if err != nil {
-				log.Fatal(err)
-			}
-			tile = Tile{id, []string{}, map[int]string{}}
-		} else if strings.HasPrefix(line, ".") || strings.HasPrefix(line, "#") {
-			tile.contents = append(tile.contents, line)
-		} else {
-			tiles = append(tiles, tile)
+// Renders the parsed tile as a string; useful for debugging
+func (t *Tile) String() string {
+	var sb strings.Builder
+	for i, line := range t.grid {
+		if i != 0 {
+			sb.WriteString("\n")
+		}
+
+		sb.WriteString(string(line))
+	}
+
+	return sb.String()
+}
+
+// Returns the top edge
+func (t *Tile) Top() string {
+	return string(t.grid[0])
+}
+
+// Returns the bottom edge
+func (t *Tile) Bottom() string {
+	return string(t.grid[t.size-1])
+}
+
+// Returns the left edge
+func (t *Tile) Left() string {
+	var left strings.Builder
+	for i := 0; i < len(t.grid[0]); i++ {
+		left.WriteRune(t.grid[i][0])
+	}
+
+	return left.String()
+}
+
+// Returns the right edge
+func (t *Tile) Right() string {
+	var right strings.Builder
+	for i := 0; i < t.size; i++ {
+		right.WriteRune(t.grid[i][t.size-1])
+	}
+
+	return right.String()
+}
+
+// Returns the edges in the current orientation
+func (t *Tile) Edges() []string {
+	return []string{
+		t.Top(),
+		t.Bottom(),
+		t.Left(),
+		t.Right(),
+	}
+}
+
+// Returns all possible edges regardless of current orientation
+// I manually worked out that this would be the current edges plus their mirror images
+func (t *Tile) AllPossibleEdges() []string {
+	edges := t.Edges()
+
+	return []string{
+		edges[0],
+		reverseString(edges[0]),
+		edges[1],
+		reverseString(edges[1]),
+		edges[2],
+		reverseString(edges[2]),
+		edges[3],
+		reverseString(edges[3]),
+	}
+}
+
+func reverseString(input string) string {
+	var sb strings.Builder
+	runes := []rune(input)
+	for i := len(runes) - 1; 0 <= i; i-- {
+		sb.WriteRune(runes[i])
+	}
+	return sb.String()
+}
+
+// Counts how many edges are not shared with other tiles
+func (t Tile) CountUniqueEdges(edges map[string]int) int {
+	ret := 0
+	for _, edge := range t.AllPossibleEdges() {
+		if edges[edge] == 2 {
+			ret++
 		}
 	}
-	tiles = append(tiles, tile)
 
-	// Identify neighbor based on shared sides
-	for a, tileA := range tiles {
-		for b, tileB := range tiles {
-			if a == b {
+	return ret
+}
+
+// Rotates the tile 90 degrees clockwise
+func (t *Tile) Rotate() Tile {
+	newGrid := make([][]rune, t.size)
+
+	for y := range t.grid {
+		newGrid[y] = make([]rune, t.size)
+	}
+
+	for y := range t.grid {
+		for x := range t.grid[y] {
+			newGrid[y][t.size-x-1] = t.grid[x][y]
+		}
+	}
+
+	return Tile{
+		num:  t.num,
+		grid: newGrid,
+		size: t.size,
+	}
+}
+
+// Flips the tile so that the top is on the bottom and vice-versa
+func (t *Tile) FlipTopBottom() Tile {
+	newGrid := make([][]rune, t.size)
+
+	for y := range t.grid {
+		newGrid[y] = t.grid[t.size-y-1]
+	}
+
+	return Tile{
+		num:  t.num,
+		grid: newGrid,
+		size: t.size,
+	}
+}
+
+// Flips the tile so that the left is on the right and vice-versa
+func (t *Tile) FlipLeftRight() Tile {
+	newGrid := make([][]rune, t.size)
+
+	for y := range t.grid {
+		newGrid[y] = make([]rune, t.size)
+		for x, char := range t.grid[y] {
+			newGrid[y][t.size-x-1] = char
+		}
+	}
+
+	return Tile{
+		num:  t.num,
+		grid: newGrid,
+		size: t.size,
+	}
+}
+
+// Removes the border from the tile
+func (t *Tile) WithoutBorder() Tile {
+	newTile := Tile{num: t.num, grid: make([][]rune, t.size-2), size: t.size - 2}
+	for y := range t.grid {
+		if y == 0 || y == t.size-1 {
+			continue
+		}
+
+		newTile.grid[y-1] = make([]rune, newTile.size)
+
+		for x, char := range t.grid[y] {
+			if x == 0 || x == t.size-1 {
 				continue
 			}
-			sharedSides := getSharedSides(tileA.getAllSides(), tileB.getAllSides())
-			for _, side := range sharedSides {
-				tileA.neighbors[tileB.id] = side
-				tileB.neighbors[tileA.id] = side
-			}
+
+			newTile.grid[y-1][x-1] = char
 		}
 	}
-	return tiles
+
+	return newTile
 }
 
-func getSharedSides(sidesA []string, sidesB []string) (shared []string) {
-	for _, a := range sidesA {
-		for _, b := range sidesB {
-			if a == b {
-				shared = append(shared, a)
-			}
+// Produces a set of all possible orientations for the given tile
+func (t *Tile) AllPossibleOrientations() []Tile {
+	ret := make([]Tile, 12)
+
+	possible := *t
+	for i := 0; i < 4; i++ {
+		ret[i*3] = possible
+		ret[i*3+1] = possible.FlipLeftRight()
+		ret[i*3+2] = possible.FlipTopBottom()
+
+		possible = possible.Rotate()
+	}
+
+	return ret
+}
+
+// Rotates and/or flips the tile until the left and top edges match what we're looking for
+// "left" and "top" can either be:
+//   - A string containing a specific edge to match
+//   - An empty string, indicating that we don't care what the edge is, so long as it's unique
+//     (in other words, it's not shared with any other tile, so it must be along the outside border)
+func (t *Tile) Orient(left, top string, edges map[string]int) *Tile {
+	for _, orientation := range t.AllPossibleOrientations() {
+		matchesLeft := (left == "" && edges[orientation.Left()] == 1) || (left == orientation.Left())
+		matchesTop := (top == "" && edges[orientation.Top()] == 1) || (top == orientation.Top())
+		if matchesLeft && matchesTop {
+			return &orientation
 		}
 	}
-	return shared
+
+	return nil
 }
 
-func readLines(filename string) (lines []string) {
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
+// Sea Monster identification based on https://gitlab.com/kurisuchan/advent-of-code-2020/-/blob/master/pkg/day20/day20.go
+func calculateRoughness(stitched Tile) int {
+	var t Tile
+	found := false
+	for _, t = range stitched.AllPossibleOrientations() {
+		for y := range t.grid {
+			for x := range t.grid[y] {
+				// Does a Sea Monster exist here?
+				match := true
+				for m := range SeaMonster {
+					if y+m.Y >= len(t.grid) {
+						match = false
+						break
+					}
 
-	return lines
-}
+					if x+m.X >= len(t.grid[y+m.Y]) {
+						match = false
+						break
+					}
 
-func assemble(tilesMap map[int]Tile, cornerTileIds []int) (fullpic []string) {
-	var r = 0
-	var c = 0
-	var gridmap map[Point]int = map[Point]int{}
-	// var fullpic = []string{}
-
-	for len(gridmap) < len(tilesMap) {
-		if r == 0 && c == 0 {
-			cornerTileId := cornerTileIds[0]
-			cornerTile := tilesMap[cornerTileId]
-			fmt.Printf("cornerTile %v\n", cornerTile)
-
-			sides := getValues(cornerTile.neighbors)
-			reversedSides := getReversedSides(sides)
-			allSides := append(sides, reversedSides...)
-
-			for {
-				bottom, right := cornerTile.getSide("bottom"), cornerTile.getSide("right")
-				if contains(allSides, bottom) && contains(allSides, right) {
-					break
+					if t.grid[y+m.Y][x+m.X] != '#' {
+						match = false
+						break
+					}
 				}
-				cornerTile.rotate()
+
+				if !match {
+					continue
+				}
+
+				// It does!
+				found = true
+				for m := range SeaMonster {
+					t.grid[y+m.Y][x+m.X] = 'O'
+				}
 			}
-			point := Point{row: r, col: c}
-			gridmap[point] = cornerTileId
-			addTileToPic(fullpic, cornerTile, false)
-			c += 1
-		} else if c == 0 {
-			// 	# add new tile based on first tile in previous row's bottom
-			// 	...[snip]...
-			c += 1
-			return fullpic
-		} else {
-			// 	# look for next in row
-			// 	...[snip]...
-			// 	if find next:
-			// 		# add to row
-			// 		...[snip]...
-			// 		c += 1
-			// 	else:
-			// 		r, c = r + 1, 0
-			return fullpic
+		}
+
+		if found {
+			break
 		}
 	}
-	return fullpic
+
+	// Count the waves
+	waves := 0
+	for y := range t.grid {
+		for x := range t.grid[y] {
+			if t.grid[y][x] == '#' {
+				waves++
+			}
+		}
+	}
+
+	return waves
 }
 
-func getTilesMap(tiles []Tile) (result map[int]Tile) {
-	result = map[int]Tile{}
-	for _, tile := range tiles {
-		result[tile.id] = tile
+// Parses the puzzle input
+func NewTileSet(input string) TileSet {
+	tiles := strings.Split(input, "\n\n")
+	result := make(TileSet, len(tiles))
+
+	for _, tileData := range tiles {
+		t := NewTile(tileData)
+		result[t.num] = t
 	}
+
 	return result
 }
 
-func addTileToPic(pic []string, tile Tile, newline bool) (newPic []string) {
-	copy(newPic, pic)
+// Takes the input tiles, orients them correctly, and returns the stitched image as a large tile
+func (ts *TileSet) Stitch() Tile {
+	allPossibleEdges := ts.CountAllPossibleEdges()
 
-	if len(newPic) == 0 {
-		copy(newPic, tile.contents)
-		return newPic
-	}
-	if newline {
-		newPic = append(newPic, tile.contents...)
-		return newPic
-	}
-	var R = len(newPic) - len(tile.contents)
-	for index, row := range tile.contents {
-		newPic[R+index] += row
-	}
-	return newPic
-}
+	// The edges that the next tile must match
+	var left, top string
+	// Tracks which tiles have already been used
+	usedKeys := make(map[int]struct{})
+	// Helps us track the "top" search value we'll need in future rows
+	usedTilesByPosition := make(map[Vector2]Tile)
+	// Helps us stitch together the final image
+	var stitcher ImageStitcher
 
-func reverse(input string) (reversed string) {
-	for _, r := range input {
-		reversed = string(r) + reversed
-	}
-	return reversed
-}
+	pos := Vector2{}
 
-func reverseSlice(input []string) (reversed []string) {
-	for _, r := range input {
-		reversed = append([]string{r}, reversed...)
-	}
-	return reversed
-}
+	// Pick any corner to be our top-left; orient it correctly
+	firstTileInRow := ts.FindRandomCorner(allPossibleEdges).Orient("", "", allPossibleEdges)
 
-func getValues(input map[int]string) (result []string) {
-	for _, v := range input {
-		result = append(result, v)
-	}
-	return result
-}
+	// Save this corner
+	usedKeys[firstTileInRow.num] = struct{}{}
+	usedTilesByPosition[pos] = *firstTileInRow
+	stitcher = NewImageStitcher(firstTileInRow.size-2, len(*ts))
+	stitcher.AddTile(pos, firstTileInRow.WithoutBorder())
 
-func getReversedSides(input []string) (reversed []string) {
-	for _, v := range input {
-		reversed = append(reversed, reverse(v))
-	}
-	return reversed
-}
+	// Determine the search criteria for the next tile
+	pos = pos.Add(Vector2{X: 1})
+	left, top = firstTileInRow.Right(), ""
 
-func contains(input []string, item string) bool {
-	for _, v := range input {
-		if v == item {
-			return true
+	// Keep looping until all tiles have been used
+	for len(usedKeys) < len(*ts) {
+		// Track whether we found any matching tiles this time around
+		found := false
+
+		// Try to find the next matching tile
+		for id, next := range *ts {
+			// Have we already used this tile?
+			if _, ok := usedKeys[id]; ok {
+				continue
+			}
+
+			// Does this tile fit?
+			if candidate := next.Orient(left, top, allPossibleEdges); candidate != nil {
+				// Save this tile
+				usedKeys[candidate.num] = struct{}{}
+				usedTilesByPosition[pos] = *candidate
+				stitcher.AddTile(pos, candidate.WithoutBorder())
+
+				// Determine the search criteria for the next tile
+				pos = pos.Add(Vector2{X: 1})
+				left = candidate.Right()
+				if aboveNext, ok := usedTilesByPosition[pos.Add(Vector2{Y: -1})]; ok {
+					top = aboveNext.Bottom()
+				}
+
+				found = true
+				if firstTileInRow == nil {
+					firstTileInRow = candidate
+				}
+				break
+			}
+		}
+
+		// Failing to find another tile in this row means we've completed the row and should
+		// starting working on the next one
+		if !found {
+			pos = Vector2{X: 0, Y: pos.Y + 1}
+			// Next row should start with a unique border edge on the left, and it's top should match
+			// the previous row start's bottom
+			left, top = "", firstTileInRow.Bottom()
+			// We don't yet know while tile will be the first one in this row
+			firstTileInRow = nil
 		}
 	}
-	return false
+
+	// All tiles have been arranged correctly! Return the final stitched image as a Tile
+	return stitcher.Complete()
+}
+
+// Returns a random corner (we don't really care which one)
+func (ts *TileSet) FindRandomCorner(allEdges map[string]int) *Tile {
+	for _, tile := range *ts {
+		if tile.CountUniqueEdges(allEdges) == 4 {
+			return &tile
+		}
+	}
+
+	panic("no corner tile found")
+}
+
+type ImageStitcher struct {
+	contents      [][]rune
+	tileSize      int
+	height, width int
+}
+
+func NewImageStitcher(tileSize, tileCount int) ImageStitcher {
+	width := int(math.Sqrt(float64(tileCount)))
+	height := width
+
+	contents := make([][]rune, tileSize*height)
+	for i := 0; i < tileSize*height; i++ {
+		contents[i] = make([]rune, tileSize*width)
+	}
+
+	return ImageStitcher{
+		contents: contents,
+		tileSize: tileSize,
+		width:    width,
+		height:   height,
+	}
+}
+
+func (i *ImageStitcher) AddTile(pos Vector2, t Tile) {
+	for tileY, row := range t.grid {
+		imageY := (i.tileSize * pos.Y) + tileY
+
+		for tileX, char := range row {
+			imageX := (i.tileSize * pos.X) + tileX
+			i.contents[imageY][imageX] = char
+		}
+	}
+}
+
+func (i *ImageStitcher) Complete() Tile {
+	return Tile{
+		num:  0,
+		grid: i.contents,
+		size: i.tileSize * i.height,
+	}
+}
+
+func buildSeaMonster() {
+	SeaMonster = make(map[Vector2]struct{})
+	pattern := "                  # \n#    ##    ##    ###\n #  #  #  #  #  #   "
+	for y, line := range strings.Split(pattern, "\n") {
+		for x, r := range line {
+			if r == '#' {
+				SeaMonster[Vector2{X: x, Y: y}] = struct{}{}
+			}
+		}
+	}
 }
