@@ -28,13 +28,13 @@ func ReadFile(filename string) string {
 }
 
 func main() {
-	filename := "input.txt"
+	fmt.Printf("Starting day 20...\n")
 
-	fmt.Println("----- Part 1 -----")
-	fmt.Printf("Product of corner tile IDs: %d\n", PartOne(filename))
+	partOne := PartOne("input.txt")
+	fmt.Printf("Part one: %v\n", partOne)
 
-	fmt.Println("----- Part 2 -----")
-	fmt.Printf("Roughness of the water: %d\n", PartTwo(filename))
+	partTwo := PartTwo("input.txt")
+	fmt.Printf("Part two: %v\n", partTwo)
 }
 
 var SeaMonster map[Vector2]struct{}
@@ -43,23 +43,23 @@ func init() {
 	buildSeaMonster()
 }
 
-func PartOne(filename string) int {
+func PartOne(filename string) (productOfCornerTileIds int) {
 	input := ReadFile(filename)
 	tiles := NewTileSet(input)
 	allEdges := tiles.CountAllPossibleEdges()
 
-	result := 1
+	productOfCornerTileIds = 1
 
 	for id, tile := range tiles {
 		// Technically the corner tiles only have 2 unique, unshared edges, but remember that
 		// we've also checked for its reverse orientation, which doubles the number of edges,
 		// so we need to check for 4 instead of 2
 		if tile.CountUniqueEdges(allEdges) == 4 {
-			result *= id
+			productOfCornerTileIds *= id
 		}
 	}
 
-	return result
+	return productOfCornerTileIds
 }
 
 func PartTwo(filename string) int {
@@ -78,18 +78,17 @@ type Tile struct {
 	size int
 }
 
-// Returns a list of all edges in all possible orientations, along with how many tile-orientation combos have that edge
-func (ts TileSet) CountAllPossibleEdges() map[string]int {
+func (ts TileSet) CountAllPossibleEdges() (edgeOccurences map[string]int) {
 	// Tracks the number of distinct edges found in all tiles
-	ret := make(map[string]int)
+	edgeOccurences = make(map[string]int)
 
 	for _, t := range ts {
 		for _, edge := range t.AllPossibleEdges() {
-			ret[edge]++
+			edgeOccurences[edge]++
 		}
 	}
 
-	return ret
+	return edgeOccurences
 }
 
 // Parses a tile from text
@@ -167,7 +166,6 @@ func (t *Tile) Edges() []string {
 }
 
 // Returns all possible edges regardless of current orientation
-// I manually worked out that this would be the current edges plus their mirror images
 func (t *Tile) AllPossibleEdges() []string {
 	edges := t.Edges()
 
