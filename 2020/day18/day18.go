@@ -55,7 +55,7 @@ func Evaluate(expression string, operatorPrecedence map[string]int) (result int)
 // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
 func ReversePolishNotation(expression string, operatorPrecedence map[string]int) (result string) {
 	output := []string{}
-	operatorStack := OperatorStack{[]string{}} // operatorStack includes parenthesis
+	operatorStack := Stack[string]{[]string{}} // operatorStack includes parenthesis
 	stripped := strings.ReplaceAll(expression, " ", "")
 	tokens := strings.Split(stripped, "")
 	for _, token := range tokens {
@@ -96,7 +96,7 @@ func ReversePolishNotation(expression string, operatorPrecedence map[string]int)
 }
 
 func EvaluateReversePolishNotation(rpn string) (result int) {
-	operandStack := OperandStack{[]int{}}
+	operandStack := Stack[int]{[]int{}}
 	tokens := strings.Split(rpn, " ")
 	for _, token := range tokens {
 		if isNumber(token) {
