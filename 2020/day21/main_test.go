@@ -2,12 +2,22 @@ package main
 
 import "testing"
 
-func TestPartOne(t *testing.T) {
-	filename := "example.txt"
-	got := PartOne(filename)
-	want := 5
+type testCase struct {
+	input string
+	want int
+}
 
-	if got != want {
-		t.Errorf("PartOne(%v) got %v want %v", filename, got, want)
+func TestPartOne(t *testing.T) {
+	tests := []testCase{
+		{"example.txt", 5},
+		{"input.txt", 2659},
+	}
+
+	for _, test := range tests {
+		got := PartOne(test.input)
+
+		if got != test.want {
+			t.Errorf("PartOne(%v) got %v want %v", test.input, got, test.want)
+		}
 	}
 }
