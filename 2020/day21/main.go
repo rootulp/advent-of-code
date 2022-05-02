@@ -5,14 +5,18 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
 func main() {
 	fmt.Printf("Starting day 21...\n")
 
-	partOne := PartOne("example.txt")
+	partOne := PartOne("input.txt")
 	fmt.Printf("Part One: %v", partOne)
+
+	partTwo := PartTwo("example.txt")
+	fmt.Printf("Part Two: %v", partTwo)
 }
 
 type Set struct {
@@ -41,6 +45,17 @@ func Intersection(a Set, b Set) (Set) {
 	return Set{set: set}
 }
 
+func GetOnlyKey(s Set) string {
+	if len(s.set) != 1 {
+		log.Fatalf("can not get only key for set with len %v", len(s.set))
+	}
+	keys := []string{}
+	for k, _ := range s.set {
+		keys = append(keys, k)
+	}
+	return keys[0]
+}
+
 // PartOne returns the number of times a "safe ingredient" appears in the list of recipes in filename
 // A "safe ingredient" is one that can not possibly contain any of the allergens
 func PartOne(filename string) int {
@@ -49,11 +64,55 @@ func PartOne(filename string) int {
 	allergenIngredients := getAllergenIngredients(allAllergens)
 	safeIngredients := getSafeIngredients(allIngredients, NewSet(allergenIngredients))
 
-	fmt.Printf("allIngredients %v\n", allIngredients)
-	fmt.Printf("allAllergens %v\n", allAllergens)
-	fmt.Printf("allergenFoods %v\n", allergenIngredients)
-	fmt.Printf("safeIngredients %v\n", safeIngredients)
+	// fmt.Printf("allIngredients %v\n", allIngredients)
+	// fmt.Printf("allAllergens %v\n", allAllergens)
+	// fmt.Printf("allergenFoods %v\n", allergenIngredients)
+	// fmt.Printf("safeIngredients %v\n", safeIngredients)
 	return len(safeIngredients)
+}
+
+// PartTwo returns a canonical dangerous list. The canonical dangerous list is a
+// list of ingredients that contain an allergen. The list is sorted
+// alphabetically and contains no spaces.
+func PartTwo(filename string) (canonicalDangerous string) {
+	lines := readLines(filename)
+	_, allAllergens := parseLines(lines)
+
+	dangerousList := getDangerousList(allAllergens)
+	return strings.Join(dangerousList, ",")
+}
+
+
+func getDangerousList(allAllergens map[string]Set) (dangerous []string) {
+	allergenToIngredient := map[string]string{}
+
+	for len(allAllergens) > 0 {
+		for k, v := range allAllergens {
+			if len(v.set) == 1 {
+				ingredient := GetOnlyKey(v)
+				allergenToIngredient[k] = ingredient
+				delete(allAllergens, k)
+				for _, setToRemoveIngredient := range allAllergens {
+					delete(setToRemoveIngredient.set, ingredient)
+				}
+			}
+		}
+	}
+
+	allergens := []string{}
+	for allergen := range allergenToIngredient {
+		allergens = append(allergens, allergen)
+	}
+	sort.Strings(allergens)
+
+	for _, allergen := range allergens {
+		dangerous = append(dangerous, allergenToIngredient[allergen])
+	}
+
+	// fmt.Printf("allergenToIngredient %v\n", allergenToIngredient)
+	// fmt.Printf("allergens %v\n", allergens)
+	// fmt.Printf("dangerous %v\n", dangerous)
+	return dangerous
 }
 
 func getSafeIngredients(allIngredients []string, allergenIngredients Set) (safeIngredients []string) {
