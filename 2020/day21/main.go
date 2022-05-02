@@ -13,10 +13,10 @@ func main() {
 	fmt.Printf("Starting day 21...\n")
 
 	partOne := PartOne("input.txt")
-	fmt.Printf("Part One: %v", partOne)
+	fmt.Printf("Part One: %v\n", partOne)
 
-	partTwo := PartTwo("example.txt")
-	fmt.Printf("Part Two: %v", partTwo)
+	partTwo := PartTwo("input.txt")
+	fmt.Printf("Part Two: %v\n", partTwo)
 }
 
 type Set struct {
