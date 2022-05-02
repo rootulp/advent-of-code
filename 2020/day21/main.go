@@ -45,21 +45,7 @@ func Intersection(a Set, b Set) (Set) {
 // A "safe ingredient" is one that can not possibly contain any of the allergens
 func PartOne(filename string) int {
 	lines := readLines(filename)
-	allIngredients := []string{}
-	allAllergens := map[string]Set{}
-
-	for _, line := range lines {
-		ingredients, allergens := parseLine(line)
-		allIngredients = append(allIngredients, ingredients...)
-		for _, allergen := range allergens {
-			allergenSet := NewSet(ingredients)
-			if len(allAllergens[allergen].set) == 0 {
-				allAllergens[allergen] = allergenSet
-			} else {
-				allAllergens[allergen] = Intersection(allAllergens[allergen], allergenSet)
-			}
-		}
-	}
+	allIngredients, allAllergens := parseLines(lines)
 
 	allergenFoodList := []string{}
 	for _, set := range allAllergens {
@@ -81,6 +67,24 @@ func PartOne(filename string) int {
 	fmt.Printf("allergenFoods %v\n", allergenFoods)
 	fmt.Printf("safeIngredients %v\n", safeIngredients)
 	return len(safeIngredients)
+}
+
+func parseLines(lines []string) (allIngredients []string, allAllergens map[string]Set) {
+	allAllergens = map[string]Set{}
+
+	for _, line := range lines {
+		ingredients, allergens := parseLine(line)
+		allIngredients = append(allIngredients, ingredients...)
+		for _, allergen := range allergens {
+			allergenSet := NewSet(ingredients)
+			if len(allAllergens[allergen].set) == 0 {
+				allAllergens[allergen] = allergenSet
+			} else {
+				allAllergens[allergen] = Intersection(allAllergens[allergen], allergenSet)
+			}
+		}
+	}
+	return allIngredients, allAllergens
 }
 
 func parseLine (line string) (ingredients []string, allergens []string) {
