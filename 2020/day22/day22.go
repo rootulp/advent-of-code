@@ -56,8 +56,8 @@ func main() {
 	partOne := PartOne("input.txt")
 	fmt.Printf("PartOne: %v\n", partOne)
 
-	// partTwo := PartTwo("example.txt")
-	// fmt.Printf("PartTwo: %v\n", partTwo)
+	partTwo := PartTwo("example.txt")
+	fmt.Printf("PartTwo: %v\n", partTwo)
 }
 
 func PartOne(filename string) (score int) {
@@ -86,6 +86,27 @@ func PartOne(filename string) (score int) {
 		log.Fatalf("neither deck has len > 0")
 	}
 	return 0
+}
+
+func PartTwo(filename string) (score int) {
+	lines := readLines(filename)
+
+	playerOneLines := lines[:len(lines) / 2]
+	playerTwoLines := lines[len(lines) / 2 + 1:]
+
+	deckOne := NewDeck("Player 1", playerOneLines)
+	deckTwo := NewDeck("Player 2", playerTwoLines)
+
+	gameNumber := 1
+	var winner Deck
+	for !isGameOver(deckOne, deckTwo) {
+		deckOne, deckTwo, winner = playGame(deckOne, deckTwo, gameNumber)
+	}
+
+	fmt.Println("== Post-game results ==")
+	fmt.Println(deckOne)
+	fmt.Println(deckTwo)
+	return winningScore(winner)
 }
 
 func winningScore(deck Deck) (score int) {
@@ -129,6 +150,49 @@ func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, ne
 	fmt.Println()
 
 	return newDeckOne, newDeckTwo, roundNumber + 1
+}
+
+func playGame(deckOne Deck, deckTwo Deck, gameNumber int) (deckOne Deck, deckTwo Deck, winner Deck) {
+	fmt.Printf("=== Game %d ===\n\n", gameNumber)
+
+	roundNumber := 1
+	for !isGameOver(deckOne, deckTwo, subgameWinner) {
+		deckOne, deckTwo, roundNumber = playRound(deckOne, deckTwo, roundNumber)
+	}
+
+}
+
+func playRecursiveRound(deckOne Deck, deckTwo Deck, roundNumber int, gameNumber int) (newDeckOne Deck, newDeckTwo Deck, newRoundNumber int, newGameNumber int) {
+	fmt.Printf("-- Round %d -- (Game %d)\n", roundNumber, gameNumber)
+	fmt.Println(deckOne)
+	fmt.Println(deckTwo)
+
+	newDeckOne, playerOneCard := deckOne.shift()
+	newDeckTwo, playerTwoCard := deckTwo.shift()
+
+	fmt.Printf("Player 1 plays: %d\n", playerOneCard)
+	fmt.Printf("Player 2 plays: %d\n", playerTwoCard)
+
+	if shouldRecurse(playerOneCard, len(newDeckOne.cards)) && shouldRecurse(playerTwoCard, len(newDeckTwo.cards)) {
+		fmt.Println("Playing a sub-game to determine the winner...")
+
+
+	} else if playerOneCard > playerTwoCard {
+		fmt.Printf("Player 1 wins round %d of game %d!\n", roundNumber, gameNumber)
+		newDeckOne = newDeckOne.push(playerOneCard)
+		newDeckOne = newDeckOne.push(playerTwoCard)
+	} else {
+		fmt.Printf("Player 2 wins the round!\n")
+		newDeckTwo = newDeckTwo.push(playerTwoCard)
+		newDeckTwo = newDeckTwo.push(playerOneCard)
+	}
+	fmt.Println()
+
+	return newDeckOne, newDeckTwo, roundNumber + 1, gameNumber
+}
+
+func shouldRecurse(currentCard int, numRemainingCards int) bool {
+	return currentCard < numRemainingCards
 }
 
 func readLines(filename string) (lines []string) {
