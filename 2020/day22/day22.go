@@ -71,8 +71,7 @@ func PartOne(filename string) (score int) {
 
 	roundNumber := 1
 	for !isGameOver(deckOne, deckTwo) {
-		deckOne, deckTwo = playRound(deckOne, deckTwo, roundNumber)
-		roundNumber += 1
+		deckOne, deckTwo, roundNumber = playRound(deckOne, deckTwo, roundNumber)
 	}
 
 	fmt.Println("== Post-game results ==")
@@ -107,7 +106,7 @@ func isGameOver(deckOne Deck, deckTwo Deck) bool {
 	return len(deckOne.cards) == 0 || len(deckTwo.cards) == 0
 }
 
-func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, newDeckTwo Deck) {
+func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, newDeckTwo Deck, newRoundNumber int) {
 	fmt.Printf("-- Round %d --\n", roundNumber)
 	fmt.Println(deckOne)
 	fmt.Println(deckTwo)
@@ -129,7 +128,7 @@ func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, ne
 	}
 	fmt.Println()
 
-	return newDeckOne, newDeckTwo
+	return newDeckOne, newDeckTwo, roundNumber + 1
 }
 
 func readLines(filename string) (lines []string) {
