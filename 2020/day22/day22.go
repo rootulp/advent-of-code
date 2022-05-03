@@ -14,7 +14,7 @@ type Deck struct {
 	cards []int
 }
 
-func NewDeck(name string, lines []string) *Deck {
+func NewDeck(name string, lines []string) Deck {
 	cards := []int{}
 	for _, line := range lines {
 		if strings.HasPrefix(line, "Player") {
@@ -26,22 +26,28 @@ func NewDeck(name string, lines []string) *Deck {
 		}
 		cards = append(cards, card)
 	}
-	return &Deck{name, cards}
+	return Deck{name, cards}
 }
 
-func (d *Deck) String() string {
+func (d Deck) String() string {
 	return fmt.Sprintf("%s: %v", d.name, d.cards)
 }
 
-func (d *Deck) push(card int) {
-	d.cards = append(d.cards, card)
+func (d Deck) push(card int) Deck {
+	return Deck{
+		d.name,
+		append(d.cards, card),
+	}
 }
 
-func (d *Deck) shift() int {
-	result := d.cards[0]
-	d.cards = d.cards[1:]
+func (d Deck) shift() (newDeck Deck, result int) {
+	newDeck = Deck{
+		d.name,
+		d.cards[1:],
+	}
+	result = d.cards[0]
 
-	return result
+	return newDeck, result
 }
 
 func main() {
@@ -65,7 +71,7 @@ func PartOne(filename string) (score int) {
 
 	roundNumber := 1
 	for !isGameOver(deckOne, deckTwo) {
-		playRound(deckOne, deckTwo, roundNumber)
+		deckOne, deckTwo = playRound(deckOne, deckTwo, roundNumber)
 		roundNumber += 1
 	}
 
@@ -83,7 +89,7 @@ func PartOne(filename string) (score int) {
 	return 0
 }
 
-func winningScore(deck *Deck) (score int) {
+func winningScore(deck Deck) (score int) {
 	for i, card := range reverse(deck.cards) {
 		score += card * (i + 1)
 	}
@@ -97,32 +103,33 @@ func reverse(list []int) (reversed []int) {
 	return reversed
 }
 
-func isGameOver(deckOne *Deck, deckTwo *Deck) bool {
+func isGameOver(deckOne Deck, deckTwo Deck) bool {
 	return len(deckOne.cards) == 0 || len(deckTwo.cards) == 0
 }
 
-func playRound(deckOne *Deck, deckTwo *Deck, roundNumber int) {
+func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, newDeckTwo Deck) {
 	fmt.Printf("-- Round %d --\n", roundNumber)
 	fmt.Println(deckOne)
 	fmt.Println(deckTwo)
 
-	playerOneCard := deckOne.shift()
-	playerTwoCard := deckTwo.shift()
+	newDeckOne, playerOneCard := deckOne.shift()
+	newDeckTwo, playerTwoCard := deckTwo.shift()
 
 	fmt.Printf("Player 1 plays: %d\n", playerOneCard)
 	fmt.Printf("Player 2 plays: %d\n", playerTwoCard)
 
 	if playerOneCard > playerTwoCard {
 		fmt.Printf("Player 1 wins the round!\n")
-		deckOne.push(playerOneCard)
-		deckOne.push(playerTwoCard)
+		newDeckOne = newDeckOne.push(playerOneCard)
+		newDeckOne = newDeckOne.push(playerTwoCard)
 	} else {
 		fmt.Printf("Player 2 wins the round!\n")
-		deckTwo.push(playerTwoCard)
-		deckTwo.push(playerOneCard)
+		newDeckTwo = newDeckTwo.push(playerTwoCard)
+		newDeckTwo = newDeckTwo.push(playerOneCard)
 	}
-
 	fmt.Println()
+
+	return newDeckOne, newDeckTwo
 }
 
 func readLines(filename string) (lines []string) {
