@@ -47,7 +47,7 @@ func (d *Deck) shift() int {
 func main() {
 	fmt.Printf("Starting day22...\n")
 
-	partOne := PartOne("example.txt")
+	partOne := PartOne("input.txt")
 	fmt.Printf("PartOne: %v\n", partOne)
 
 	// partTwo := PartTwo("example.txt")

@@ -10,6 +10,7 @@ func TestPartOne(t *testing.T) {
 
 	tests := []testCase{
 		{"example.txt", 306},
+		{"input.txt", 33403},
 	}
 
 	for _, test := range tests {
