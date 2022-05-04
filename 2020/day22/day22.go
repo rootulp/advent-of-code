@@ -70,8 +70,8 @@ func (d Deck) Len() int {
 func main() {
 	fmt.Printf("Starting day22...\n")
 
-	// partOne := PartOne("input.txt")
-	// fmt.Printf("PartOne: %v\n", partOne)
+	partOne := PartOne("input.txt")
+	fmt.Printf("PartOne: %v\n", partOne)
 
 	partTwo := PartTwo("input.txt")
 	fmt.Printf("PartTwo: %v\n", partTwo)
@@ -79,9 +79,7 @@ func main() {
 
 func PartOne(filename string) (score int) {
 	lines := readLines(filename)
-
-	playerOneLines := lines[:len(lines) / 2]
-	playerTwoLines := lines[len(lines) / 2 + 1:]
+	playerOneLines, playerTwoLines := splitLines(lines)
 
 	deckOne := NewDeck("Player 1", playerOneLines)
 	deckTwo := NewDeck("Player 2", playerTwoLines)
@@ -107,9 +105,7 @@ func PartOne(filename string) (score int) {
 
 func PartTwo(filename string) (score int) {
 	lines := readLines(filename)
-
-	playerOneLines := lines[:len(lines) / 2]
-	playerTwoLines := lines[len(lines) / 2 + 1:]
+	playerOneLines, playerTwoLines := splitLines(lines)
 
 	deckOne := NewDeck("Player 1", playerOneLines)
 	deckTwo := NewDeck("Player 2", playerTwoLines)
@@ -323,4 +319,11 @@ func readLines(filename string) (lines []string) {
 		log.Fatal(err)
 	}
 	return lines
+}
+
+func splitLines(lines []string) (playerOneLines []string, playerTwoLines []string) {
+	playerOneLines = lines[:len(lines) / 2]
+	playerTwoLines = lines[len(lines) / 2 + 1:]
+
+	return playerOneLines, playerTwoLines
 }
