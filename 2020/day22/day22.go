@@ -68,6 +68,13 @@ func (d Deck) Len() int {
 	return len(d.cards)
 }
 
+func (d Deck) Score() (score int) {
+	for i, card := range reverse(d.cards) {
+		score += card * (i + 1)
+	}
+	return score
+}
+
 func main() {
 	fmt.Printf("Starting day22...\n")
 
@@ -94,11 +101,11 @@ func PartOne(filename string) (score int) {
 	fmt.Println(deckOne)
 	fmt.Println(deckTwo)
 
-	winner, err := getWinningDeck(deckOne, deckTwo)
+	winningDeck, err := getWinningDeck(deckOne, deckTwo)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return winningScore(winner)
+	return winningDeck.Score()
 }
 
 func PartTwo(filename string) (score int) {
@@ -118,7 +125,7 @@ func PartTwo(filename string) (score int) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return winningScore(winningDeck)
+	return winningDeck.Score()
 }
 
 func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (newDeckOne Deck, newDeckTwo Deck, winner string) {
@@ -204,12 +211,6 @@ func serialize(deckOne Deck, deckTwo Deck) (serialized string) {
 	return strings.Join([]string{serializedOne, serializedTwo}, "|")
 }
 
-func winningScore(deck Deck) (score int) {
-	for i, card := range reverse(deck.cards) {
-		score += card * (i + 1)
-	}
-	return score
-}
 
 func reverse(list []int) (reversed []int) {
 	for _, element := range list {
