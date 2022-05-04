@@ -6,6 +6,8 @@ import (
 	"strconv"
 )
 
+const NUM_CUPS_TO_PICK_UP int = 3
+
 type Game struct {
 	cups []int
 	currentCupIndex int
@@ -16,8 +18,33 @@ func NewGame(input string) (Game) {
 }
 
 func (g Game) Move() (newGame Game) {
-	// TODO
-	return g
+	fmt.Print(g)
+
+	// TODO this has to wrap around
+	startIndexPickUp := g.currentCupIndex + 1
+	stopIndexPickUp := g.currentCupIndex + 4
+
+	pickedUp := g.cups[startIndexPickUp:stopIndexPickUp]
+	fmt.Printf("pick up: %v\n", pickedUp)
+
+	remainingCups := g.getRemainingCups(startIndexPickUp, stopIndexPickUp)
+	fmt.Printf("remaining: %v\n", remainingCups)
+
+	destination := g.DestinationCup(pickedUp)
+	fmt.Printf("destination: %v\n", destination)
+
+	destinationIndex, err := indexOf(remainingCups, destination)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	newCups := insertInto(remainingCups, pickedUp, destinationIndex)
+	currentIndex, err := indexOf(newCups, g.CurrentCup())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return Game{newCups, currentIndex + 1}
 }
 
 func (g Game) CupOrder() (result string) {
@@ -33,6 +60,18 @@ func (g Game) CupOrder() (result string) {
 		result += strconv.Itoa(g.cups[cupIndex])
 	}
 	return result
+}
+
+func (g Game) DestinationCup(pickedUp []int) (destinationCup int) {
+	destinationCup = g.CurrentCup() - 1
+	for contains(pickedUp, destinationCup) {
+		destinationCup = g.decrementCup(destinationCup)
+	}
+	return destinationCup
+}
+
+func (g Game) CurrentCup() (cup int) {
+	return g.cups[g.currentCupIndex]
 }
 
 func (g Game) String() (result string) {
@@ -51,6 +90,35 @@ func parseCups(input string) (cups []int) {
 	}
 
 	return cups
+}
+
+func (g Game) decrementCup(cup int) (int) {
+	if cup == 1 {
+		return g.maxCup()
+	}
+	return cup - 1
+}
+
+// func (g Game) incrementCup(cup int) (int) {
+// 	if cup == g.maxCup {
+// 		return g.maxCup()
+// 	}
+// 	return cup - 1
+// }
+
+func (g Game) maxCup() (max int) {
+	for _, cup := range g.cups {
+		if cup > max {
+			max = cup
+		}
+	}
+	return max
+}
+
+func (g Game) getRemainingCups(startIndexPickUp int, stopIndexPickUp int) (remainingCups []int) {
+	remainingCups = append([]int{}, g.cups[:startIndexPickUp]...)
+	remainingCups = append(remainingCups, g.cups[stopIndexPickUp:]...)
+	return remainingCups
 }
 
 // PartOne retruns the order of the cups after applying numMoves
@@ -74,4 +142,21 @@ func indexOf(list []int, item int) (index int, err error) {
 		}
 	}
 	return 0, fmt.Errorf("item %v not found in list %v", item, list)
+}
+
+func contains(list []int, item int) bool {
+	for _, val := range list {
+		if val == item {
+			return true
+		}
+	}
+	return false
+}
+
+func insertInto(list []int, itemsToInsert []int, index int) (result []int) {
+	result = append(result, list[:index+1]...)
+	result = append(result, itemsToInsert...)
+	result = append(result, list[index+1:]...)
+
+	return result
 }
