@@ -20,15 +20,7 @@ func NewGame(input string) (Game) {
 func (g Game) Move() (newGame Game) {
 	fmt.Print(g)
 
-	// TODO this has to wrap around
-	startIndexPickUp := g.currentCupIndex + 1
-	stopIndexPickUp := g.currentCupIndex + 4
-
-	pickedUp := g.cups[startIndexPickUp:stopIndexPickUp]
-	fmt.Printf("pick up: %v\n", pickedUp)
-
-	remainingCups := g.getRemainingCups(startIndexPickUp, stopIndexPickUp)
-	fmt.Printf("remaining: %v\n", remainingCups)
+	pickedUp, remainingCups := g.PickUp()
 
 	destination := g.DestinationCup(pickedUp)
 	fmt.Printf("destination: %v\n", destination)
@@ -45,6 +37,20 @@ func (g Game) Move() (newGame Game) {
 	}
 
 	return Game{newCups, currentIndex + 1}
+}
+
+func (g Game) PickUp() (pickedUp []int, remainingCups []int) {
+	// TODO this has to wrap around
+	startIndexPickUp := g.currentCupIndex + 1
+	stopIndexPickUp := g.currentCupIndex + 4
+
+	pickedUp = g.cups[startIndexPickUp:stopIndexPickUp]
+	fmt.Printf("pick up: %v\n", pickedUp)
+
+	remainingCups = g.getRemainingCups(startIndexPickUp, stopIndexPickUp)
+	fmt.Printf("remaining: %v\n", remainingCups)
+
+	return pickedUp, remainingCups
 }
 
 func (g Game) CupOrder() (result string) {
