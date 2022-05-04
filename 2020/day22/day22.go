@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -128,101 +127,7 @@ func PartTwo(filename string) (score int) {
 	return winningDeck.Score()
 }
 
-func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (newDeckOne Deck, newDeckTwo Deck, winner string) {
-	fmt.Printf("=== Game %d ===\n\n", gameNumber)
-
-	// seen is a map from serialized game state to true (if seen)
-	seen := map[string]bool{}
-
-	roundNumber := 1
-	for !isGameOver(deckOne, deckTwo) {
-		if hasSeenBefore(seen, deckOne, deckTwo) {
-			fmt.Printf("hasSeenBefore triggered\n")
-			return deckOne, deckTwo, deckOne.name
-		}
-		serialized := serialize(deckOne, deckTwo)
-		seen[serialized] = true
-
-		fmt.Printf("=== Round %d (Game %d) --\n", roundNumber, gameNumber)
-		fmt.Println(deckOne)
-		fmt.Println(deckTwo)
-
-		newDeckOne, playerOneCard := deckOne.Shift()
-		newDeckTwo, playerTwoCard := deckTwo.Shift()
-
-		fmt.Printf("Player 1 plays: %d\n", playerOneCard)
-		fmt.Printf("Player 2 plays: %d\n", playerTwoCard)
-		if playerOneCard <= len(newDeckOne.cards) && playerTwoCard <= len(newDeckTwo.cards) {
-			fmt.Printf("Playing a sub-game to determine the winner...\n")
-			copiedDeckOne := newDeckOne.Copy(playerOneCard)
-			copiedDeckTwo := newDeckTwo.Copy(playerTwoCard)
-			_, _, winner := playSubGame(copiedDeckOne, copiedDeckTwo, gameNumber + 1)
-			if winner == deckOne.name {
-				fmt.Printf("Player 1 wins the round!\n")
-				newDeckOne = newDeckOne.Push(playerOneCard)
-				newDeckOne = newDeckOne.Push(playerTwoCard)
-			} else if winner == deckTwo.name {
-				fmt.Printf("Player 2 wins the round!\n")
-				newDeckTwo = newDeckTwo.Push(playerTwoCard)
-				newDeckTwo = newDeckTwo.Push(playerOneCard)
-			}
-		} else if playerOneCard > playerTwoCard {
-			fmt.Printf("Player 1 wins the round!\n")
-			newDeckOne = newDeckOne.Push(playerOneCard)
-			newDeckOne = newDeckOne.Push(playerTwoCard)
-			winner = deckOne.name
-		} else {
-			fmt.Printf("Player 2 wins the round!\n")
-			newDeckTwo = newDeckTwo.Push(playerTwoCard)
-			newDeckTwo = newDeckTwo.Push(playerOneCard)
-			winner = deckTwo.name
-		}
-		deckOne = newDeckOne
-		deckTwo = newDeckTwo
-		roundNumber += 1
-	}
-
-	fmt.Printf("...anyway, back to game %d.\n", gameNumber - 1)
-	return deckOne, deckTwo, winner
-}
-
-func hasSeenBefore(seen map[string]bool, deckOne Deck, deckTwo Deck) bool {
-	serialized := serialize(deckOne, deckTwo)
-	result := seen[serialized]
-	if result {
-		fmt.Printf("serizlied %v\n", serialized)
-		// PrettyPrint(seen)
-	}
-	return result
-}
-
-func PrettyPrint(v interface{}) (err error) {
-	b, err := json.MarshalIndent(v, "", "  ")
-	if err == nil {
-			fmt.Println(string(b))
-	}
-	return
-}
-
-func serialize(deckOne Deck, deckTwo Deck) (serialized string) {
-	serializedOne := deckOne.String()
-	serializedTwo := deckTwo.String()
-
-	return strings.Join([]string{serializedOne, serializedTwo}, "|")
-}
-
-
-func reverse(list []int) (reversed []int) {
-	for _, element := range list {
-		reversed = append([]int{element}, reversed...)
-	}
-	return reversed
-}
-
-func isGameOver(deckOne Deck, deckTwo Deck) bool {
-	return deckOne.Len() == 0 || deckTwo.Len() == 0
-}
-
+// playRound plays a round according to the rules of PartOne
 func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, newDeckTwo Deck, newRoundNumber int) {
 	fmt.Printf("-- Round %d --\n", roundNumber)
 	fmt.Println(deckOne)
@@ -246,6 +151,87 @@ func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, ne
 	fmt.Println()
 
 	return newDeckOne, newDeckTwo, roundNumber + 1
+}
+
+
+// playSubGame plays a game according to the rules of PartTwo
+func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (newDeckOne Deck, newDeckTwo Deck, winner string) {
+	fmt.Printf("=== Game %d ===\n\n", gameNumber)
+
+	// seen is a map from serialized game state to true (if seen)
+	seen := map[string]bool{}
+
+	roundNumber := 1
+	for !isGameOver(deckOne, deckTwo) {
+		if hasSeenBefore(seen, deckOne, deckTwo) {
+			return deckOne, deckTwo, deckOne.name
+		}
+		serialized := serialize(deckOne, deckTwo)
+		seen[serialized] = true
+
+		fmt.Printf("=== Round %d (Game %d) --\n", roundNumber, gameNumber)
+		fmt.Println(deckOne)
+		fmt.Println(deckTwo)
+
+		newDeckOne, playerOneCard := deckOne.Shift()
+		newDeckTwo, playerTwoCard := deckTwo.Shift()
+
+		fmt.Printf("Player 1 plays: %d\n", playerOneCard)
+		fmt.Printf("Player 2 plays: %d\n", playerTwoCard)
+		if playerOneCard <= len(newDeckOne.cards) && playerTwoCard <= len(newDeckTwo.cards) {
+			fmt.Printf("Playing a sub-game to determine the winner...\n")
+			copiedDeckOne := newDeckOne.Copy(playerOneCard)
+			copiedDeckTwo := newDeckTwo.Copy(playerTwoCard)
+			_, _, winner = playSubGame(copiedDeckOne, copiedDeckTwo, gameNumber + 1)
+		} else if playerOneCard > playerTwoCard {
+			winner = deckOne.name
+		} else {
+			winner = deckTwo.name
+		}
+
+		if winner == deckOne.name {
+			fmt.Printf("Player 1 wins the round!\n")
+			newDeckOne = newDeckOne.Push(playerOneCard)
+			newDeckOne = newDeckOne.Push(playerTwoCard)
+		} else if winner == deckTwo.name {
+			fmt.Printf("Player 2 wins the round!\n")
+			newDeckTwo = newDeckTwo.Push(playerTwoCard)
+			newDeckTwo = newDeckTwo.Push(playerOneCard)
+		} else {
+			log.Fatal("unexpected winner")
+		}
+
+		deckOne = newDeckOne
+		deckTwo = newDeckTwo
+		roundNumber += 1
+	}
+
+	fmt.Printf("...anyway, back to game %d.\n", gameNumber - 1)
+	return deckOne, deckTwo, winner
+}
+
+func hasSeenBefore(seen map[string]bool, deckOne Deck, deckTwo Deck) bool {
+	serialized := serialize(deckOne, deckTwo)
+	return seen[serialized]
+}
+
+
+func serialize(deckOne Deck, deckTwo Deck) (serialized string) {
+	serializedOne := deckOne.String()
+	serializedTwo := deckTwo.String()
+
+	return strings.Join([]string{serializedOne, serializedTwo}, "|")
+}
+
+func reverse(list []int) (reversed []int) {
+	for _, element := range list {
+		reversed = append([]int{element}, reversed...)
+	}
+	return reversed
+}
+
+func isGameOver(deckOne Deck, deckTwo Deck) bool {
+	return deckOne.Len() == 0 || deckTwo.Len() == 0
 }
 
 func readLines(filename string) (lines []string) {
