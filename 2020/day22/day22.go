@@ -69,7 +69,7 @@ func main() {
 	// partOne := PartOne("input.txt")
 	// fmt.Printf("PartOne: %v\n", partOne)
 
-	partTwo := PartTwo("example.txt")
+	partTwo := PartTwo("input.txt")
 	fmt.Printf("PartTwo: %v\n", partTwo)
 }
 
@@ -239,7 +239,7 @@ func hasSeenBefore(seen map[string]bool, deckOne Deck, deckTwo Deck) bool {
 	result := seen[serialized]
 	if result {
 		fmt.Printf("serizlied %v\n", serialized)
-		PrettyPrint(seen)
+		// PrettyPrint(seen)
 	}
 	return result
 }

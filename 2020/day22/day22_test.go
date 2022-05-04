@@ -25,7 +25,7 @@ func TestPartOne(t *testing.T) {
 func TestPartTwo(t *testing.T) {
 	tests := []testCase {
 		{"example.txt", 291},
-		{"input.txt", 0},
+		{"input.txt", 29177}, // takes a while to run
 	}
 
 	for _, test := range tests {
