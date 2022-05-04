@@ -138,6 +138,12 @@ func pop(list []int, index int) (remaining []int, popped int) {
 	return remaining, popped
 }
 
+func main() {
+	fmt.Printf("Starting day23...\n")
+
+	partOne := PartOne("685974213", 100)
+	fmt.Printf("PartOne %v\n", partOne)
+}
 // PartOne retruns the order of the cups after applying numMoves
 func PartOne(input string, numMoves int) (result string) {
 	game := NewGame(input)
