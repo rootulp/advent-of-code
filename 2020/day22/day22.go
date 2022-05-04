@@ -94,7 +94,7 @@ func PartOne(filename string) (score int) {
 	fmt.Println(deckOne)
 	fmt.Println(deckTwo)
 
-	winner, err := getWinner(deckOne, deckTwo)
+	winner, err := getWinningDeck(deckOne, deckTwo)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -108,70 +108,20 @@ func PartTwo(filename string) (score int) {
 	deckOne := NewDeck("Player 1", playerOneLines)
 	deckTwo := NewDeck("Player 2", playerTwoLines)
 
-	gameNumber := 1
-	fmt.Printf("=== Game %d ===\n\n", gameNumber)
-
-	// seen is a map from serialized game state to true (if seen)
-	seen := map[string]bool{}
-
-	roundNumber := 1
-	for !isGameOver(deckOne, deckTwo) {
-		if hasSeenBefore(seen, deckOne, deckTwo) {
-			return winningScore(deckOne)
-		}
-		serialized := serialize(deckOne, deckTwo)
-		seen[serialized] = true
-
-		fmt.Printf("-- Round %d (Game %d) --\n", roundNumber, gameNumber)
-		fmt.Println(deckOne)
-		fmt.Println(deckTwo)
-
-		newDeckOne, playerOneCard := deckOne.Shift()
-		newDeckTwo, playerTwoCard := deckTwo.Shift()
-
-		fmt.Printf("Player 1 plays: %d\n", playerOneCard)
-		fmt.Printf("Player 2 plays: %d\n", playerTwoCard)
-		shouldRecurse := playerOneCard <= len(newDeckOne.cards) && playerTwoCard <= len(newDeckTwo.cards)
-		if shouldRecurse{
-			fmt.Printf("Playing a sub-game to determine the winner...\n")
-			copiedDeckOne := newDeckOne.Copy(playerOneCard)
-			copiedDeckTwo := newDeckTwo.Copy(playerTwoCard)
-			winner := playSubGame(copiedDeckOne, copiedDeckTwo, gameNumber + 1)
-			if winner == deckOne.name {
-				fmt.Printf("Player 1 wins the round!\n")
-				newDeckOne = newDeckOne.Push(playerOneCard)
-				newDeckOne = newDeckOne.Push(playerTwoCard)
-			} else if winner == deckTwo.name {
-				fmt.Printf("Player 2 wins the round!\n")
-				newDeckTwo = newDeckTwo.Push(playerTwoCard)
-				newDeckTwo = newDeckTwo.Push(playerOneCard)
-			}
-		} else if playerOneCard > playerTwoCard {
-			fmt.Printf("Player 1 wins the round!\n")
-			newDeckOne = newDeckOne.Push(playerOneCard)
-			newDeckOne = newDeckOne.Push(playerTwoCard)
-		} else {
-			fmt.Printf("Player 2 wins the round!\n")
-			newDeckTwo = newDeckTwo.Push(playerTwoCard)
-			newDeckTwo = newDeckTwo.Push(playerOneCard)
-		}
-		deckOne = newDeckOne
-		deckTwo = newDeckTwo
-		roundNumber += 1
-	}
+	newDeckOne, newDeckTwo, _ := playSubGame(deckOne, deckTwo, 1)
 
 	fmt.Println("== Post-game results ==")
-	fmt.Println(deckOne)
-	fmt.Println(deckTwo)
+	fmt.Println(newDeckOne)
+	fmt.Println(newDeckTwo)
 
-	winner, err := getWinner(deckOne, deckTwo)
+	winningDeck, err := getWinningDeck(newDeckOne, newDeckTwo)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return winningScore(winner)
+	return winningScore(winningDeck)
 }
 
-func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (winner string) {
+func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (newDeckOne Deck, newDeckTwo Deck, winner string) {
 	fmt.Printf("=== Game %d ===\n\n", gameNumber)
 
 	// seen is a map from serialized game state to true (if seen)
@@ -181,7 +131,7 @@ func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (winner string) {
 	for !isGameOver(deckOne, deckTwo) {
 		if hasSeenBefore(seen, deckOne, deckTwo) {
 			fmt.Printf("hasSeenBefore triggered\n")
-			return deckOne.name
+			return deckOne, deckTwo, deckOne.name
 		}
 		serialized := serialize(deckOne, deckTwo)
 		seen[serialized] = true
@@ -199,7 +149,7 @@ func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (winner string) {
 			fmt.Printf("Playing a sub-game to determine the winner...\n")
 			copiedDeckOne := newDeckOne.Copy(playerOneCard)
 			copiedDeckTwo := newDeckTwo.Copy(playerTwoCard)
-			winner := playSubGame(copiedDeckOne, copiedDeckTwo, gameNumber + 1)
+			_, _, winner := playSubGame(copiedDeckOne, copiedDeckTwo, gameNumber + 1)
 			if winner == deckOne.name {
 				fmt.Printf("Player 1 wins the round!\n")
 				newDeckOne = newDeckOne.Push(playerOneCard)
@@ -226,7 +176,7 @@ func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (winner string) {
 	}
 
 	fmt.Printf("...anyway, back to game %d.\n", gameNumber - 1)
-	return winner
+	return deckOne, deckTwo, winner
 }
 
 func hasSeenBefore(seen map[string]bool, deckOne Deck, deckTwo Deck) bool {
@@ -323,7 +273,7 @@ func splitLines(lines []string) (playerOneLines []string, playerTwoLines []strin
 	return playerOneLines, playerTwoLines
 }
 
-func getWinner(deckOne Deck, deckTwo Deck) (winner Deck, err error) {
+func getWinningDeck(deckOne Deck, deckTwo Deck) (winner Deck, err error) {
 	if deckOne.Len() > 0 {
 		return deckOne, nil
 	} else if deckTwo.Len() > 0 {
