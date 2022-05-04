@@ -31,23 +31,32 @@ func (g Game) Move() (newGame Game) {
 	}
 
 	newCups := insertInto(remainingCups, pickedUp, destinationIndex)
-	currentIndex, err := indexOf(newCups, g.CurrentCup())
+	newIndex := incrementCurrentCupIndex(newCups, g.CurrentCup())
+
+	return Game{newCups, newIndex}
+}
+
+func incrementCurrentCupIndex(newCups []int, currentCup int) (newIndex int) {
+	currentIndex, err := indexOf(newCups, currentCup)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return Game{newCups, currentIndex + 1}
+	if currentIndex == len(newCups) - 1 {
+		return 0
+	}
+	return currentIndex + 1
 }
 
 func (g Game) PickUp() (pickedUp []int, remainingCups []int) {
-	// TODO this has to wrap around
-	startIndexPickUp := g.currentCupIndex + 1
-	stopIndexPickUp := g.currentCupIndex + 4
+	remainingCups = append([]int{}, g.cups...)
 
-	pickedUp = g.cups[startIndexPickUp:stopIndexPickUp]
+	for i := 0; i < NUM_CUPS_TO_PICK_UP; i += 1 {
+		remaining, popped := pop(remainingCups, g.currentCupIndex + 1)
+		remainingCups = remaining
+		pickedUp = append(pickedUp, popped)
+	}
 	fmt.Printf("pick up: %v\n", pickedUp)
-
-	remainingCups = g.getRemainingCups(startIndexPickUp, stopIndexPickUp)
 	fmt.Printf("remaining: %v\n", remainingCups)
 
 	return pickedUp, remainingCups
@@ -70,6 +79,9 @@ func (g Game) CupOrder() (result string) {
 
 func (g Game) DestinationCup(pickedUp []int) (destinationCup int) {
 	destinationCup = g.CurrentCup() - 1
+	if destinationCup == 0 {
+		destinationCup = g.maxCup()
+	}
 	for contains(pickedUp, destinationCup) {
 		destinationCup = g.decrementCup(destinationCup)
 	}
@@ -99,7 +111,7 @@ func parseCups(input string) (cups []int) {
 }
 
 func (g Game) decrementCup(cup int) (int) {
-	if cup == 1 {
+	if cup <= 1 {
 		return g.maxCup()
 	}
 	return cup - 1
@@ -119,6 +131,17 @@ func (g Game) maxCup() (max int) {
 		}
 	}
 	return max
+}
+
+func pop(list []int, index int) (remaining []int, popped int) {
+	if index >= len(list) {
+		return pop(list, 0)
+	}
+	popped = list[index]
+	remaining = append([]int{}, list[:index]...)
+	remaining = append(remaining, list[index + 1:]...)
+
+	return remaining, popped
 }
 
 func (g Game) getRemainingCups(startIndexPickUp int, stopIndexPickUp int) (remainingCups []int) {
