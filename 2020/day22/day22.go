@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -93,14 +94,11 @@ func PartOne(filename string) (score int) {
 	fmt.Println(deckOne)
 	fmt.Println(deckTwo)
 
-	if deckOne.Len() > 0 {
-		return winningScore(deckOne)
-	} else if deckTwo.Len() > 0 {
-		return winningScore(deckTwo)
-	} else {
-		log.Fatalf("neither deck has len > 0")
+	winner, err := getWinner(deckOne, deckTwo)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return 0
+	return winningScore(winner)
 }
 
 func PartTwo(filename string) (score int) {
@@ -166,14 +164,11 @@ func PartTwo(filename string) (score int) {
 	fmt.Println(deckOne)
 	fmt.Println(deckTwo)
 
-	if deckOne.Len() > 0 {
-		return winningScore(deckOne)
-	} else if deckTwo.Len() > 0 {
-		return winningScore(deckTwo)
-	} else {
-		log.Fatalf("neither deck has len > 0")
+	winner, err := getWinner(deckOne, deckTwo)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return 0
+	return winningScore(winner)
 }
 
 func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (winner string) {
@@ -326,4 +321,14 @@ func splitLines(lines []string) (playerOneLines []string, playerTwoLines []strin
 	playerTwoLines = lines[len(lines) / 2 + 1:]
 
 	return playerOneLines, playerTwoLines
+}
+
+func getWinner(deckOne Deck, deckTwo Deck) (winner Deck, err error) {
+	if deckOne.Len() > 0 {
+		return deckOne, nil
+	} else if deckTwo.Len() > 0 {
+		return deckTwo, nil
+	} else {
+		return Deck{}, errors.New("neither deck has len > 0")
+	}
 }
