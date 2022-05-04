@@ -34,14 +34,14 @@ func (d Deck) String() string {
 	return fmt.Sprintf("%s: %v", d.name, d.cards)
 }
 
-func (d Deck) push(card int) Deck {
+func (d Deck) Push(card int) Deck {
 	return Deck{
 		d.name,
 		append(d.cards, card),
 	}
 }
 
-func (d Deck) shift() (newDeck Deck, result int) {
+func (d Deck) Shift() (newDeck Deck, result int) {
 	newDeck = Deck{
 		d.name,
 		d.cards[1:],
@@ -51,7 +51,7 @@ func (d Deck) shift() (newDeck Deck, result int) {
 	return newDeck, result
 }
 
-func (d Deck) copy(numCards int) (newDeck Deck) {
+func (d Deck) Copy(numCards int) (newDeck Deck) {
 	newCards := make([]int, numCards)
 	copy(newCards, d.cards)
 
@@ -61,6 +61,10 @@ func (d Deck) copy(numCards int) (newDeck Deck) {
 	}
 
 	return newDeck
+}
+
+func (d Deck) Len() int {
+	return len(d.cards)
 }
 
 func main() {
@@ -91,9 +95,9 @@ func PartOne(filename string) (score int) {
 	fmt.Println(deckOne)
 	fmt.Println(deckTwo)
 
-	if len(deckOne.cards) > 0 {
+	if deckOne.Len() > 0 {
 		return winningScore(deckOne)
-	} else if len(deckTwo.cards) > 0 {
+	} else if deckTwo.Len() > 0 {
 		return winningScore(deckTwo)
 	} else {
 		log.Fatalf("neither deck has len > 0")
@@ -128,34 +132,34 @@ func PartTwo(filename string) (score int) {
 		fmt.Println(deckOne)
 		fmt.Println(deckTwo)
 
-		newDeckOne, playerOneCard := deckOne.shift()
-		newDeckTwo, playerTwoCard := deckTwo.shift()
+		newDeckOne, playerOneCard := deckOne.Shift()
+		newDeckTwo, playerTwoCard := deckTwo.Shift()
 
 		fmt.Printf("Player 1 plays: %d\n", playerOneCard)
 		fmt.Printf("Player 2 plays: %d\n", playerTwoCard)
 		shouldRecurse := playerOneCard <= len(newDeckOne.cards) && playerTwoCard <= len(newDeckTwo.cards)
 		if shouldRecurse{
 			fmt.Printf("Playing a sub-game to determine the winner...\n")
-			copiedDeckOne := newDeckOne.copy(playerOneCard)
-			copiedDeckTwo := newDeckTwo.copy(playerTwoCard)
+			copiedDeckOne := newDeckOne.Copy(playerOneCard)
+			copiedDeckTwo := newDeckTwo.Copy(playerTwoCard)
 			winner := playSubGame(copiedDeckOne, copiedDeckTwo, gameNumber + 1)
 			if winner == deckOne.name {
 				fmt.Printf("Player 1 wins the round!\n")
-				newDeckOne = newDeckOne.push(playerOneCard)
-				newDeckOne = newDeckOne.push(playerTwoCard)
+				newDeckOne = newDeckOne.Push(playerOneCard)
+				newDeckOne = newDeckOne.Push(playerTwoCard)
 			} else if winner == deckTwo.name {
 				fmt.Printf("Player 2 wins the round!\n")
-				newDeckTwo = newDeckTwo.push(playerTwoCard)
-				newDeckTwo = newDeckTwo.push(playerOneCard)
+				newDeckTwo = newDeckTwo.Push(playerTwoCard)
+				newDeckTwo = newDeckTwo.Push(playerOneCard)
 			}
 		} else if playerOneCard > playerTwoCard {
 			fmt.Printf("Player 1 wins the round!\n")
-			newDeckOne = newDeckOne.push(playerOneCard)
-			newDeckOne = newDeckOne.push(playerTwoCard)
+			newDeckOne = newDeckOne.Push(playerOneCard)
+			newDeckOne = newDeckOne.Push(playerTwoCard)
 		} else {
 			fmt.Printf("Player 2 wins the round!\n")
-			newDeckTwo = newDeckTwo.push(playerTwoCard)
-			newDeckTwo = newDeckTwo.push(playerOneCard)
+			newDeckTwo = newDeckTwo.Push(playerTwoCard)
+			newDeckTwo = newDeckTwo.Push(playerOneCard)
 		}
 		deckOne = newDeckOne
 		deckTwo = newDeckTwo
@@ -166,9 +170,9 @@ func PartTwo(filename string) (score int) {
 	fmt.Println(deckOne)
 	fmt.Println(deckTwo)
 
-	if len(deckOne.cards) > 0 {
+	if deckOne.Len() > 0 {
 		return winningScore(deckOne)
-	} else if len(deckTwo.cards) > 0 {
+	} else if deckTwo.Len() > 0 {
 		return winningScore(deckTwo)
 	} else {
 		log.Fatalf("neither deck has len > 0")
@@ -195,34 +199,34 @@ func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (winner string) {
 		fmt.Println(deckOne)
 		fmt.Println(deckTwo)
 
-		newDeckOne, playerOneCard := deckOne.shift()
-		newDeckTwo, playerTwoCard := deckTwo.shift()
+		newDeckOne, playerOneCard := deckOne.Shift()
+		newDeckTwo, playerTwoCard := deckTwo.Shift()
 
 		fmt.Printf("Player 1 plays: %d\n", playerOneCard)
 		fmt.Printf("Player 2 plays: %d\n", playerTwoCard)
 		if playerOneCard <= len(newDeckOne.cards) && playerTwoCard <= len(newDeckTwo.cards) {
 			fmt.Printf("Playing a sub-game to determine the winner...\n")
-			copiedDeckOne := newDeckOne.copy(playerOneCard)
-			copiedDeckTwo := newDeckTwo.copy(playerTwoCard)
+			copiedDeckOne := newDeckOne.Copy(playerOneCard)
+			copiedDeckTwo := newDeckTwo.Copy(playerTwoCard)
 			winner := playSubGame(copiedDeckOne, copiedDeckTwo, gameNumber + 1)
 			if winner == deckOne.name {
 				fmt.Printf("Player 1 wins the round!\n")
-				newDeckOne = newDeckOne.push(playerOneCard)
-				newDeckOne = newDeckOne.push(playerTwoCard)
+				newDeckOne = newDeckOne.Push(playerOneCard)
+				newDeckOne = newDeckOne.Push(playerTwoCard)
 			} else if winner == deckTwo.name {
 				fmt.Printf("Player 2 wins the round!\n")
-				newDeckTwo = newDeckTwo.push(playerTwoCard)
-				newDeckTwo = newDeckTwo.push(playerOneCard)
+				newDeckTwo = newDeckTwo.Push(playerTwoCard)
+				newDeckTwo = newDeckTwo.Push(playerOneCard)
 			}
 		} else if playerOneCard > playerTwoCard {
 			fmt.Printf("Player 1 wins the round!\n")
-			newDeckOne = newDeckOne.push(playerOneCard)
-			newDeckOne = newDeckOne.push(playerTwoCard)
+			newDeckOne = newDeckOne.Push(playerOneCard)
+			newDeckOne = newDeckOne.Push(playerTwoCard)
 			winner = deckOne.name
 		} else {
 			fmt.Printf("Player 2 wins the round!\n")
-			newDeckTwo = newDeckTwo.push(playerTwoCard)
-			newDeckTwo = newDeckTwo.push(playerOneCard)
+			newDeckTwo = newDeckTwo.Push(playerTwoCard)
+			newDeckTwo = newDeckTwo.Push(playerOneCard)
 			winner = deckTwo.name
 		}
 		deckOne = newDeckOne
@@ -274,7 +278,7 @@ func reverse(list []int) (reversed []int) {
 }
 
 func isGameOver(deckOne Deck, deckTwo Deck) bool {
-	return len(deckOne.cards) == 0 || len(deckTwo.cards) == 0
+	return deckOne.Len() == 0 || deckTwo.Len() == 0
 }
 
 func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, newDeckTwo Deck, newRoundNumber int) {
@@ -282,20 +286,20 @@ func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, ne
 	fmt.Println(deckOne)
 	fmt.Println(deckTwo)
 
-	newDeckOne, playerOneCard := deckOne.shift()
-	newDeckTwo, playerTwoCard := deckTwo.shift()
+	newDeckOne, playerOneCard := deckOne.Shift()
+	newDeckTwo, playerTwoCard := deckTwo.Shift()
 
 	fmt.Printf("Player 1 plays: %d\n", playerOneCard)
 	fmt.Printf("Player 2 plays: %d\n", playerTwoCard)
 
 	if playerOneCard > playerTwoCard {
 		fmt.Printf("Player 1 wins the round!\n")
-		newDeckOne = newDeckOne.push(playerOneCard)
-		newDeckOne = newDeckOne.push(playerTwoCard)
+		newDeckOne = newDeckOne.Push(playerOneCard)
+		newDeckOne = newDeckOne.Push(playerTwoCard)
 	} else {
 		fmt.Printf("Player 2 wins the round!\n")
-		newDeckTwo = newDeckTwo.push(playerTwoCard)
-		newDeckTwo = newDeckTwo.push(playerOneCard)
+		newDeckTwo = newDeckTwo.Push(playerTwoCard)
+		newDeckTwo = newDeckTwo.Push(playerOneCard)
 	}
 	fmt.Println()
 
