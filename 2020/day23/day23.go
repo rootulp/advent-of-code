@@ -36,17 +36,6 @@ func (g Game) Move() (newGame Game) {
 	return Game{newCups, newIndex}
 }
 
-func incrementCurrentCupIndex(newCups []int, currentCup int) (newIndex int) {
-	currentIndex, err := indexOf(newCups, currentCup)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if currentIndex == len(newCups) - 1 {
-		return 0
-	}
-	return currentIndex + 1
-}
 
 func (g Game) PickUp() (pickedUp []int, remainingCups []int) {
 	remainingCups = append([]int{}, g.cups...)
@@ -117,12 +106,17 @@ func (g Game) decrementCup(cup int) (int) {
 	return cup - 1
 }
 
-// func (g Game) incrementCup(cup int) (int) {
-// 	if cup == g.maxCup {
-// 		return g.maxCup()
-// 	}
-// 	return cup - 1
-// }
+func incrementCurrentCupIndex(newCups []int, currentCup int) (newIndex int) {
+	currentIndex, err := indexOf(newCups, currentCup)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if currentIndex == len(newCups) - 1 {
+		return 0
+	}
+	return currentIndex + 1
+}
 
 func (g Game) maxCup() (max int) {
 	for _, cup := range g.cups {
@@ -142,12 +136,6 @@ func pop(list []int, index int) (remaining []int, popped int) {
 	remaining = append(remaining, list[index + 1:]...)
 
 	return remaining, popped
-}
-
-func (g Game) getRemainingCups(startIndexPickUp int, stopIndexPickUp int) (remainingCups []int) {
-	remainingCups = append([]int{}, g.cups[:startIndexPickUp]...)
-	remainingCups = append(remainingCups, g.cups[stopIndexPickUp:]...)
-	return remainingCups
 }
 
 // PartOne retruns the order of the cups after applying numMoves
