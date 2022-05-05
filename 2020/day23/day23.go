@@ -13,7 +13,7 @@ const INPUT = "685974213"
 func main() {
 	fmt.Printf("Starting day23...\n")
 
-	partOne := PartOne(INPUT, 100)
+	partOne := PartOne(EXAMPLE_INPUT, 10)
 	fmt.Printf("PartOne %v\n", partOne)
 
 	partTwo := PartTwo(EXAMPLE_INPUT, 10_000_000)
@@ -22,139 +22,104 @@ func main() {
 
 // PartOne retruns the order of the cups after applying numMoves
 func PartOne(input string, numMoves int) (result string) {
-	shouldAppendCupsUpToOneMillion := false
-	game := NewGame(input, shouldAppendCupsUpToOneMillion)
+	totalCups := len(input)
+	cups := parseCups(input)
+	game := NewGame(cups, totalCups, numMoves)
 
-	for move := 1; move <= numMoves; move += 1 {
-		fmt.Printf("-- move %v --\n", move)
-		game = game.Move()
+	for moveNumber := 1; moveNumber <= numMoves; moveNumber += 1 {
+		fmt.Printf("-- move %d --\n", moveNumber)
+		fmt.Println(game)
+		game.Move()
 	}
 
 	fmt.Printf("-- final --\n")
 	fmt.Println(game)
-	return game.CupOrder()
-}
 
+	return game.CupOrderWithoutOne()
+}
 
 // PartTwo returns the product of the two cups immediately clockwise of cup 1 after applying numMoves
 func PartTwo(input string, numMoves int) (product int) {
-	shouldAppendCupsUpToOneMillion := true
-	game := NewGame(input, shouldAppendCupsUpToOneMillion)
-
-	for move := 1; move <= numMoves; move += 1 {
-		// fmt.Printf("-- move %v --\n", move)
-		game = game.Move()
-	}
-
-	// fmt.Printf("-- final --\n")
-	// fmt.Println(game)
-
-	indexOfOne, err := game.Index(1)
-	if err != nil {
-		log.Fatal(err)
-	}
-	result1, result2 := game.cups[indexOfOne + 1], game.cups[indexOfOne + 2]
-	return result1 * result2
+	return 0
 }
 
 type Game struct {
-	cups []int
-	currentCupIndex int
+	cupToNextCup map[int]int
+	pointer int
+	totalCups int
 }
 
-func NewGame(input string, shouldAppendCupsUpToOneMillion bool) (Game) {
-	cups := parseCups(input)
-	if shouldAppendCupsUpToOneMillion {
-		cups = appendCupsUpToOneMillion(cups)
+func NewGame(cups []int, totalCups int, numMoves int) (result *Game) {
+	cupToNextCup := map[int]int{}
+
+	for i := 0; i < totalCups; i += 1 {
+		if i < len(cups) - 1 {
+			cupToNextCup[cups[i]] = cups[i + 1]
+		} else if i == len(cups) - 1 && len(cups) == totalCups {
+			// reached last cup, point to first cup
+			cupToNextCup[cups[i]] = cups[0]
+		} else if i == len(cups) - 1 && len(cups) < totalCups {
+			cupToNextCup[cups[i]] = getMax(cups) + 1
+		} else if i < totalCups - 1 {
+			cupToNextCup[i + 1] = i + 2
+		} else if i == totalCups - 1 {
+			cupToNextCup[i + 1] = cups[0]
+		}
 	}
-	return Game{cups, 0}
+	return &Game{cupToNextCup, cups[0], totalCups}
 }
 
-func (g Game) Move() (newGame Game) {
-	// fmt.Print(g)
+func (g *Game) String() (result string) {
+	result += fmt.Sprintf("cupToNextCup: (%v)\n", g.cupToNextCup)
+	result += fmt.Sprintf("cups: (%v) ", g.pointer)
 
-	pickedUp, remainingCups := g.PickUp()
-
-	destination := g.DestinationCup(pickedUp)
-	// fmt.Printf("destination: %v\n", destination)
-
-	destinationIndex, err := indexOf(remainingCups, destination)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	newCups := insertInto(remainingCups, pickedUp, destinationIndex)
-	newIndex := incrementCurrentCupIndex(newCups, g.CurrentCup())
-
-	return Game{newCups, newIndex}
-}
-
-func (g Game) PickUp() (pickedUp []int, remainingCups []int) {
-	remainingCups = append([]int{}, g.cups...)
-
-	for i := 0; i < NUM_CUPS_TO_PICK_UP; i += 1 {
-		remaining, popped := pop(remainingCups, g.currentCupIndex + 1)
-		remainingCups = remaining
-		pickedUp = append(pickedUp, popped)
-	}
-	// fmt.Printf("pick up: %v\n", pickedUp)
-	// fmt.Printf("remaining: %v\n", remainingCups)
-
-	return pickedUp, remainingCups
-}
-
-func (g Game) CupOrder() (result string) {
-	indexOfOne, err := indexOf(g.cups, 1)
-	if err != nil {
-		log.Fatal(err)
-	}
-	startIndex := indexOfOne + 1
-	stopIndex := startIndex + len(g.cups) - 1
-
-	for i := startIndex; i < stopIndex; i += 1 {
-		cupIndex := i % len(g.cups)
-		result += strconv.Itoa(g.cups[cupIndex])
+	current := g.cupToNextCup[g.pointer]
+	for current != g.pointer {
+		result += fmt.Sprintf("%d ", current)
+		current = g.cupToNextCup[current]
 	}
 	return result
 }
 
-func (g Game) DestinationCup(pickedUp []int) (destinationCup int) {
-	destinationCup = g.CurrentCup() - 1
-	if destinationCup == 0 {
-		destinationCup = g.maxCup()
+func (g *Game) Move() {
+	// remove three cups
+	cup1 := g.cupToNextCup[g.pointer]
+	cup2 := g.cupToNextCup[cup1]
+	cup3 := g.cupToNextCup[cup2]
+	g.cupToNextCup[g.pointer] = g.cupToNextCup[cup3]
+	fmt.Printf("pick up: %v, %v, %v\n", cup1, cup2, cup3)
+
+	// find destination cup
+	destination := decrementInRange(1, g.totalCups, g.pointer)
+	for includes([]int{cup1, cup2, cup3}, destination) {
+		destination = decrementInRange(1, g.totalCups, destination)
 	}
-	for contains(pickedUp, destinationCup) {
-		destinationCup = g.decrementCup(destinationCup)
-	}
-	return destinationCup
+	fmt.Printf("destination: %v\n\n", destination)
+
+	// reinsert cups after dest
+	g.cupToNextCup[cup3] = g.cupToNextCup[destination]
+	g.cupToNextCup[destination] = cup1
+
+	// move pointer forward
+	g.pointer = g.cupToNextCup[g.pointer]
 }
 
-func (g Game) CurrentCup() (cup int) {
-	return g.cups[g.currentCupIndex]
-}
-
-func (g Game) String() (result string) {
-	result += fmt.Sprintf("cups: %v\n", g.cups)
-	result += fmt.Sprintf("currentCupIndex: %v\n", g.currentCupIndex)
+func (g *Game) CupOrderWithoutOne() (result string) {
+	current := g.cupToNextCup[1]
+	for current != 1 {
+		result += fmt.Sprintf("%d", current)
+		current = g.cupToNextCup[current]
+	}
 	return result
 }
 
-func (g Game) Index(cup int) (index int, err error) {
-	return indexOf(g.cups, cup)
-}
-
-func (g Game) maxCup() (max int) {
-	return getMax(g.cups)
-}
-
-func (g Game) decrementCup(cup int) (int) {
-	if cup <= 1 {
-		return g.maxCup()
+func decrementInRange(min int, max int, val int) (decremented int) {
+	// fmt.Printf("decrementInRange(%v, %v, %v)\n", min, max, val)
+	if val - 1 < min {
+		return max
 	}
-	return cup - 1
+	return val - 1
 }
-
-// Utils
 
 func parseCups(input string) (cups []int) {
 	for _, r := range input {
@@ -164,72 +129,23 @@ func parseCups(input string) (cups []int) {
 		}
 		cups = append(cups, cup)
 	}
-
 	return cups
 }
 
-func appendCupsUpToOneMillion(cups []int) ([]int) {
-	max := getMax(cups)
-	for i := max + 1; i <= 1_000_000; i += 1 {
-		cups = append(cups, i)
-	}
-	return cups
-}
-
-func incrementCurrentCupIndex(newCups []int, currentCup int) (newIndex int) {
-	currentIndex, err := indexOf(newCups, currentCup)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if currentIndex == len(newCups) - 1 {
-		return 0
-	}
-	return currentIndex + 1
-}
-
-func getMax(cups []int) (max int) {
-	for _, cup := range cups {
-		if cup > max {
-			max = cup
+func getMax(list []int) (max int) {
+	for _, v := range list {
+		if v > max {
+			max = v
 		}
 	}
 	return max
 }
 
-func pop(list []int, index int) (remaining []int, popped int) {
-	if index >= len(list) {
-		return pop(list, 0)
-	}
-	popped = list[index]
-	remaining = append([]int{}, list[:index]...)
-	remaining = append(remaining, list[index + 1:]...)
-
-	return remaining, popped
-}
-
-func contains(list []int, item int) bool {
-	for _, val := range list {
-		if val == item {
+func includes(list []int, val int) bool {
+	for _, v := range list {
+		if v == val {
 			return true
 		}
 	}
 	return false
-}
-
-func insertInto(list []int, itemsToInsert []int, index int) (result []int) {
-	result = append(result, list[:index+1]...)
-	result = append(result, itemsToInsert...)
-	result = append(result, list[index+1:]...)
-
-	return result
-}
-
-func indexOf(list []int, item int) (index int, err error) {
-	for i, v := range list {
-		if item == v {
-			return i, nil
-		}
-	}
-	return 0, fmt.Errorf("item %v not found in list %v", item, list)
 }
