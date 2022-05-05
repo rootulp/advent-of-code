@@ -13,10 +13,10 @@ const INPUT = "685974213"
 func main() {
 	fmt.Printf("Starting day23...\n")
 
-	partOne := PartOne(EXAMPLE_INPUT, 10)
+	partOne := PartOne(INPUT, 100)
 	fmt.Printf("PartOne %v\n", partOne)
 
-	partTwo := PartTwo(EXAMPLE_INPUT, 10_000_000)
+	partTwo := PartTwo(INPUT, 10_000_000)
 	fmt.Printf("PartTwo %v\n", partTwo)
 }
 
@@ -40,7 +40,15 @@ func PartOne(input string, numMoves int) (result string) {
 
 // PartTwo returns the product of the two cups immediately clockwise of cup 1 after applying numMoves
 func PartTwo(input string, numMoves int) (product int) {
-	return 0
+	totalCups := 1_000_000
+	cups := parseCups(input)
+	game := NewGame(cups, totalCups, numMoves)
+
+	for moveNumber := 1; moveNumber <= numMoves; moveNumber += 1 {
+		game.Move()
+	}
+
+	return game.ProductOfTwoCupsAfterCupOne()
 }
 
 type Game struct {
@@ -87,14 +95,14 @@ func (g *Game) Move() {
 	cup2 := g.cupToNextCup[cup1]
 	cup3 := g.cupToNextCup[cup2]
 	g.cupToNextCup[g.pointer] = g.cupToNextCup[cup3]
-	fmt.Printf("pick up: %v, %v, %v\n", cup1, cup2, cup3)
+	// fmt.Printf("pick up: %v, %v, %v\n", cup1, cup2, cup3)
 
 	// find destination cup
 	destination := decrementInRange(1, g.totalCups, g.pointer)
 	for includes([]int{cup1, cup2, cup3}, destination) {
 		destination = decrementInRange(1, g.totalCups, destination)
 	}
-	fmt.Printf("destination: %v\n\n", destination)
+	// fmt.Printf("destination: %v\n\n", destination)
 
 	// reinsert cups after dest
 	g.cupToNextCup[cup3] = g.cupToNextCup[destination]
@@ -111,6 +119,13 @@ func (g *Game) CupOrderWithoutOne() (result string) {
 		current = g.cupToNextCup[current]
 	}
 	return result
+}
+
+func (g *Game) ProductOfTwoCupsAfterCupOne() (product int) {
+	firstCup := g.cupToNextCup[1]
+	secondCup := g.cupToNextCup[firstCup]
+
+	return firstCup * secondCup
 }
 
 func decrementInRange(min int, max int, val int) (decremented int) {
