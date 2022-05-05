@@ -20,22 +20,63 @@ func main() {
 	fmt.Printf("PartTwo %v\n", partTwo)
 }
 
+// PartOne retruns the order of the cups after applying numMoves
+func PartOne(input string, numMoves int) (result string) {
+	shouldAppendCupsUpToOneMillion := false
+	game := NewGame(input, shouldAppendCupsUpToOneMillion)
+
+	for move := 1; move <= numMoves; move += 1 {
+		fmt.Printf("-- move %v --\n", move)
+		game = game.Move()
+	}
+
+	fmt.Printf("-- final --\n")
+	fmt.Println(game)
+	return game.CupOrder()
+}
+
+
+// PartTwo returns the product of the two cups immediately clockwise of cup 1 after applying numMoves
+func PartTwo(input string, numMoves int) (product int) {
+	shouldAppendCupsUpToOneMillion := true
+	game := NewGame(input, shouldAppendCupsUpToOneMillion)
+
+	for move := 1; move <= numMoves; move += 1 {
+		// fmt.Printf("-- move %v --\n", move)
+		game = game.Move()
+	}
+
+	// fmt.Printf("-- final --\n")
+	// fmt.Println(game)
+
+	indexOfOne, err := game.Index(1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	result1, result2 := game.cups[indexOfOne + 1], game.cups[indexOfOne + 2]
+	return result1 * result2
+}
+
 type Game struct {
 	cups []int
 	currentCupIndex int
 }
 
-func NewGame(input string) (Game) {
-	return Game{parseCups(input), 0}
+func NewGame(input string, shouldAppendCupsUpToOneMillion bool) (Game) {
+	cups := parseCups(input)
+	if shouldAppendCupsUpToOneMillion {
+		cups = appendCupsUpToOneMillion(cups)
+	}
+	return Game{cups, 0}
 }
 
 func (g Game) Move() (newGame Game) {
-	fmt.Print(g)
+	// fmt.Print(g)
 
 	pickedUp, remainingCups := g.PickUp()
 
 	destination := g.DestinationCup(pickedUp)
-	fmt.Printf("destination: %v\n", destination)
+	// fmt.Printf("destination: %v\n", destination)
 
 	destinationIndex, err := indexOf(remainingCups, destination)
 	if err != nil {
@@ -48,7 +89,6 @@ func (g Game) Move() (newGame Game) {
 	return Game{newCups, newIndex}
 }
 
-
 func (g Game) PickUp() (pickedUp []int, remainingCups []int) {
 	remainingCups = append([]int{}, g.cups...)
 
@@ -57,8 +97,8 @@ func (g Game) PickUp() (pickedUp []int, remainingCups []int) {
 		remainingCups = remaining
 		pickedUp = append(pickedUp, popped)
 	}
-	fmt.Printf("pick up: %v\n", pickedUp)
-	fmt.Printf("remaining: %v\n", remainingCups)
+	// fmt.Printf("pick up: %v\n", pickedUp)
+	// fmt.Printf("remaining: %v\n", remainingCups)
 
 	return pickedUp, remainingCups
 }
@@ -99,6 +139,23 @@ func (g Game) String() (result string) {
 	return result
 }
 
+func (g Game) Index(cup int) (index int, err error) {
+	return indexOf(g.cups, cup)
+}
+
+func (g Game) maxCup() (max int) {
+	return getMax(g.cups)
+}
+
+func (g Game) decrementCup(cup int) (int) {
+	if cup <= 1 {
+		return g.maxCup()
+	}
+	return cup - 1
+}
+
+// Utils
+
 func parseCups(input string) (cups []int) {
 	for _, r := range input {
 		cup, err := strconv.Atoi(string(r))
@@ -111,11 +168,12 @@ func parseCups(input string) (cups []int) {
 	return cups
 }
 
-func (g Game) decrementCup(cup int) (int) {
-	if cup <= 1 {
-		return g.maxCup()
+func appendCupsUpToOneMillion(cups []int) ([]int) {
+	max := getMax(cups)
+	for i := max + 1; i <= 1_000_000; i += 1 {
+		cups = append(cups, i)
 	}
-	return cup - 1
+	return cups
 }
 
 func incrementCurrentCupIndex(newCups []int, currentCup int) (newIndex int) {
@@ -130,8 +188,8 @@ func incrementCurrentCupIndex(newCups []int, currentCup int) (newIndex int) {
 	return currentIndex + 1
 }
 
-func (g Game) maxCup() (max int) {
-	for _, cup := range g.cups {
+func getMax(cups []int) (max int) {
+	for _, cup := range cups {
 		if cup > max {
 			max = cup
 		}
@@ -150,35 +208,6 @@ func pop(list []int, index int) (remaining []int, popped int) {
 	return remaining, popped
 }
 
-
-// PartOne retruns the order of the cups after applying numMoves
-func PartOne(input string, numMoves int) (result string) {
-	game := NewGame(input)
-
-	for move := 1; move <= numMoves; move += 1 {
-		fmt.Printf("-- move %v --\n", move)
-		game = game.Move()
-	}
-
-	fmt.Printf("-- final --\n")
-	fmt.Println(game)
-	return game.CupOrder()
-}
-
-func indexOf(list []int, item int) (index int, err error) {
-	for i, v := range list {
-		if item == v {
-			return i, nil
-		}
-	}
-	return 0, fmt.Errorf("item %v not found in list %v", item, list)
-}
-
-// PartTwo returns the product of the two cups immediately clockwise of cup 1 after applying numMoves
-func PartTwo(input string, numMoves int) (product int) {
-	return 0
-}
-
 func contains(list []int, item int) bool {
 	for _, val := range list {
 		if val == item {
@@ -194,4 +223,13 @@ func insertInto(list []int, itemsToInsert []int, index int) (result []int) {
 	result = append(result, list[index+1:]...)
 
 	return result
+}
+
+func indexOf(list []int, item int) (index int, err error) {
+	for i, v := range list {
+		if item == v {
+			return i, nil
+		}
+	}
+	return 0, fmt.Errorf("item %v not found in list %v", item, list)
 }
