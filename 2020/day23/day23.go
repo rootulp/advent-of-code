@@ -6,7 +6,19 @@ import (
 	"strconv"
 )
 
-const NUM_CUPS_TO_PICK_UP int = 3
+const NUM_CUPS_TO_PICK_UP = 3
+const EXAMPLE_INPUT = "389125467"
+const INPUT = "685974213"
+
+func main() {
+	fmt.Printf("Starting day23...\n")
+
+	partOne := PartOne(INPUT, 100)
+	fmt.Printf("PartOne %v\n", partOne)
+
+	partTwo := PartTwo(EXAMPLE_INPUT, 10_000_000)
+	fmt.Printf("PartTwo %v\n", partTwo)
+}
 
 type Game struct {
 	cups []int
@@ -138,12 +150,7 @@ func pop(list []int, index int) (remaining []int, popped int) {
 	return remaining, popped
 }
 
-func main() {
-	fmt.Printf("Starting day23...\n")
 
-	partOne := PartOne("685974213", 100)
-	fmt.Printf("PartOne %v\n", partOne)
-}
 // PartOne retruns the order of the cups after applying numMoves
 func PartOne(input string, numMoves int) (result string) {
 	game := NewGame(input)
@@ -165,6 +172,11 @@ func indexOf(list []int, item int) (index int, err error) {
 		}
 	}
 	return 0, fmt.Errorf("item %v not found in list %v", item, list)
+}
+
+// PartTwo returns the product of the two cups immediately clockwise of cup 1 after applying numMoves
+func PartTwo(input string, numMoves int) (product int) {
+	return 0
 }
 
 func contains(list []int, item int) bool {
