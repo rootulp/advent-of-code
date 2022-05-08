@@ -2,12 +2,11 @@ package main
 
 import "testing"
 
-
 func TestPartOne(t *testing.T) {
 	type testCase struct {
-		input string
+		input    string
 		numMoves int
-		want string
+		want     string
 	}
 
 	tests := []testCase{
@@ -27,9 +26,9 @@ func TestPartOne(t *testing.T) {
 
 func TestPartTwo(t *testing.T) {
 	type testCase struct {
-		input string
+		input    string
 		numMoves int
-		want int
+		want     int
 	}
 
 	tests := []testCase{

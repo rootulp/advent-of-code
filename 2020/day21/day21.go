@@ -32,7 +32,7 @@ func NewSet(list []string) Set {
 	return Set{set: set}
 }
 
-func Intersection(a Set, b Set) (Set) {
+func Intersection(a Set, b Set) Set {
 	set := map[string]bool{}
 
 	for aItem := range a.set {
@@ -50,7 +50,7 @@ func GetOnlyKey(s Set) string {
 		log.Fatalf("can not get only key for set with len %v", len(s.set))
 	}
 	keys := []string{}
-	for k, _ := range s.set {
+	for k := range s.set {
 		keys = append(keys, k)
 	}
 	return keys[0]
@@ -81,7 +81,6 @@ func PartTwo(filename string) (canonicalDangerous string) {
 	dangerousList := getDangerousList(allAllergens)
 	return strings.Join(dangerousList, ",")
 }
-
 
 func getDangerousList(allAllergens map[string]Set) (dangerous []string) {
 	allergenToIngredient := map[string]string{}
@@ -151,7 +150,7 @@ func parseLines(lines []string) (allIngredients []string, allAllergens map[strin
 	return allIngredients, allAllergens
 }
 
-func parseLine (line string) (ingredients []string, allergens []string) {
+func parseLine(line string) (ingredients []string, allergens []string) {
 	parts := strings.Split(line, " (contains ")
 	if len(parts) != 2 {
 		log.Fatalf("unexpected number of parts %v for line %v", len(parts), line)

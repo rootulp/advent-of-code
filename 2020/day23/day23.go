@@ -53,25 +53,25 @@ func PartTwo(input string, numMoves int) (product int) {
 
 type Game struct {
 	cupToNextCup map[int]int
-	pointer int
-	totalCups int
+	pointer      int
+	totalCups    int
 }
 
 func NewGame(cups []int, totalCups int, numMoves int) (result *Game) {
 	cupToNextCup := map[int]int{}
 
 	for i := 0; i < totalCups; i += 1 {
-		if i < len(cups) - 1 {
-			cupToNextCup[cups[i]] = cups[i + 1]
-		} else if i == len(cups) - 1 && len(cups) == totalCups {
+		if i < len(cups)-1 {
+			cupToNextCup[cups[i]] = cups[i+1]
+		} else if i == len(cups)-1 && len(cups) == totalCups {
 			// reached last cup, point to first cup
 			cupToNextCup[cups[i]] = cups[0]
-		} else if i == len(cups) - 1 && len(cups) < totalCups {
+		} else if i == len(cups)-1 && len(cups) < totalCups {
 			cupToNextCup[cups[i]] = getMax(cups) + 1
-		} else if i < totalCups - 1 {
-			cupToNextCup[i + 1] = i + 2
-		} else if i == totalCups - 1 {
-			cupToNextCup[i + 1] = cups[0]
+		} else if i < totalCups-1 {
+			cupToNextCup[i+1] = i + 2
+		} else if i == totalCups-1 {
+			cupToNextCup[i+1] = cups[0]
 		}
 	}
 	return &Game{cupToNextCup, cups[0], totalCups}
@@ -130,7 +130,7 @@ func (g *Game) ProductOfTwoCupsAfterCupOne() (product int) {
 
 func decrementInRange(min int, max int, val int) (decremented int) {
 	// fmt.Printf("decrementInRange(%v, %v, %v)\n", min, max, val)
-	if val - 1 < min {
+	if val-1 < min {
 		return max
 	}
 	return val - 1

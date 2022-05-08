@@ -2,11 +2,10 @@ package main
 
 import "testing"
 
-
 func TestPartOne(t *testing.T) {
 	type testCase struct {
 		input string
-		want int
+		want  int
 	}
 
 	tests := []testCase{
@@ -23,11 +22,10 @@ func TestPartOne(t *testing.T) {
 	}
 }
 
-
 func TestPartTwo(t *testing.T) {
 	type testCase struct {
 		input string
-		want string
+		want  string
 	}
 
 	tests := []testCase{

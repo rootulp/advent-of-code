@@ -11,7 +11,7 @@ import (
 )
 
 type Deck struct {
-	name string
+	name  string
 	cards []int
 }
 
@@ -153,7 +153,6 @@ func playRound(deckOne Deck, deckTwo Deck, roundNumber int) (newDeckOne Deck, ne
 	return newDeckOne, newDeckTwo, roundNumber + 1
 }
 
-
 // playSubGame plays a game according to the rules of PartTwo
 func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (newDeckOne Deck, newDeckTwo Deck, winner string) {
 	fmt.Printf("=== Game %d ===\n\n", gameNumber)
@@ -182,7 +181,7 @@ func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (newDeckOne Deck, n
 			fmt.Printf("Playing a sub-game to determine the winner...\n")
 			copiedDeckOne := newDeckOne.Copy(playerOneCard)
 			copiedDeckTwo := newDeckTwo.Copy(playerTwoCard)
-			_, _, winner = playSubGame(copiedDeckOne, copiedDeckTwo, gameNumber + 1)
+			_, _, winner = playSubGame(copiedDeckOne, copiedDeckTwo, gameNumber+1)
 		} else if playerOneCard > playerTwoCard {
 			winner = deckOne.name
 		} else {
@@ -206,7 +205,7 @@ func playSubGame(deckOne Deck, deckTwo Deck, gameNumber int) (newDeckOne Deck, n
 		roundNumber += 1
 	}
 
-	fmt.Printf("...anyway, back to game %d.\n", gameNumber - 1)
+	fmt.Printf("...anyway, back to game %d.\n", gameNumber-1)
 	return deckOne, deckTwo, winner
 }
 
@@ -214,7 +213,6 @@ func hasSeenBefore(seen map[string]bool, deckOne Deck, deckTwo Deck) bool {
 	serialized := serialize(deckOne, deckTwo)
 	return seen[serialized]
 }
-
 
 func serialize(deckOne Deck, deckTwo Deck) (serialized string) {
 	serializedOne := deckOne.String()
@@ -254,8 +252,8 @@ func readLines(filename string) (lines []string) {
 }
 
 func splitLines(lines []string) (playerOneLines []string, playerTwoLines []string) {
-	playerOneLines = lines[:len(lines) / 2]
-	playerTwoLines = lines[len(lines) / 2 + 1:]
+	playerOneLines = lines[:len(lines)/2]
+	playerTwoLines = lines[len(lines)/2+1:]
 
 	return playerOneLines, playerTwoLines
 }

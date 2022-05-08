@@ -4,7 +4,7 @@ import "testing"
 
 type testCase struct {
 	input string
-	want int
+	want  int
 }
 
 func TestPartOne(t *testing.T) {
@@ -23,7 +23,7 @@ func TestPartOne(t *testing.T) {
 }
 
 func TestPartTwo(t *testing.T) {
-	tests := []testCase {
+	tests := []testCase{
 		{"example.txt", 291},
 		// takes a while to run
 		{"input.txt", 29177},
