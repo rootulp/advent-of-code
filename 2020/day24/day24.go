@@ -149,7 +149,64 @@ func (f *Floor) NumBlackTiles() (result int) {
 }
 
 func (f *Floor) AdvanceOneDay() {
+	tilesToFlip := []*Tile{}
+
 	// TODO
+	for point, tile := range f.tiles{
+		if f.shouldFlip(point, tile) {
+			tilesToFlip = append(tilesToFlip, tile)
+		}
+	}
+
+	for _, tile := range tilesToFlip {
+		tile.Flip()
+	}
+}
+
+func (f *Floor) numNeighbors(point Point, tile *Tile) (result int) {
+	return len(f.neighbors(point, tile))
+}
+
+func (f *Floor) numBlackNeighbors(point Point, tile *Tile) (result int) {
+	neighbors := f.neighbors(point, tile)
+	for _, neighbor := range neighbors {
+		if neighbor.IsBlack() {
+			result += 1
+		}
+	}
+	return result
+}
+
+func (f *Floor) neighbors(point Point, tile *Tile) (result []*Tile) {
+	possibleNeighbors := possibleNeighbors(point)
+
+	for point, tile := range f.tiles {
+		if contains(possibleNeighbors, point) {
+			result = append(result, tile)
+		}
+	}
+	return result
+}
+
+func possibleNeighbors(p Point) (result []Point) {
+	return []Point{
+		{p.x - 1, p.y - 1},
+		{p.x + 1, p.y + 1},
+		{p.x + 1, p.y - 1},
+		{p.x - 1, p.y + 1},
+		{p.x + 2, p.y},
+		{p.x - 2, p.y},
+	}
+}
+
+func (f *Floor) shouldFlip(point Point, tile *Tile) bool {
+	if tile.IsBlack() && (f.numNeighbors(point, tile) == 0 || f.numNeighbors(point, tile) >= 2) {
+		return true
+	}
+	if tile.IsWhite() && (f.numBlackNeighbors(point, tile) == 2) {
+		return true
+	}
+	return false
 }
 
 func (f *Floor) String() (result string) {
@@ -182,10 +239,23 @@ func (t *Tile) IsBlack() bool {
 	return t.isBlack
 }
 
+func (t *Tile) IsWhite() bool {
+	return !t.isBlack
+}
+
 func (t *Tile) String() string {
-	if t.isBlack {
+	if t.IsBlack() {
 		return "black"
 	} else {
 		return "white"
 	}
+}
+
+func contains(points []Point, val Point) bool {
+	for _, point := range points {
+		if point == val {
+			return true
+		}
+	}
+	return false
 }
