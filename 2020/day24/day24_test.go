@@ -5,9 +5,9 @@ import "testing"
 func TestPartOne(t *testing.T) {
 	type testCase struct {
 		input string
-		want int
+		want  int
 	}
-	tests := []testCase {
+	tests := []testCase{
 		{"example.txt", 10},
 		{"input.txt", 375},
 	}
@@ -23,11 +23,11 @@ func TestPartOne(t *testing.T) {
 
 func TestPartTwo(t *testing.T) {
 	type testCase struct {
-		input string
+		input   string
 		numDays int
-		want int
+		want    int
 	}
-	tests := []testCase {
+	tests := []testCase{
 		{"example.txt", 1, 15},
 		{"example.txt", 2, 12},
 		{"example.txt", 3, 25},

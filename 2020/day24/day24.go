@@ -70,7 +70,7 @@ func readLines(filename string) (lines []string) {
 	return lines
 }
 
-func getPoint(line string) (Point) {
+func getPoint(line string) Point {
 	x := 0
 	y := 0
 	for _, token := range tokenize(line) {
@@ -82,17 +82,17 @@ func getPoint(line string) (Point) {
 			x += 1
 			y += 1
 		case "sw":
-				x -= 1
-				y -= 1
+			x -= 1
+			y -= 1
 		case "se":
-				x += 1
-				y -= 1
+			x += 1
+			y -= 1
 		case "e":
-				x += 2
+			x += 2
 		case "w":
-				x -= 2
+			x -= 2
 		default:
-				log.Fatalf("unrecognized token %v", token)
+			log.Fatalf("unrecognized token %v", token)
 		}
 	}
 	return Point{x, y}
@@ -132,7 +132,7 @@ type Floor struct {
 	tiles map[Point]*Tile
 }
 
-func NewFloor() (*Floor) {
+func NewFloor() *Floor {
 	tiles := map[Point]*Tile{}
 	return &Floor{tiles}
 }
@@ -158,7 +158,7 @@ func (f *Floor) AdvanceOneDay() {
 	f.populateMissingTiles()
 
 	tilesToFlip := []*Tile{}
-	for point, tile := range f.tiles{
+	for point, tile := range f.tiles {
 		if f.shouldFlip(point, tile) {
 			tilesToFlip = append(tilesToFlip, tile)
 		}
@@ -237,7 +237,7 @@ type Tile struct {
 	isBlack bool
 }
 
-func NewTile() (*Tile) {
+func NewTile() *Tile {
 	// tiles start off white
 	return &Tile{isBlack: false}
 }
