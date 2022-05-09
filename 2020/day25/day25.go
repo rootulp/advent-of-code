@@ -5,13 +5,15 @@ import "fmt"
 const SUBJECT_NUMBER = 7
 const DIVISOR = 20201227
 
+func main() {
+	fmt.Printf("Startind day25...\n")
+
+	partOne := PartOne(10943862, 12721030)
+	fmt.Printf("PartOne: %d\n", partOne)
+}
+
 func PartOne(cardPublicKey int, doorPublicKey int) (int) {
-	cardLoopSize := loopSize(cardPublicKey)
 	doorLoopSize := loopSize(doorPublicKey)
-
-	fmt.Printf("cardLoopSize %d\n", cardLoopSize)
-	fmt.Printf("doorLoopSize %d\n", doorLoopSize)
-
 	return encryptionKey(cardPublicKey, doorLoopSize)
 }
 
