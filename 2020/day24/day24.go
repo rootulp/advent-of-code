@@ -11,10 +11,10 @@ import (
 func main() {
 	fmt.Printf("Starting day24...\n")
 
-	// partOne := PartOne("input.txt")
-	// fmt.Printf("PartOne: %v\n", partOne)
+	partOne := PartOne("input.txt")
+	fmt.Printf("PartOne: %v\n", partOne)
 
-	partTwo := PartTwo("example.txt", 10)
+	partTwo := PartTwo("input.txt", 100)
 	fmt.Printf("PartTwo: %v\n", partTwo)
 }
 
@@ -40,15 +40,15 @@ func PartTwo(filename string, numDays int) (numBlackTiles int) {
 		floor.Flip(point)
 	}
 
-	fmt.Printf("Day 0\n")
-	fmt.Println(floor)
+	// fmt.Printf("Day 0\n")
+	// fmt.Println(floor)
 
 	for day := 1; day <= numDays; day += 1 {
 		floor.AdvanceOneDay()
 
-		fmt.Printf("Day %d\n", day)
-		fmt.Printf("Num black tiles %v\n", floor.NumBlackTiles())
-		fmt.Println(floor)
+		// fmt.Printf("Day %d\n", day)
+		// fmt.Printf("Num black tiles %v\n", floor.NumBlackTiles())
+		// fmt.Println(floor)
 	}
 
 	return floor.NumBlackTiles()
