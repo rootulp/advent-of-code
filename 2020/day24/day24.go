@@ -28,6 +28,26 @@ func PartOne(filename string) (numBlackTiles int) {
 	return floor.NumBlackTiles()
 }
 
+func PartTwo(filename string, numDays int) (numBlackTiles int) {
+	lines := readLines(filename)
+	floor := NewFloor()
+
+	for _, line := range lines {
+		point := getPoint(line)
+		floor.Flip(point)
+	}
+
+	for day := 0; day < numDays; day += 1 {
+		floor.AdvanceOneDay()
+
+		fmt.Printf("Day %d\n", day)
+		fmt.Printf("Num black tiles %v\n", floor.NumBlackTiles())
+		fmt.Println(floor)
+	}
+
+	return floor.NumBlackTiles()
+}
+
 func readLines(filename string) (lines []string) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -126,6 +146,10 @@ func (f *Floor) NumBlackTiles() (result int) {
 		}
 	}
 	return result
+}
+
+func (f *Floor) AdvanceOneDay() {
+	// TODO
 }
 
 func (f *Floor) String() (result string) {
