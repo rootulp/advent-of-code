@@ -11,8 +11,8 @@ import (
 func main() {
 	fmt.Printf("Starting day24...\n")
 
-	partOne := PartOne("example.txt")
-	fmt.Printf("PartOne: %v", partOne)
+	partOne := PartOne("input.txt")
+	fmt.Printf("PartOne: %v\n", partOne)
 }
 
 func PartOne(filename string) (numBlackTiles int) {
