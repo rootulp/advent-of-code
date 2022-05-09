@@ -32,7 +32,7 @@ func encryptionKey(publicKey int, loopSize int) (int) {
 	for loop := 0; loop < loopSize; loop += 1 {
 		val *= publicKey
 		val %= DIVISOR
-		fmt.Printf("loop %d val %d\n", loop, val)
+		// fmt.Printf("loop %d val %d\n", loop, val)
 	}
 	return val
 }

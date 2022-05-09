@@ -11,7 +11,7 @@ func TestPartOne(t *testing.T) {
 
 	tests := []testCase {
 		{5764801, 17807724, 14897079}, // example
-		// {10943862, 12721030, 0}, // input
+		{10943862, 12721030, 5025281}, // input
 	}
 
 	for _, test := range tests {
