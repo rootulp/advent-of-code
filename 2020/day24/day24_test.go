@@ -31,7 +31,8 @@ func TestPartTwo(t *testing.T) {
 		{"example.txt", 1, 15},
 		{"example.txt", 2, 12},
 		{"example.txt", 3, 25},
-		{"example.txt", 100, 2208},
+		{"example.txt", 10, 37},
+		// {"example.txt", 100, 2208},
 	}
 
 	for _, test := range tests {

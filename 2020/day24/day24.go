@@ -11,8 +11,11 @@ import (
 func main() {
 	fmt.Printf("Starting day24...\n")
 
-	partOne := PartOne("input.txt")
-	fmt.Printf("PartOne: %v\n", partOne)
+	// partOne := PartOne("input.txt")
+	// fmt.Printf("PartOne: %v\n", partOne)
+
+	partTwo := PartTwo("example.txt", 10)
+	fmt.Printf("PartTwo: %v\n", partTwo)
 }
 
 func PartOne(filename string) (numBlackTiles int) {
@@ -37,7 +40,10 @@ func PartTwo(filename string, numDays int) (numBlackTiles int) {
 		floor.Flip(point)
 	}
 
-	for day := 0; day < numDays; day += 1 {
+	fmt.Printf("Day 0\n")
+	fmt.Println(floor)
+
+	for day := 1; day <= numDays; day += 1 {
 		floor.AdvanceOneDay()
 
 		fmt.Printf("Day %d\n", day)
@@ -149,9 +155,9 @@ func (f *Floor) NumBlackTiles() (result int) {
 }
 
 func (f *Floor) AdvanceOneDay() {
-	tilesToFlip := []*Tile{}
+	f.populateMissingTiles()
 
-	// TODO
+	tilesToFlip := []*Tile{}
 	for point, tile := range f.tiles{
 		if f.shouldFlip(point, tile) {
 			tilesToFlip = append(tilesToFlip, tile)
@@ -161,10 +167,6 @@ func (f *Floor) AdvanceOneDay() {
 	for _, tile := range tilesToFlip {
 		tile.Flip()
 	}
-}
-
-func (f *Floor) numNeighbors(point Point, tile *Tile) (result int) {
-	return len(f.neighbors(point, tile))
 }
 
 func (f *Floor) numBlackNeighbors(point Point, tile *Tile) (result int) {
@@ -200,7 +202,7 @@ func possibleNeighbors(p Point) (result []Point) {
 }
 
 func (f *Floor) shouldFlip(point Point, tile *Tile) bool {
-	if tile.IsBlack() && (f.numNeighbors(point, tile) == 0 || f.numNeighbors(point, tile) >= 2) {
+	if tile.IsBlack() && (f.numBlackNeighbors(point, tile) == 0 || f.numBlackNeighbors(point, tile) > 2) {
 		return true
 	}
 	if tile.IsWhite() && (f.numBlackNeighbors(point, tile) == 2) {
@@ -209,12 +211,57 @@ func (f *Floor) shouldFlip(point Point, tile *Tile) bool {
 	return false
 }
 
+func (f *Floor) populateMissingTiles() {
+	for x := f.minX(); x <= f.maxX(); x += 1 {
+		for y := f.minY(); y <= f.maxY(); y += 1 {
+			if _, ok := f.tiles[Point{x, y}]; !ok {
+				f.tiles[Point{x, y}] = NewTile()
+			}
+		}
+	}
+}
+
+func (f *Floor) minX() (min int) {
+	for point, tile := range f.tiles {
+		if tile.IsBlack() && point.x < min {
+			min = point.x
+		}
+	}
+	return min - 2
+}
+
+func (f *Floor) maxX() (max int) {
+	for point, tile := range f.tiles {
+		if tile.IsBlack() && point.x > max {
+			max = point.x
+		}
+	}
+	return max + 2
+}
+
+func (f *Floor) minY() (min int) {
+	for point, tile := range f.tiles {
+		if tile.IsBlack() && point.y < min {
+			min = point.x
+		}
+	}
+	return min - 1
+}
+
+func (f *Floor) maxY() (max int) {
+	for point, tile := range f.tiles {
+		if tile.IsBlack() && point.y > max {
+			max = point.x
+		}
+	}
+	return max + 1
+}
+
 func (f *Floor) String() (result string) {
 	for point, tile := range f.tiles {
 		result += fmt.Sprintf("%v: %v\n", point, tile)
 	}
 	return result
-
 }
 
 type Point struct {
