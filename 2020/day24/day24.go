@@ -232,42 +232,6 @@ func (f *Floor) populateMissingTiles() {
 	}
 }
 
-func (f *Floor) minX() (min int) {
-	for point, tile := range f.tiles {
-		if tile.IsBlack() && point.x < min {
-			min = point.x
-		}
-	}
-	return min - 2
-}
-
-func (f *Floor) maxX() (max int) {
-	for point, tile := range f.tiles {
-		if tile.IsBlack() && point.x > max {
-			max = point.x
-		}
-	}
-	return max + 2
-}
-
-func (f *Floor) minY() (min int) {
-	for point, tile := range f.tiles {
-		if tile.IsBlack() && point.y < min {
-			min = point.x
-		}
-	}
-	return min - 1
-}
-
-func (f *Floor) maxY() (max int) {
-	for point, tile := range f.tiles {
-		if tile.IsBlack() && point.y > max {
-			max = point.x
-		}
-	}
-	return max + 1
-}
-
 func (f *Floor) String() (result string) {
 	for point, tile := range f.tiles {
 		result += fmt.Sprintf("%v: %v\n", point, tile)
