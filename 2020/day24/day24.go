@@ -2,20 +2,28 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strings"
 )
 
+func main() {
+	fmt.Printf("Starting day24...\n")
+
+	partOne := PartOne("example.txt")
+	fmt.Printf("PartOne: %v", partOne)
+}
 
 func PartOne(filename string) (numBlackTiles int) {
 	lines := readLines(filename)
-	floor := Floor{}
+	floor := NewFloor()
 
 	for _, line := range lines {
 		point := getPoint(line)
 		floor.Flip(point)
 	}
+	fmt.Println(floor)
 
 	return floor.NumBlackTiles()
 }
@@ -56,7 +64,7 @@ func getPoint(line string) (Point) {
 		case "e":
 				x += 2
 		case "w":
-				y -= 2
+				x -= 2
 		default:
 				log.Fatalf("unrecognized token %v", token)
 		}
@@ -95,20 +103,37 @@ func tokenize(line string) (tokens []string) {
 }
 
 type Floor struct {
-	tiles map[Point]Tile
+	tiles map[Point]*Tile
 }
 
-func (f Floor) Flip(p Point) {
-	// TODO
+func NewFloor() (*Floor) {
+	tiles := map[Point]*Tile{}
+	return &Floor{tiles}
 }
 
-func (f Floor) NumBlackTiles() (result int) {
+func (f *Floor) Flip(point Point) {
+	if _, ok := f.tiles[point]; !ok {
+		f.tiles[point] = NewTile()
+	}
+	tile := f.tiles[point]
+	tile.Flip()
+}
+
+func (f *Floor) NumBlackTiles() (result int) {
 	for _, tile := range f.tiles {
 		if tile.IsBlack() {
 			result += 1
 		}
 	}
 	return result
+}
+
+func (f *Floor) String() (result string) {
+	for point, tile := range f.tiles {
+		result += fmt.Sprintf("%v: %v\n", point, tile)
+	}
+	return result
+
 }
 
 type Point struct {
@@ -120,10 +145,23 @@ type Tile struct {
 	isBlack bool
 }
 
+func NewTile() (*Tile) {
+	// tiles start off white
+	return &Tile{isBlack: false}
+}
+
 func (t *Tile) Flip() {
 	t.isBlack = !t.isBlack
 }
 
 func (t *Tile) IsBlack() bool {
 	return t.isBlack
+}
+
+func (t *Tile) String() string {
+	if t.isBlack {
+		return "black"
+	} else {
+		return "white"
+	}
 }
