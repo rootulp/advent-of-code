@@ -190,17 +190,6 @@ func (f *Floor) neighbors(point Point, tile *Tile) (result []*Tile) {
 	return result
 }
 
-func possibleNeighbors(p Point) (result []Point) {
-	return []Point{
-		{p.x - 1, p.y - 1},
-		{p.x + 1, p.y + 1},
-		{p.x + 1, p.y - 1},
-		{p.x - 1, p.y + 1},
-		{p.x + 2, p.y},
-		{p.x - 2, p.y},
-	}
-}
-
 func (f *Floor) shouldFlip(point Point, tile *Tile) bool {
 	if tile.IsBlack() && (f.numBlackNeighbors(point, tile) == 0 || f.numBlackNeighbors(point, tile) > 2) {
 		return true
@@ -273,6 +262,8 @@ func (t *Tile) String() string {
 	}
 }
 
+// Utils
+
 func contains(points []Point, val Point) bool {
 	for _, point := range points {
 		if point == val {
@@ -280,4 +271,15 @@ func contains(points []Point, val Point) bool {
 		}
 	}
 	return false
+}
+
+func possibleNeighbors(p Point) (result []Point) {
+	return []Point{
+		{p.x - 1, p.y - 1},
+		{p.x + 1, p.y + 1},
+		{p.x + 1, p.y - 1},
+		{p.x - 1, p.y + 1},
+		{p.x + 2, p.y},
+		{p.x - 2, p.y},
+	}
 }
