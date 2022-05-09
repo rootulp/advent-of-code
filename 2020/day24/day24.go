@@ -211,11 +211,22 @@ func (f *Floor) shouldFlip(point Point, tile *Tile) bool {
 	return false
 }
 
+func (f *Floor) blackPoints() (result []Point) {
+	for point, tile := range f.tiles {
+		if tile.IsBlack() {
+			result = append(result, point)
+		}
+	}
+	return result
+}
+
 func (f *Floor) populateMissingTiles() {
-	for x := f.minX(); x <= f.maxX(); x += 1 {
-		for y := f.minY(); y <= f.maxY(); y += 1 {
-			if _, ok := f.tiles[Point{x, y}]; !ok {
-				f.tiles[Point{x, y}] = NewTile()
+	blackPoints := f.blackPoints()
+	for _, point := range blackPoints {
+		neighbors := possibleNeighbors(point)
+		for _, neighbor := range neighbors {
+			if _, ok := f.tiles[neighbor]; !ok {
+				f.tiles[neighbor] = NewTile()
 			}
 		}
 	}

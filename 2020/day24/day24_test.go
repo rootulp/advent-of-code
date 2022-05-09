@@ -32,6 +32,12 @@ func TestPartTwo(t *testing.T) {
 		{"example.txt", 2, 12},
 		{"example.txt", 3, 25},
 		{"example.txt", 10, 37},
+		{"example.txt", 20, 132},
+		{"example.txt", 30, 259},
+		{"example.txt", 40, 406},
+		{"example.txt", 50, 566},
+		{"example.txt", 60, 788},
+		{"example.txt", 70, 1106},
 		{"example.txt", 100, 2208},
 	}
 
