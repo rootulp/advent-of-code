@@ -19,13 +19,13 @@ func PartOne(cardPublicKey int, doorPublicKey int) (int) {
 
 func loopSize(publicKey int) (int) {
 	val := 1
-	loop := 1
+	loop := 0
 	for val != publicKey {
+		loop += 1
 		val *= SUBJECT_NUMBER
 		val %= DIVISOR
-		loop += 1
 	}
-	return loop - 1
+	return loop
 }
 
 func encryptionKey(publicKey int, loopSize int) (int) {
@@ -34,7 +34,6 @@ func encryptionKey(publicKey int, loopSize int) (int) {
 	for loop := 0; loop < loopSize; loop += 1 {
 		val *= publicKey
 		val %= DIVISOR
-		// fmt.Printf("loop %d val %d\n", loop, val)
 	}
 	return val
 }
