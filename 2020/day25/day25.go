@@ -12,12 +12,12 @@ func main() {
 	fmt.Printf("PartOne: %d\n", partOne)
 }
 
-func PartOne(cardPublicKey int, doorPublicKey int) (int) {
+func PartOne(cardPublicKey int, doorPublicKey int) int {
 	doorLoopSize := loopSize(doorPublicKey)
 	return encryptionKey(cardPublicKey, doorLoopSize)
 }
 
-func loopSize(publicKey int) (int) {
+func loopSize(publicKey int) int {
 	val := 1
 	loop := 0
 	for val != publicKey {
@@ -28,7 +28,7 @@ func loopSize(publicKey int) (int) {
 	return loop
 }
 
-func encryptionKey(publicKey int, loopSize int) (int) {
+func encryptionKey(publicKey int, loopSize int) int {
 	var val = 1
 
 	for loop := 0; loop < loopSize; loop += 1 {

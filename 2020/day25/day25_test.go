@@ -9,7 +9,7 @@ func TestPartOne(t *testing.T) {
 		encryptionKey int
 	}
 
-	tests := []testCase {
+	tests := []testCase{
 		{5764801, 17807724, 14897079}, // example
 		{10943862, 12721030, 5025281}, // input
 	}
